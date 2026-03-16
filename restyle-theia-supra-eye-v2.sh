@@ -1,0 +1,217 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$ROOT"
+
+TARGET="$(find . -type f \( \
+  -path '*/theia-extensions/product/src/browser/style/index.css' -o \
+  -path '*/theia-extensions/product/src/browser/style/*.css' \
+\) | head -n 1)"
+
+if [ -z "$TARGET" ]; then
+  echo "Could not find Theia product stylesheet."
+  exit 1
+fi
+
+DIR="$(dirname "$TARGET")"
+BASE="$(basename "$TARGET")"
+BACKUP_DIR=".skye-theme-backups/$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+cp "$TARGET" "$BACKUP_DIR/$BASE"
+
+cat > "$DIR/skye-supra-eye-v2.css" <<'CSS'
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap");
+
+:root {
+  --skye-bg-0: #05060b;
+  --skye-bg-1: #120b1f;
+  --skye-bg-2: #221033;
+  --skye-panel: rgba(14, 10, 24, 0.88);
+  --skye-panel-2: rgba(19, 14, 32, 0.92);
+  --skye-border: rgba(168, 106, 255, 0.28);
+  --skye-gold: #ffd660;
+  --skye-purple: #a243ff;
+  --skye-cyan: #27f2ff;
+  --skye-text: #f7f2ff;
+  --skye-muted: #c9bedf;
+  --skye-shadow: 0 20px 60px rgba(0,0,0,.42);
+  --skye-font-display: "Orbitron", sans-serif;
+  --skye-font-body: "Space Grotesk", sans-serif;
+  --skye-font-mono: "IBM Plex Mono", monospace;
+}
+
+html, body {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(162,67,255,.18), transparent 30%),
+    radial-gradient(circle at 84% 12%, rgba(255,214,96,.12), transparent 26%),
+    radial-gradient(circle at 50% 92%, rgba(39,242,255,.08), transparent 24%),
+    linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 55%, #05070d);
+  color: var(--skye-text);
+  font-family: var(--skye-font-body);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(168,106,255,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,106,255,.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transform: perspective(1000px) rotateX(73deg) scale(1.25);
+  transform-origin: center top;
+  opacity: .18;
+  z-index: 0;
+}
+
+.theia-ApplicationShell,
+.theia-app-shell,
+.theia-app-main,
+.monaco-workbench,
+.monaco-workbench .part.editor > .content,
+.monaco-editor,
+.monaco-editor-background {
+  background: transparent !important;
+  color: var(--skye-text) !important;
+}
+
+.p-MenuBar,
+.p-CommandPalette,
+.p-TabBar,
+.p-Widget,
+.theia-side-panel,
+.theia-sidebar,
+.theia-panel,
+.theia-TreeContainer,
+.theia-output,
+.theia-notifications-container,
+.theia-statusBar,
+.theia-tabBar-toolbar,
+.theia-quick-input-widget,
+.theia-preferences,
+.theia-editor,
+.theia-monaco-editor,
+.theia-search-container,
+.theia-terminal,
+.terminal.xterm {
+  background: linear-gradient(180deg, var(--skye-panel-2), var(--skye-panel)) !important;
+  border-color: var(--skye-border) !important;
+  box-shadow: var(--skye-shadow);
+  backdrop-filter: blur(12px);
+  color: var(--skye-text) !important;
+}
+
+.p-SplitPanel-handle,
+.theia-sash,
+.monaco-sash {
+  background: rgba(168,106,255,.12) !important;
+}
+
+.p-TabBar-tab,
+.theia-tab {
+  color: var(--skye-muted) !important;
+  border-color: transparent !important;
+}
+
+.p-TabBar-tab.p-mod-current,
+.p-TabBar-tab.theia-mod-active,
+.theia-tab.active {
+  color: var(--skye-gold) !important;
+  background: linear-gradient(180deg, rgba(255,214,96,.10), rgba(162,67,255,.10)) !important;
+  box-shadow: inset 0 -2px 0 rgba(255,214,96,.55);
+}
+
+.theia-statusBar {
+  background: linear-gradient(90deg, rgba(75,45,138,.96), rgba(49,66,125,.96)) !important;
+  color: #fff !important;
+}
+
+input, textarea, select,
+.theia-input,
+.monaco-inputbox input {
+  background: rgba(8,8,14,.82) !important;
+  color: var(--skye-text) !important;
+  border: 1px solid var(--skye-border) !important;
+  border-radius: 10px;
+}
+
+button,
+.theia-button,
+.p-Button {
+  background: rgba(255,255,255,.05) !important;
+  color: var(--skye-text) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: 12px !important;
+}
+
+button:hover,
+.theia-button:hover,
+.p-Button:hover {
+  border-color: rgba(255,214,96,.35) !important;
+  box-shadow: 0 0 18px rgba(255,214,96,.12);
+}
+
+.monaco-workbench .activitybar,
+.monaco-workbench .sidebar,
+.monaco-workbench .titlebar,
+.monaco-workbench .editor-group-container,
+.monaco-workbench .part {
+  background: transparent !important;
+}
+
+.monaco-list-row.focused,
+.monaco-list-row.selected,
+.monaco-list-row:hover {
+  background: rgba(162,67,255,.12) !important;
+}
+
+.monaco-editor .margin,
+.monaco-editor .monaco-editor-background {
+  background: rgba(7,8,14,.72) !important;
+}
+
+.monaco-editor,
+.monaco-workbench,
+.xterm,
+.terminal.xterm {
+  font-family: var(--skye-font-mono) !important;
+}
+
+.theia-aboutDialog .title,
+.theia-welcomeView .title,
+.theia-preferences-header,
+.theia-settings-header,
+.monaco-dialog-box .dialog-message-text,
+.theia-sidebar .label-name {
+  font-family: var(--skye-font-display) !important;
+  letter-spacing: .03em;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,.04);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(162,67,255,.82), rgba(255,214,96,.68));
+  border-radius: 999px;
+  border: 2px solid rgba(7,8,14,.45);
+}
+CSS
+
+if ! grep -q 'skye-supra-eye-v2.css' "$TARGET"; then
+  {
+    printf '%s\n' '@import "./skye-supra-eye-v2.css";'
+    cat "$TARGET"
+  } > "$TARGET.tmp"
+  mv "$TARGET.tmp" "$TARGET"
+fi
+
+echo "Done."
+echo "Target: $TARGET"
+echo "Overlay: $DIR/skye-supra-eye-v2.css"
+echo "Backup: $BACKUP_DIR/$BASE"
