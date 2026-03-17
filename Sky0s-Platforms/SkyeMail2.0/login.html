@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login — Skye Mail Vault</title>
+
+  <link rel="stylesheet" href="/assets/css/login.css"/>
+<script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div class="name">
+          <b>Skye Mail Vault</b>
+          <span>Encrypted business message center • Netlify + Neon</span>
+        </div>
+      </div>
+      <div class="navlinks">
+<a class="pill" href="/">Home</a>
+        <a class="pill" href="/trust/">Trust Pack</a>
+        <a class="pill" href="/sso.html">SSO</a>
+        <a class="pill" href="/siem.html">SIEM</a>
+        <a class="pill" href="/signup.html">Sign up</a>
+        <a class="pill" href="/login.html">Login</a>
+        <a class="pill" href="/founder.html">Founder</a>
+        <a class="pill" href="/ai.html">AI</a>
+        <a class="pill" href="/dashboard.html">Inbox</a>
+      
+              <a class="pill" href="/sessions.html">Sessions</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+<div class="card">
+  <h1 class="h1 u1">Login</h1>
+  <p class="sub">Sign in to view your encrypted inbox.</p>
+
+  <div class="split">
+    <div>
+      <label>Email or Handle</label>
+      <input id="ident" placeholder="you@domain.com or yourbrand" autocomplete="username" />
+
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Your password" autocomplete="current-password" />
+
+      <div class="btnrow u2">
+        <button class="btn gold" id="btnLogin">Login</button>
+        <a class="btn" href="/signup.html">Create account</a>
+      </div>
+
+
+      <div class="sub u3">
+        <a href="/forgot.html">Forgot password?</a>
+      </div>
+
+      
+      <div class="hr"></div>
+
+      <div class="sub">SSO Login (SAML)</div>
+      <label>Organization Slug</label>
+      <input id="org_slug" placeholder="your-org-slug" autocomplete="organization" />
+
+      <div class="btnrow">
+        <button class="btn" id="btnSaml">Login with SAML</button>
+      </div>
+      <div id="samlStatus" class="mono"> </div>
+
+      <div id="verifyBox" class="card u4">
+        <div class="sub">Email not verified. Check your inbox for the verification link.</div>
+        <div class="btnrow u3">
+          <button class="btn" id="btnResendVerify">Resend verification</button>
+        </div>
+        <div id="verifyStatus" class="mono u5"></div>
+      </div>
+
+      <div class="hr"></div>
+      <div id="status" class="mono">Ready.</div>
+    </div>
+
+    <div>
+      <div class="pane">
+        <h3>Vault unlock</h3>
+        <div class="notice">
+          Login gets you access to your inbox metadata. To decrypt message contents you will unlock with your Vault Passphrase on the Inbox screen.
+        </div>
+      </div>
+      <div class="pane u6">
+        <h3>Public address</h3>
+        <div class="notice">
+          Share <span class="mono">/u/&lt;handle&gt;</span> to let anyone send you an encrypted message.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  </div>
+  <div class="footer">
+    <div class="container">
+      <p>
+        Skyes Over London LC • Phoenix, AZ • For contracts, partnerships, operations alignment, and high-integrity execution systems:
+        <a href="mailto:SkyesOverLondonLC@solenterprises.org">SkyesOverLondonLC@solenterprises.org</a> •
+        <a href="mailto:SkyesOverLondon@gmail.com">SkyesOverLondon@gmail.com</a> •
+        <a href="mailto:B2B@solenterprises.org">B2B@solenterprises.org</a> •
+        <a href="tel:+14804695416">(480) 469-5416</a>
+      </p>
+      <p class="linksbox">
+        <a href="https://solenterprises.org/pages/contact-hub" target="_blank" rel="noopener">Contact Hub</a>
+        <a href="https://solenterprises.org/pages/leadership-hub" target="_blank" rel="noopener">Leadership Hub</a>
+        <a href="https://kaixugateway13ee.netlify.app/" target="_blank" rel="noopener">kAIxuGateway13EE</a>
+        <a href="https://solenterprisesnexusconnect.netlify.app/" target="_blank" rel="noopener">NexusConnect</a>
+        <a href="https://familycommand.netlify.app/" target="_blank" rel="noopener">FamilyCommand</a>
+        <a href="https://skyecode-nexus.netlify.app/" target="_blank" rel="noopener">SkyeCode Nexus</a>
+        <a href="https://skyesoverlondon.netlify.app/" target="_blank" rel="noopener">SkyesOverLondon</a>
+        <a href="https://solenterprises.org/pages/skyeweb" target="_blank" rel="noopener">SkyeWeb</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+  <script src="/assets/pages/login.js" defer></script>
+</body>
+</html>

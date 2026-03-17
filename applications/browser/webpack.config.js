@@ -7,6 +7,7 @@ const configs = require('./gen-webpack.config.js');
 const nodeConfig = require('./gen-webpack.node.config.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 const productExtensionPath = path.resolve(__dirname, '..', '..', 'theia-extensions', 'product');
 
@@ -39,11 +40,33 @@ configs[0].plugins.push(
 );
 
 configs.forEach(config => {
+    if (config.entry?.bundle) {
+        config.name = 'browser-main';
+    } else if (config.entry?.['secondary-window']) {
+        config.name = 'browser-secondary-window';
+    }
     config.resolve = config.resolve || {};
     config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'theia-ide-product-ext': productExtensionPath
     };
+    if (config.mode === 'production') {
+        config.devtool = false;
+        config.cache = false;
+        config.parallelism = 1;
+        config.stats = 'errors-warnings';
+        config.optimization = {
+            ...(config.optimization || {}),
+            minimize: false,
+            minimizer: []
+        };
+        if (config.plugins) {
+            config.plugins = config.plugins.filter(plugin => !(plugin instanceof CompressionPlugin));
+        }
+        if (config.module?.rules) {
+            config.module.rules = config.module.rules.filter(rule => rule.loader !== 'source-map-loader');
+        }
+    }
     config.ignoreWarnings = [
         ...(config.ignoreWarnings || []),
         ...benignWarnings

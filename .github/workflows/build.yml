@@ -79,11 +79,6 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=4096
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # https://github.com/microsoft/vscode-ripgrep/issues/9
 
-      - name: Update electron-builder.yml for macos-15
-        if: matrix.os == 'macos-15'
-        run: |
-          sed -i '' 's|https://download.eclipse.org/theia/ide/latest/macos|https://download.eclipse.org/theia/ide/latest/macos-arm|g' applications/electron/electron-builder.yml
-
       - name: Build prod package (Mac)
         if: runner.os == 'macOS'
         shell: bash

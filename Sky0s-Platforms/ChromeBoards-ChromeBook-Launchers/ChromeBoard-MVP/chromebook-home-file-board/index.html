@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111827" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Home File Board</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.08);
+      --panel-2: rgba(255,255,255,0.12);
+      --text: #f5f7fb;
+      --muted: #b8c2d9;
+      --accent: #c9a227;
+      --accent-2: #7c5cff;
+      --border: rgba(255,255,255,0.12);
+      --danger: #ff6b6b;
+      --success: #2ecc71;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(124,92,255,0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(201,162,39,0.14), transparent 28%),
+        linear-gradient(180deg, #0b1020 0%, #10172c 100%);
+      color: var(--text);
+      font: 16px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      padding: 22px;
+    }
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .hero {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .hero-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+    }
+    .sub {
+      color: var(--muted);
+      max-width: 900px;
+      margin: 0;
+    }
+    .warning {
+      font-size: 0.95rem;
+      margin-top: 12px;
+      color: #f9ddb0;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button, .chip {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    button:hover, .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+    button.primary { background: linear-gradient(135deg, rgba(124,92,255,0.65), rgba(201,162,39,0.4)); }
+    button.danger { border-color: rgba(255,107,107,0.45); color: #ffd5d5; }
+    .statusbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .status {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      flex: 1 1 340px;
+    }
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      min-width: 110px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .tile {
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 16px;
+      min-height: 180px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      position: relative;
+      overflow: hidden;
+    }
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -35% auto;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(201,162,39,0.15), transparent 60%);
+      pointer-events: none;
+    }
+    .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(124,92,255,0.5), rgba(201,162,39,0.3));
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .name {
+      font-weight: 700;
+      font-size: 1rem;
+      word-break: break-word;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.87rem;
+      word-break: break-word;
+    }
+    .tile-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tile-actions button {
+      padding: 9px 10px;
+      font-size: 0.88rem;
+      border-radius: 12px;
+    }
+    .empty {
+      padding: 28px;
+      border-radius: 22px;
+      border: 1px dashed rgba(255,255,255,0.22);
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+    dialog {
+      width: min(860px, calc(100vw - 24px));
+      border: 1px solid var(--border);
+      background: #0f1730;
+      color: var(--text);
+      border-radius: 22px;
+      padding: 0;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    }
+    dialog::backdrop { background: rgba(0,0,0,0.55); }
+    .modal-head, .modal-body, .modal-foot { padding: 18px; }
+    .modal-head { border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .modal-body { max-height: 68vh; overflow: auto; }
+    .folder-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+    .folder-item { border: 1px solid var(--border); border-radius: 16px; padding: 12px; background: rgba(255,255,255,0.05); }
+    .folder-item button { width: 100%; }
+    form.add-link {
+      display: grid;
+      gap: 10px;
+    }
+    input[type="text"], input[type="url"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font: inherit;
+    }
+    .tiny { font-size: 0.86rem; color: var(--muted); }
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      .hero-card { padding: 18px; border-radius: 22px; }
+      .grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero hero-card">
+      <div>
+        <h1>Home File Board</h1>
+        <p class="sub">This is the real ChromeOS workaround: a fake home screen app for your files. Install it as a PWA, add your local files, folders, or Drive/web links, and launch them from one clean board instead of fighting ChromeOS like it owes you rent.</p>
+        <p class="warning">ChromeOS still does not allow apps or shortcuts directly on the desktop wallpaper/background. This app sidesteps that by becoming the thing you put on the launcher/shelf and use like a file home screen.</p>
+      </div>
+      <div class="toolbar">
+        <button class="primary" id="addFilesBtn">Add local file(s)</button>
+        <button id="addFolderBtn">Add folder</button>
+        <button id="addLinkBtn">Add Drive / web link</button>
+        <button id="installBtn" hidden>Install app</button>
+        <button id="exportBtn">Export links list</button>
+        <button id="importBtn">Import links list</button>
+        <button id="clearBtn" class="danger">Clear board</button>
+        <input type="file" id="importFile" accept="application/json" hidden />
+      </div>
+    </section>
+
+    <div class="statusbar">
+      <div class="status" id="status">Ready. Add files or folders, then install this as an app on your Chromebook.</div>
+      <div class="stats">
+        <div class="stat"><strong id="fileCount">0</strong><br>items</div>
+        <div class="stat"><strong id="folderCount">0</strong><br>folders</div>
+        <div class="stat"><strong id="linkCount">0</strong><br>links</div>
+      </div>
+    </div>
+
+    <main id="board"></main>
+  </div>
+
+  <dialog id="folderDialog">
+    <div class="modal-head">
+      <strong id="folderTitle">Folder</strong>
+      <button id="closeFolderDialog">Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="folder-list" id="folderList"></div>
+    </div>
+  </dialog>
+
+  <dialog id="linkDialog">
+    <div class="modal-head">
+      <strong>Add link</strong>
+      <button id="closeLinkDialog">Close</button>
+    </div>
+    <div class="modal-body">
+      <form class="add-link" id="linkForm">
+        <label>
+          <div class="tiny">Label</div>
+          <input type="text" id="linkLabel" placeholder="Quarterly report / Project folder / Drive doc" required />
+        </label>
+        <label>
+          <div class="tiny">URL</div>
+          <input type="url" id="linkUrl" placeholder="https://drive.google.com/..." required />
+        </label>
+        <button class="primary" type="submit">Add link</button>
+      </form>
+    </div>
+  </dialog>
+
+  <script>
+    const DB_NAME = 'home-file-board-db';
+    const STORE = 'items';
+    let deferredPrompt = null;
+    let db;
+
+    const els = {
+      board: document.getElementById('board'),
+      status: document.getElementById('status'),
+      addFilesBtn: document.getElementById('addFilesBtn'),
+      addFolderBtn: document.getElementById('addFolderBtn'),
+      addLinkBtn: document.getElementById('addLinkBtn'),
+      installBtn: document.getElementById('installBtn'),
+      clearBtn: document.getElementById('clearBtn'),
+      exportBtn: document.getElementById('exportBtn'),
+      importBtn: document.getElementById('importBtn'),
+      importFile: document.getElementById('importFile'),
+      fileCount: document.getElementById('fileCount'),
+      folderCount: document.getElementById('folderCount'),
+      linkCount: document.getElementById('linkCount'),
+      folderDialog: document.getElementById('folderDialog'),
+      closeFolderDialog: document.getElementById('closeFolderDialog'),
+      folderTitle: document.getElementById('folderTitle'),
+      folderList: document.getElementById('folderList'),
+      linkDialog: document.getElementById('linkDialog'),
+      closeLinkDialog: document.getElementById('closeLinkDialog'),
+      linkForm: document.getElementById('linkForm'),
+      linkLabel: document.getElementById('linkLabel'),
+      linkUrl: document.getElementById('linkUrl'),
+    };
+
+    const iconFor = (item) => {
+      if (item.kind === 'folder') return '📁';
+      if (item.kind === 'link') return '🔗';
+      const ext = (item.name.split('.').pop() || '').toLowerCase();
+      if (['pdf'].includes(ext)) return '📕';
+      if (['png','jpg','jpeg','gif','webp','svg'].includes(ext)) return '🖼️';
+      if (['mp4','mov','webm','mkv'].includes(ext)) return '🎬';
+      if (['mp3','wav','ogg','m4a'].includes(ext)) return '🎵';
+      if (['zip','rar','7z'].includes(ext)) return '🗜️';
+      if (['doc','docx','txt','md','rtf'].includes(ext)) return '📄';
+      if (['xls','xlsx','csv'].includes(ext)) return '📊';
+      if (['ppt','pptx'].includes(ext)) return '📽️';
+      return '🧩';
+    };
+
+    function setStatus(text, tone = 'normal') {
+      els.status.textContent = text;
+      els.status.style.borderColor = tone === 'error' ? 'rgba(255,107,107,0.45)' : tone === 'good' ? 'rgba(46,204,113,0.45)' : 'rgba(255,255,255,0.12)';
+    }
+
+    function openDb() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(STORE)) {
+            db.createObjectStore(STORE, { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function tx(mode = 'readonly') {
+      return db.transaction(STORE, mode).objectStore(STORE);
+    }
+
+    function getAllItems() {
+      return new Promise((resolve, reject) => {
+        const req = tx().getAll();
+        req.onsuccess = () => resolve((req.result || []).sort((a,b) => a.createdAt - b.createdAt));
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function putItem(item) {
+      return new Promise((resolve, reject) => {
+        const req = tx('readwrite').put(item);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function deleteItem(id) {
+      return new Promise((resolve, reject) => {
+        const req = tx('readwrite').delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function clearItems() {
+      return new Promise((resolve, reject) => {
+        const req = tx('readwrite').clear();
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function requestHandlePermission(handle, mode = 'read') {
+      if (!handle?.queryPermission || !handle?.requestPermission) return true;
+      const options = { mode };
+      const q = await handle.queryPermission(options);
+      if (q === 'granted') return true;
+      const r = await handle.requestPermission(options);
+      return r === 'granted';
+    }
+
+    async function addFiles() {
+      try {
+        if (!('showOpenFilePicker' in window)) {
+          setStatus('This browser/origin does not expose the local file picker API here. Use Chrome on Chromebook over HTTPS or localhost.', 'error');
+          return;
+        }
+        const handles = await window.showOpenFilePicker({ multiple: true });
+        for (const handle of handles) {
+          await putItem({
+            id: crypto.randomUUID(),
+            kind: 'file',
+            name: handle.name,
+            createdAt: Date.now(),
+            handle,
+          });
+        }
+        setStatus(`Added ${handles.length} file${handles.length === 1 ? '' : 's'}.`, 'good');
+        await render();
+      } catch (err) {
+        if (err?.name !== 'AbortError') setStatus(`Could not add files: ${err.message}`, 'error');
+      }
+    }
+
+    async function addFolder() {
+      try {
+        if (!('showDirectoryPicker' in window)) {
+          setStatus('This browser/origin does not expose the folder picker API here. Use Chrome on Chromebook over HTTPS or localhost.', 'error');
+          return;
+        }
+        const handle = await window.showDirectoryPicker();
+        await putItem({
+          id: crypto.randomUUID(),
+          kind: 'folder',
+          name: handle.name,
+          createdAt: Date.now(),
+          handle,
+        });
+        setStatus(`Added folder: ${handle.name}`, 'good');
+        await render();
+      } catch (err) {
+        if (err?.name !== 'AbortError') setStatus(`Could not add folder: ${err.message}`, 'error');
+      }
+    }
+
+    function addLinkDialog() {
+      els.linkDialog.showModal();
+    }
+
+    async function addLink(label, url) {
+      await putItem({
+        id: crypto.randomUUID(),
+        kind: 'link',
+        name: label,
+        url,
+        createdAt: Date.now(),
+      });
+      setStatus(`Added link: ${label}`, 'good');
+      await render();
+    }
+
+    async function openFileItem(item) {
+      try {
+        const granted = await requestHandlePermission(item.handle, 'read');
+        if (!granted) {
+          setStatus(`Permission denied for ${item.name}.`, 'error');
+          return;
+        }
+        const file = await item.handle.getFile();
+        const url = URL.createObjectURL(file);
+        window.open(url, '_blank', 'noopener,noreferrer');
+        setStatus(`Opened ${item.name}.`, 'good');
+      } catch (err) {
+        setStatus(`Could not open ${item.name}: ${err.message}`, 'error');
+      }
+    }
+
+    async function showFolder(item) {
+      try {
+        const granted = await requestHandlePermission(item.handle, 'read');
+        if (!granted) {
+          setStatus(`Permission denied for ${item.name}.`, 'error');
+          return;
+        }
+        els.folderTitle.textContent = item.name;
+        els.folderList.innerHTML = '<div class="tiny">Loading folder…</div>';
+        els.folderDialog.showModal();
+        const entries = [];
+        for await (const entry of item.handle.values()) {
+          if (entry.kind === 'file') entries.push(entry);
+        }
+        els.folderList.innerHTML = '';
+        if (!entries.length) {
+          els.folderList.innerHTML = '<div class="tiny">No files found in this folder.</div>';
+          return;
+        }
+        entries.sort((a,b) => a.name.localeCompare(b.name));
+        for (const handle of entries) {
+          const wrap = document.createElement('div');
+          wrap.className = 'folder-item';
+          wrap.innerHTML = `
+            <div style="margin-bottom:8px;font-weight:700;word-break:break-word;">${escapeHtml(handle.name)}</div>
+            <button>Open</button>
+          `;
+          wrap.querySelector('button').addEventListener('click', async () => {
+            try {
+              const file = await handle.getFile();
+              const url = URL.createObjectURL(file);
+              window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (err) {
+              setStatus(`Could not open ${handle.name}: ${err.message}`, 'error');
+            }
+          });
+          els.folderList.appendChild(wrap);
+        }
+        setStatus(`Loaded folder ${item.name}.`, 'good');
+      } catch (err) {
+        els.folderList.innerHTML = '<div class="tiny">Could not read this folder.</div>';
+        setStatus(`Could not read folder ${item.name}: ${err.message}`, 'error');
+      }
+    }
+
+    async function openLink(item) {
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+      setStatus(`Opened link: ${item.name}`, 'good');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+    }
+
+    async function render() {
+      const items = await getAllItems();
+      const fileCount = items.filter(i => i.kind === 'file').length;
+      const folderCount = items.filter(i => i.kind === 'folder').length;
+      const linkCount = items.filter(i => i.kind === 'link').length;
+      els.fileCount.textContent = fileCount;
+      els.folderCount.textContent = folderCount;
+      els.linkCount.textContent = linkCount;
+
+      if (!items.length) {
+        els.board.innerHTML = `
+          <div class="empty">
+            <h2 style="margin-top:0">No items yet</h2>
+            <p>Add files, folders, or Drive links. Then install this app and use it as your fake Chromebook home screen for files.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      items.forEach(item => {
+        const tile = document.createElement('article');
+        tile.className = 'tile';
+        tile.innerHTML = `
+          <div class="icon">${iconFor(item)}</div>
+          <div>
+            <div class="name">${escapeHtml(item.name)}</div>
+            <div class="meta">${item.kind === 'link' ? escapeHtml(new URL(item.url).hostname) : item.kind}</div>
+          </div>
+          <div class="tile-actions">
+            <button class="openBtn">Open</button>
+            <button class="removeBtn">Remove</button>
+          </div>
+        `;
+        tile.querySelector('.openBtn').addEventListener('click', async () => {
+          if (item.kind === 'file') return openFileItem(item);
+          if (item.kind === 'folder') return showFolder(item);
+          return openLink(item);
+        });
+        tile.querySelector('.removeBtn').addEventListener('click', async () => {
+          await deleteItem(item.id);
+          setStatus(`Removed ${item.name}.`, 'good');
+          await render();
+        });
+        grid.appendChild(tile);
+      });
+
+      els.board.innerHTML = '';
+      els.board.appendChild(grid);
+    }
+
+    async function exportLinksList() {
+      const items = await getAllItems();
+      const exportable = items.map(item => {
+        if (item.kind === 'link') return item;
+        return { id: item.id, kind: item.kind, name: item.name, createdAt: item.createdAt };
+      });
+      const blob = new Blob([JSON.stringify(exportable, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'home-file-board-export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatus('Exported board metadata. Note: local file permissions/handles may not restore across devices.', 'good');
+    }
+
+    async function importLinksList(file) {
+      const text = await file.text();
+      const items = JSON.parse(text);
+      let count = 0;
+      for (const item of items) {
+        if (item.kind === 'link' && item.url) {
+          await putItem({
+            id: crypto.randomUUID(),
+            kind: 'link',
+            name: item.name || item.url,
+            url: item.url,
+            createdAt: Date.now(),
+          });
+          count++;
+        }
+      }
+      setStatus(`Imported ${count} link${count === 1 ? '' : 's'}. Local file handles are not imported from JSON for security reasons.`, 'good');
+      await render();
+    }
+
+    async function installApp() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      els.installBtn.hidden = true;
+    }
+
+    async function init() {
+      try {
+        db = await openDb();
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js');
+        }
+        await render();
+        setStatus('Ready. Add files or folders, then install this app on your Chromebook.', 'good');
+      } catch (err) {
+        setStatus(`Startup failed: ${err.message}`, 'error');
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      els.installBtn.hidden = false;
+      setStatus('This app can be installed. Tap “Install app” and pin it where you want.', 'good');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      els.installBtn.hidden = true;
+      setStatus('Installed. Put it on your launcher/shelf and use it as your file home screen.', 'good');
+    });
+
+    els.addFilesBtn.addEventListener('click', addFiles);
+    els.addFolderBtn.addEventListener('click', addFolder);
+    els.addLinkBtn.addEventListener('click', addLinkDialog);
+    els.installBtn.addEventListener('click', installApp);
+    els.clearBtn.addEventListener('click', async () => {
+      const ok = confirm('Clear the whole board?');
+      if (!ok) return;
+      await clearItems();
+      setStatus('Board cleared.', 'good');
+      await render();
+    });
+    els.exportBtn.addEventListener('click', exportLinksList);
+    els.importBtn.addEventListener('click', () => els.importFile.click());
+    els.importFile.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        await importLinksList(file);
+      } catch (err) {
+        setStatus(`Import failed: ${err.message}`, 'error');
+      } finally {
+        e.target.value = '';
+      }
+    });
+    els.closeFolderDialog.addEventListener('click', () => els.folderDialog.close());
+    els.closeLinkDialog.addEventListener('click', () => els.linkDialog.close());
+    els.linkForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await addLink(els.linkLabel.value.trim(), els.linkUrl.value.trim());
+        els.linkDialog.close();
+        els.linkForm.reset();
+      } catch (err) {
+        setStatus(`Could not add link: ${err.message}`, 'error');
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

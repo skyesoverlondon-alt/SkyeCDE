@@ -1,0 +1,17 @@
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "Replace",
+      "path": "active",
+      "value": false
+    },
+    {
+      "op": "Replace",
+      "path": "userName",
+      "value": "new.user@acme.com"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Vault Keys — Skye Mail Vault</title>
+<link rel="stylesheet" href="/assets/css/keys.css"/>
+</head><body>
+<div class="wrap">
+  <div class="topbar"><div class="nav">
+    <div class="brand">
+      <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+      <div class="name"><b>Skye Mail Vault</b><span>Keys • Export/Import • Rotation</span></div>
+    </div>
+    <div class="navlinks">
+<a class="pill" href="/">Home</a>
+        <a class="pill" href="/trust/">Trust Pack</a>
+        <a class="pill" href="/sso.html">SSO</a>
+        <a class="pill" href="/siem.html">SIEM</a>
+      <a class="pill" href="/dashboard.html">Inbox</a>
+        <a class="pill" href="/org.html">Org</a>
+        <a class="pill" href="/audit.html">Audit</a>
+        <a class="pill" href="/sessions.html">Sessions</a>
+      <a class="pill" href="/ai.html">AI</a>
+      <a class="pill" href="/founder.html">Founder</a>
+      <button class="pill u1" id="btnLogout">Logout</button>
+    
+      </div>
+  </div></div>
+
+  <div class="container"><div class="card">
+    <h1 class="h1 u2">Vault Keys</h1>
+    <p class="sub">Export a Vault Pack for backup/migration, restore keys from a Vault Pack, and rotate keys. Old messages remain decryptable via key versions.</p>
+
+    <div class="badge" id="who">Loading…</div>
+    <div class="hr"></div>
+
+    <div class="split">
+      <div>
+        <div class="pane">
+          <h3>Export Vault Pack</h3>
+          <div class="notice">Downloads an encrypted key pack (wrapped private keys). Keep it safe.</div>
+          <div class="btnrow u3">
+            <button class="btn gold" id="btnExport">Download Vault Pack</button>
+          </div>
+        </div>
+
+        <div class="pane u4">
+          <h3>Restore Keys from Vault Pack</h3>
+          <div class="notice">Paste a previously exported Vault Pack. This replaces keys on the server for your account (auth required).</div>
+          <label>Vault Pack JSON</label>
+          <textarea id="packJson" placeholder='{"schema":"SMV_VAULT_PACK_V1", ...}'></textarea>
+          <div class="btnrow u3">
+            <button class="btn" id="btnRestore">Restore Keys</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="pane">
+          <h3>Key Rotation</h3>
+          <div class="notice">Generates a new key pair locally and makes it active. Old key versions remain on your account for decrypting older messages.</div>
+          <label>Vault Passphrase (wrap the new private key)</label>
+          <input id="vaultPass" type="password" placeholder="Enter your vault passphrase" autocomplete="current-password" />
+          <div class="btnrow u3">
+            <button class="btn gold" id="btnRotate">Rotate Keys</button>
+          </div>
+          <div class="hr"></div>
+          <div id="kstatus" class="mono">Ready.</div>
+        </div>
+
+        <div class="pane u4">
+          <h3>Key Versions</h3>
+          <div class="notice" id="keysList">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <div id="status" class="mono">Ready.</div>
+  </div></div>
+
+  <div class="footer"><div class="container">
+    <p>Skyes Over London LC • Phoenix, AZ •
+      <a href="mailto:SkyesOverLondonLC@solenterprises.org">SkyesOverLondonLC@solenterprises.org</a> •
+      <a href="tel:+14804695416">(480) 469-5416</a>
+    </p>
+  </div></div>
+</div>
+
+<script src="/assets/app.js" defer></script>
+<script src="/assets/cryptoVault.js" defer></script>
+
+  <script src="/assets/pages/keys.js" defer></script>
+</body></html>

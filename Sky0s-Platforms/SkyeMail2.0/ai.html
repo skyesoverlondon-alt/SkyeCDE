@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Assistant — Skye Mail Vault</title>
+
+  <link rel="stylesheet" href="/assets/css/ai.css"/>
+<script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div class="name">
+          <b>Skye Mail Vault</b>
+          <span>Encrypted business message center • Netlify + Neon</span>
+        </div>
+      </div>
+      <div class="navlinks">
+<a class="pill" href="/">Home</a>
+        <a class="pill" href="/trust/">Trust Pack</a>
+        <a class="pill" href="/sso.html">SSO</a>
+        <a class="pill" href="/siem.html">SIEM</a>
+        <a class="pill" href="/signup.html">Sign up</a>
+        <a class="pill" href="/login.html">Login</a>
+        <a class="pill" href="/founder.html">Founder</a>
+        <a class="pill" href="/ai.html">AI</a>
+        <a class="pill" href="/dashboard.html">Inbox</a>
+      
+              <a class="pill" href="/sessions.html">Sessions</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+<div class="card">
+  <h1 class="h1 u1">AI Assistant (kAIxuGateway13)</h1>
+  <p class="sub">
+    This is a general-purpose assistant panel for message triage and reply drafting.
+    All AI traffic routes through kAIxuGateway13 (no provider SDKs, no direct provider endpoints).
+  </p>
+
+  <div class="split">
+    <div>
+      <label>Kaixu Key</label>
+      <input id="kaixuKey" placeholder="Bearer key stored locally" />
+      <small>Stored in your browser only.</small>
+
+      <div class="grid2 u2">
+        <div>
+          <label>Provider</label>
+          <select id="provider">
+            <option value="openai">openai</option>
+            <option value="anthropic">anthropic</option>
+            <option value="gemini">gemini</option>
+          </select>
+        </div>
+        <div>
+          <label>Model (editable)</label>
+          <input id="model" value="gpt-4o-mini" />
+        </div>
+      </div>
+
+      <label>System prompt</label>
+      <textarea id="systemPrompt">You are a precise assistant. Be concise, accurate, and execution-first.</textarea>
+
+      <label>Input</label>
+      <textarea id="userInput" placeholder="Paste a message, request a draft reply, or ask for an action plan..."></textarea>
+
+      <div class="btnrow">
+        <button class="btn gold" id="btnStream">Stream</button>
+        <button class="btn" id="btnNonStream">Non-stream</button>
+        <button class="btn" id="btnStop">Stop</button>
+      </div>
+
+      <div class="hr"></div>
+      <div class="badge" id="budget">Budget: —</div>
+      <div id="status" class="mono u2">Ready.</div>
+    </div>
+
+    <div>
+      <div class="pane">
+        <h3>Conversation</h3>
+        <div class="chatlog" id="chatlog"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/kaixuGateway.js" defer></script>
+
+
+  </div>
+  <div class="footer">
+    <div class="container">
+      <p>
+        Skyes Over London LC • Phoenix, AZ • For contracts, partnerships, operations alignment, and high-integrity execution systems:
+        <a href="mailto:SkyesOverLondonLC@solenterprises.org">SkyesOverLondonLC@solenterprises.org</a> •
+        <a href="mailto:SkyesOverLondon@gmail.com">SkyesOverLondon@gmail.com</a> •
+        <a href="mailto:B2B@solenterprises.org">B2B@solenterprises.org</a> •
+        <a href="tel:+14804695416">(480) 469-5416</a>
+      </p>
+      <p class="linksbox">
+        <a href="https://solenterprises.org/pages/contact-hub" target="_blank" rel="noopener">Contact Hub</a>
+        <a href="https://solenterprises.org/pages/leadership-hub" target="_blank" rel="noopener">Leadership Hub</a>
+        <a href="https://kaixugateway13ee.netlify.app/" target="_blank" rel="noopener">kAIxuGateway13EE</a>
+        <a href="https://solenterprisesnexusconnect.netlify.app/" target="_blank" rel="noopener">NexusConnect</a>
+        <a href="https://familycommand.netlify.app/" target="_blank" rel="noopener">FamilyCommand</a>
+        <a href="https://skyecode-nexus.netlify.app/" target="_blank" rel="noopener">SkyeCode Nexus</a>
+        <a href="https://skyesoverlondon.netlify.app/" target="_blank" rel="noopener">SkyesOverLondon</a>
+        <a href="https://solenterprises.org/pages/skyeweb" target="_blank" rel="noopener">SkyeWeb</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+  <script src="/assets/pages/ai.js" defer></script>
+</body>
+</html>

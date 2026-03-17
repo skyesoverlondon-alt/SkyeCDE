@@ -40,11 +40,6 @@ jobs:
           yarn version --minor --no-git-tag-version
           echo "THEIA_IDE_VERSION=$(jq -r .version package.json)-${THEIA_VERSION}-$(date +%d-%m-%y)" >> $GITHUB_ENV
 
-      - name: Update electron-builder.yml for macos-15
-        if: matrix.os == 'macos-15'
-        run: |
-          sed -i '' 's|https://download.eclipse.org/theia/ide/latest/macos|https://download.eclipse.org/theia/ide/latest/macos-arm|g' applications/electron/electron-builder.yml
-
       - name: Build prod package
         shell: bash
         run: |

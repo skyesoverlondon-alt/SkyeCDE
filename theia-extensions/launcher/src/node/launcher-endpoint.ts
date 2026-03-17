@@ -47,7 +47,7 @@ export class TheiaLauncherServiceEndpoint implements BackendApplicationContribut
             // return true
             response.json({ initialized: true });
         }
-        const uriScheme = (request.query.uriScheme as string) || 'theia';
+        const uriScheme = (request.query.uriScheme as string) || 'skyes-over-london';
         const launcherLink = `/usr/local/bin/${uriScheme}`;
         const storageFile = await getStorageFilePath(this.envServer, TheiaLauncherServiceEndpoint.STORAGE_FILE_NAME);
         if (!storageFile) {
@@ -82,9 +82,9 @@ export class TheiaLauncherServiceEndpoint implements BackendApplicationContribut
 
     private async createLauncher(request: Request, response: Response): Promise<void> {
         const shouldCreateLauncher = request.body.create;
-        const uriScheme: string = request.body.uriScheme || 'skye';
+        const uriScheme: string = request.body.uriScheme || 'skyes-over-london';
         const launcher = `/usr/local/bin/${uriScheme}`;
-        const sudoPromptName = uriScheme === 'skye-next' ? 'Skyes Over London Next' : 'Skyes Over London';
+        const sudoPromptName = uriScheme === 'skyes-over-london-next' ? 'Skyes Over London Next' : 'Skyes Over London';
         const target = process.env.APPIMAGE;
         const logFile = await this.getLogFilePath();
         const command = `printf '%s\n' '#!/bin/bash' 'exec "${target}" \\$1 &> ${logFile} &' >${launcher} && chmod +x ${launcher}`;

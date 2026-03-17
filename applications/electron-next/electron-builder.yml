@@ -1,6 +1,6 @@
 appId: com.skyes.overlondon.next
 productName: Skyes Over London Next
-copyright: Copyright © 2020-2025 Eclipse Foundation, Inc
+copyright: Copyright © 2020-2026 Skyes Over London Authors
 electronDist: ../../node_modules/electron/dist
 electronVersion: 39.7.0
 asar: true
@@ -29,6 +29,7 @@ extraResources:
 linux:
   icon: resources/icons/LinuxLauncherIcons
   category: Development
+  maintainer: Skyes Over London <noreply@skyesoverlondon.dev>
   mimeTypes:
     - inode/directory
   vendor: Skyes Over London

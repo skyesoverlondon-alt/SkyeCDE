@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SIEM — Skye Mail Vault</title>
+  <link rel="stylesheet" href="/assets/css/siem.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div class="name">
+          <b>Skye Mail Vault</b>
+          <span>SIEM delivery dashboard</span>
+        </div>
+      </div>
+      <div class="navlinks">
+        <a class="pill" href="/">Home</a>
+        <a class="pill" href="/trust/">Trust Pack</a>
+        <a class="pill" href="/signup.html">Sign up</a>
+        <a class="pill" href="/login.html">Login</a>
+        <a class="pill" href="/sso.html">SSO</a>
+        <a class="pill" href="/dashboard.html">Inbox</a>
+        <a class="pill" href="/org.html">Org</a>
+        <a class="pill" href="/audit.html">Audit</a>
+        <a class="pill" href="/siem.html">SIEM</a>
+        <a class="pill" href="/sessions.html">Sessions</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="u1">
+        <div>
+          <h1 class="h1 u2">SIEM Dashboard</h1>
+          <div class="badge" id="who">Loading…</div>
+        </div>
+        <div class="btnrow">
+          <button class="btn danger" id="btnLogout">Logout</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="grid">
+        <div class="pane">
+          <h3>Status</h3>
+          <div class="mono" id="statusLine">Loading…</div>
+          <div class="mono" id="runLine"></div>
+          <div class="mono" id="alertLine"></div>
+        </div>
+
+        <div class="pane">
+          <h3>Outbox</h3>
+          <table class="tbl">
+            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <tbody id="outboxRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="split">
+        <div class="pane">
+          <h3>Alerting hooks</h3>
+          <div class="sub">Configure webhook/email alerts when SIEM delivery is failing or backlog is growing.</div>
+
+          <label class="sub">Enabled</label>
+          <select id="enabled">
+            <option value="false">Disabled</option>
+            <option value="true">Enabled</option>
+          </select>
+
+          <label class="sub">Webhook kind</label>
+          <select id="webhook_kind">
+            <option value="generic">Generic JSON</option>
+            <option value="slack">Slack Incoming Webhook</option>
+            <option value="teams">Microsoft Teams Webhook</option>
+          </select>
+
+          <label class="sub">Webhook URL (stored encrypted)</label>
+          <input id="webhook_url" placeholder="https://..." />
+
+          <label class="sub">Email to (optional)</label>
+          <input id="email_to" placeholder="security@yourcompany.com" />
+
+          <div class="grid">
+            <div>
+              <label class="sub">Fail threshold (per run)</label>
+              <input id="threshold_failed" type="number" min="1" step="1" />
+            </div>
+            <div>
+              <label class="sub">Backlog threshold (pending)</label>
+              <input id="threshold_backlog" type="number" min="1" step="1" />
+            </div>
+            <div>
+              <label class="sub">Oldest pending minutes</label>
+              <input id="threshold_oldest_minutes" type="number" min="1" step="1" />
+            </div>
+            <div>
+              <label class="sub">Cooldown minutes</label>
+              <input id="cooldown_minutes" type="number" min="1" step="1" />
+            </div>
+          </div>
+
+          <label class="sub">Notify on recovery</label>
+          <select id="notify_on_recovery">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+
+          <div class="btnrow">
+            <button class="btn gold" id="btnSave">Save</button>
+            <button class="btn" id="btnTest">Send test alert</button>
+          </div>
+
+          <div class="mono" id="formStatus">Ready.</div>
+        </div>
+
+        <div class="pane">
+          <h3>Notes</h3>
+          <div class="sub">
+            Alerts fire when any of these are true:
+            <ul>
+              <li>Failed deliveries in a drain run exceed threshold</li>
+              <li>Pending outbox exceeds backlog threshold</li>
+              <li>Oldest pending entry age exceeds threshold</li>
+            </ul>
+            Alerts are deduped by cooldown to avoid spam.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/assets/pages/siem.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Subprocessors — Skye Mail Vault Trust Pack</title>
+  <link rel="stylesheet" href="/assets/css/trust.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div>
+          <div class="t">Skye Mail Vault</div>
+          <div class="s">Business Email Center • Trust Pack</div>
+        </div>
+      </div>
+
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/login.html">Login</a>
+        <a href="/dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="trustNav">
+      <a href="/trust/controls.html">SOC2-ish Controls</a>
+      <a href="/trust/subprocessors.html">Subprocessors</a>
+      <a href="/trust/retention.html">Retention</a>
+      <a href="/trust/audit-format.html">Audit Export Format</a>
+    </div>
+    <div class="card">
+      <h1 class="h1">Subprocessors</h1>
+      
+<p class="sub">Subprocessors are optional depending on configuration. Enable only what you use.</p>
+<div class="hr"></div>
+<div class="kv">
+  <div><b>Netlify</b></div><div>Hosting, CDN, serverless functions, scheduled functions.</div>
+  <div><b>Neon Postgres</b></div><div>Primary database for ciphertext storage, org/RBAC, audit logs, rate events.</div>
+  <div><b>Resend</b></div><div>Email delivery for verification, reset, and notifications.</div>
+  <div><b>Cloudflare Turnstile</b></div><div>Bot defense for public send + thread reply (optional).</div>
+  <div><b>AWS KMS</b></div><div>Encrypts managed keys and protected config secrets (optional).</div>
+  <div><b>Postmark</b></div><div>Inbound email webhook import (optional).</div>
+  <div><b>Splunk / Datadog</b></div><div>SIEM export targets (optional). Tokens are encrypted at rest.</div>
+  <div><b>Kaixu Gateway</b></div><div>AI calls route through your Kaixu Gateway only (optional).</div>
+</div>
+<p class="sub">Customers may request a signed subprocessor addendum and notice periods via contract.</p>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

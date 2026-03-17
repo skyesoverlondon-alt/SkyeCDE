@@ -1,7 +1,7 @@
 # Integration build against Theia@next
 
 The master branch has a script that may be used to update all theia versions to `next`. This may be executed running `yarn update:next` in the repository root.
-We will set up an integration job that will build the Eclipse Theia IDE against Theia@next so that we may identify breaking changes early.
+We will set up an integration job that will build Skyes Over London against Theia@next so that we may identify breaking changes early.
 
 ## Build process
 

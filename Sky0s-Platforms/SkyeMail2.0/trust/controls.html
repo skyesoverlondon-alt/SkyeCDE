@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SOC2-ish Controls Summary — Skye Mail Vault Trust Pack</title>
+  <link rel="stylesheet" href="/assets/css/trust.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div>
+          <div class="t">Skye Mail Vault</div>
+          <div class="s">Business Email Center • Trust Pack</div>
+        </div>
+      </div>
+
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/login.html">Login</a>
+        <a href="/dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="trustNav">
+      <a href="/trust/controls.html">SOC2-ish Controls</a>
+      <a href="/trust/subprocessors.html">Subprocessors</a>
+      <a href="/trust/retention.html">Retention</a>
+      <a href="/trust/audit-format.html">Audit Export Format</a>
+    </div>
+    <div class="card">
+      <h1 class="h1">SOC2-ish Controls Summary</h1>
+      
+<p class="sub">Customer-facing controls summary aligned to SOC 2 themes (Security, Availability, Confidentiality, Privacy).</p>
+<div class="hr"></div>
+<h2 class="h2">Security</h2>
+<div class="kv">
+  <div><b>Authentication</b></div><div>HttpOnly secure cookies + CSRF; verified email; optional SSO (OIDC/SAML) and SCIM provisioning.</div>
+  <div><b>Encryption</b></div><div>Messages/attachments are stored ciphertext-only. Web submit encrypts client-side; inbound import encrypts immediately for storage. Optional KMS mode supports managed key escrow.</div>
+  <div><b>Access Control</b></div><div>Organizations + RBAC; audit trail is immutable during retention.</div>
+  <div><b>Bot Defense</b></div><div>IP-hashed rate limiting + optional Cloudflare Turnstile on public entry points.</div>
+  <div><b>Security Headers</b></div><div>Strict CSP with no unsafe-inline scripts/styles; clickjacking protection; HSTS; no-sniff; permissions policy.</div>
+</div>
+<div class="hr"></div>
+<h2 class="h2">Availability</h2>
+<div class="kv">
+  <div><b>Hosting</b></div><div>Netlify Functions + CDN with Postgres (Neon). Health endpoint available for monitoring.</div>
+  <div><b>Backups</b></div><div>Backups are provided by the database provider; recommended daily backups + PITR if available.</div>
+  <div><b>SIEM Outbox</b></div><div>Audit events enqueue to an outbox and drain on schedule with retry/backoff.</div>
+</div>
+<div class="hr"></div>
+<h2 class="h2">Confidentiality & Privacy</h2>
+<div class="kv">
+  <div><b>Content</b></div><div>Notifications never include plaintext message content; subjects/bodies are encrypted together at rest.</div>
+  <div><b>Metadata</b></div><div>Sender identifiers and timestamps are stored plaintext for operational use.</div>
+  <div><b>IP Handling</b></div><div>Rate limiting stores only salted IP hashes (no raw IP persistence).</div>
+</div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

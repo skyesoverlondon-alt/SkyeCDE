@@ -5,9 +5,9 @@
 // @ts-check
 const configs = require('./gen-webpack.config.js');
 const nodeConfig = require('./gen-webpack.node.config.js');
-const TerserPlugin = require('terser-webpack-plugin');
 const fs = require('fs');
 const path = require('path');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 /**
  * Webpack plugin to patch the bundled ripgrep path for asar compatibility.
@@ -23,19 +23,19 @@ class PatchRipgrepPlugin {
             const mainJsPath = path.join(compiler.outputPath, 'main.js');
             if (fs.existsSync(mainJsPath)) {
                 let content = fs.readFileSync(mainJsPath, 'utf8');
-                const isProduction = compiler.options.mode === 'production';
-
-                // Production (minified): t.rgPath=i.join(__dirname,"./native/rg"+("win32"===process.platform?".exe":""))
-                // Development: exports.rgPath = path.join(__dirname, `./native/rg${process.platform === 'win32' ? '.exe' : ''}`);
-                const pattern = isProduction
-                    ? /(\w+)\.rgPath\s*=\s*(\w+)\.join\(\s*__dirname\s*,\s*["']\.\/native\/rg["']\s*\+\s*\(["']win32["']\s*===\s*process\.platform\s*\?\s*["']\.exe["']\s*:\s*["']["']\s*\)\s*\)/g
-                    : /(\w+)\.rgPath\s*=\s*(\w+)\.join\(\s*__dirname\s*,\s*`\.\/native\/rg\$\{process\.platform\s*===\s*['"]win32['"]\s*\?\s*['"]\.exe['"]\s*:\s*['"]['"]}\s*`\s*\)/g;
-
                 let patched = false;
-                const newContent = content.replace(pattern, (match, exportsVar, pathVar) => {
-                    patched = true;
-                    return `(()=>{const p=${pathVar}.join(__dirname,"./native/rg"+("win32"===process.platform?".exe":""));return ${exportsVar}.rgPath=p.includes(".asar"+${pathVar}.sep)?p.replace(".asar"+${pathVar}.sep,".asar.unpacked"+${pathVar}.sep):p})()`;
-                });
+                const patterns = [
+                    /(\w+)\.rgPath\s*=\s*(\w+)\.join\(\s*__dirname\s*,\s*["']\.\/native\/rg["']\s*\+\s*\(["']win32["']\s*===\s*process\.platform\s*\?\s*["']\.exe["']\s*:\s*["']["']\s*\)\s*\)/g,
+                    /(\w+)\.rgPath\s*=\s*(\w+)\.join\(\s*__dirname\s*,\s*`\.\/native\/rg\$\{process\.platform\s*===\s*['"]win32['"]\s*\?\s*['"]\.exe['"]\s*:\s*['"]["']}\s*`\s*\)/g
+                ];
+
+                let newContent = content;
+                for (const pattern of patterns) {
+                    newContent = newContent.replace(pattern, (match, exportsVar, pathVar) => {
+                        patched = true;
+                        return `(()=>{const p=${pathVar}.join(__dirname,"./native/rg"+("win32"===process.platform?".exe":""));return ${exportsVar}.rgPath=p.includes(".asar"+${pathVar}.sep)?p.replace(".asar"+${pathVar}.sep,".asar.unpacked"+${pathVar}.sep):p})()`;
+                    });
+                }
 
                 if (patched) {
                     fs.writeFileSync(mainJsPath, newContent);
@@ -64,24 +64,33 @@ configs[0].module.rules.push({
  * In total this may lead to OOM issues
  */
 if (nodeConfig.config.optimization) {
-    nodeConfig.config.optimization.minimizer = [
-        new TerserPlugin({
-            parallel: false,
-            exclude: /^(lib|builtins)\//,
-            terserOptions: {
-                keep_classnames: /AbortSignal/
-            }
-        })
-    ];
-}
-for (const config of configs) {
-    config.optimization = {
-        minimizer: [
-            new TerserPlugin({
-                parallel: false
-            })
-        ]
+    nodeConfig.config.optimization = {
+        ...(nodeConfig.config.optimization || {}),
+        minimize: false,
+        minimizer: []
     };
+}
+nodeConfig.config.devtool = false;
+nodeConfig.config.cache = false;
+nodeConfig.config.parallelism = 1;
+nodeConfig.config.stats = 'errors-warnings';
+
+for (const config of configs) {
+    config.devtool = false;
+    config.cache = false;
+    config.parallelism = 1;
+    config.stats = 'errors-warnings';
+    config.optimization = {
+        ...(config.optimization || {}),
+        minimize: false,
+        minimizer: []
+    };
+    if (config.plugins) {
+        config.plugins = config.plugins.filter(plugin => !(plugin instanceof CompressionPlugin));
+    }
+    if (config.module?.rules) {
+        config.module.rules = config.module.rules.filter(rule => rule.loader !== 'source-map-loader');
+    }
 }
 
 // Add the ripgrep patch plugin to the node config

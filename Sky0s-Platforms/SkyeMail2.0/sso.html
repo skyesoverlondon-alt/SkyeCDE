@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SSO Login — Skye Mail Vault</title>
+  <link rel="stylesheet" href="/assets/css/sso.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div class="name">
+          <b>Skye Mail Vault</b>
+          <span>SSO portal • SAML + OIDC</span>
+        </div>
+      </div>
+      <div class="navlinks">
+        <a class="pill" href="/">Home</a>
+        <a class="pill" href="/trust/">Trust Pack</a>
+        <a class="pill" href="/signup.html">Sign up</a>
+        <a class="pill" href="/login.html">Login</a>
+        <a class="pill" href="/sso.html">SSO</a>
+        <a class="pill" href="/dashboard.html">Inbox</a>
+        <a class="pill" href="/org.html">Org</a>
+        <a class="pill" href="/audit.html">Audit</a>
+        <a class="pill" href="/siem.html">SIEM</a>
+        <a class="pill" href="/sessions.html">Sessions</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h1 class="h1">Single Sign‑On</h1>
+      <p class="sub">Enter your organization slug, then choose a provider. If your org only enables one provider, the other button will be disabled.</p>
+
+      <label>Organization Slug</label>
+      <input id="org" placeholder="example: acme" autocomplete="organization" />
+
+      <div class="btnrow" >
+        <button class="btn gold" id="btnSaml">Continue with SAML</button>
+        <button class="btn" id="btnOidc">Continue with OIDC</button>
+      </div>
+
+      <div class="hr"></div>
+      <div id="status" class="mono">Ready.</div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/pages/sso.js" defer></script>
+</body>
+</html>
