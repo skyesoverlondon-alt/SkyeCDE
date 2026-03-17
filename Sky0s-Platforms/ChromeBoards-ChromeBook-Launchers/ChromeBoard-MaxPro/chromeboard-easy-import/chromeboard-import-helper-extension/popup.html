@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ChromeBoard Helper</title>
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;background:#10081d;color:#fff;margin:0;padding:16px;min-width:350px}
+    button,input{font:inherit}
+    .stack{display:grid;gap:10px}
+    button{width:100%;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:linear-gradient(135deg,rgba(158,92,255,.85),rgba(232,189,88,.35));color:#fff;font-weight:700;cursor:pointer}
+    button.alt{background:rgba(255,255,255,.09)}
+    .muted{color:#d6c8ea;font-size:.88rem;margin:.75rem 0 0;line-height:1.45}
+    .field{display:grid;gap:8px;margin-top:12px}
+    input{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff}
+    .group{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+    h3{margin:0 0 8px}
+  </style>
+</head>
+<body>
+  <h3>ChromeBoard Import Helper</h3>
+  <div class="stack">
+    <button id="importCurrentBtn">Import current tab</button>
+    <button id="importWindowBtn">Import all tabs in this window</button>
+    <button id="importAllTabsBtn">Import all tabs across windows</button>
+    <button id="importBookmarkBarBtn">Import bookmark bar</button>
+  </div>
+  <div class="field">
+    <label for="urlInput">ChromeBoard URL</label>
+    <input id="urlInput" placeholder="https://your-chromeboard-site.example" />
+  </div>
+  <button id="saveBtn" class="alt" style="margin-top:12px">Save URL</button>
+  <p class="muted">This is the fast lane: grab tabs and bookmarks in one hit. Native ChromeOS launcher pins still are not exposed to normal extensions, because platform bureaucracy is a lifestyle choice.</p>
+  <script src="popup.js"></script>
+</body>
+</html>

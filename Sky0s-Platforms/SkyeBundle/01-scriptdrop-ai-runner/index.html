@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScriptDrop AI Runner</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b1020">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="splash">
+  <div class="splash-card">
+    <img src="assets/logo.png" alt="logo">
+    <div class="s-kicker">Skyes Over London LC</div>
+    <div class="s-title">ScriptDrop AI Runner</div>
+  </div>
+</div>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="logo">
+      <div class="brand-block">
+        <div class="kicker">Skyes Over London LC</div>
+        <div class="title">ScriptDrop AI Runner</div>
+        <div class="sub">Source ingest · runner packs · templates</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="export-app">Export JSON</button>
+      <button class="ghost" id="import-app-trigger">Import JSON</button>
+      <input type="file" id="import-app" class="hidden" accept=".json,application/json">
+      <button class="danger" id="reset-app">Reset</button>
+    </div>
+  </header>
+  <nav class="nav" data-tab-nav>
+    <button data-tab="main" class="active">Workspace</button>
+  </nav>
+  
+<div class="grid two">
+  <section class="panel stack">
+    <div class="toolbar">
+      <span class="badge" id="pack-status">No pack loaded</span>
+      <span class="badge" id="source-status">No source files</span>
+    </div>
+    <div class="dropzone" id="dropzone">
+      <div class="card-title">Source Files</div>
+      <div class="small">PDF · DOCX · TXT · MD · JSON</div>
+      <button class="gold" id="choose-files">Choose Files</button>
+      <input type="file" id="source-files" class="hidden" multiple accept=".pdf,.doc,.docx,.txt,.md,.json,application/json,application/pdf,.rtf">
+    </div>
+    <div class="row">
+      <label>Endpoint URL<input id="endpoint-url" placeholder="https://.../runner-ingest"></label>
+      <label>Bearer Token<input id="endpoint-token" placeholder="token"></label>
+    </div>
+    <label>System Prompt<textarea id="system-prompt" placeholder="Runner pack instructions"></textarea></label>
+    <label>Raw Notes<textarea id="raw-notes" placeholder="notes"></textarea></label>
+    <div class="toolbar">
+      <button class="primary" id="parse-local">Build Local Pack</button>
+      <button class="primary" id="parse-remote">Send To Endpoint</button>
+      <button class="ghost" id="apply-json">Apply JSON Pack</button>
+      <button class="ghost" id="export-pack">Export Pack</button>
+      <button class="danger" id="revert-pack">Revert</button>
+    </div>
+    <div class="output code" id="ingest-preview"></div>
+  </section>
+
+  <section class="panel">
+    <div class="nav" data-tab-nav>
+      <button data-tab="runner" class="active">Runner</button>
+      <button data-tab="templates">Templates</button>
+      <button data-tab="assessment">Assessment</button>
+      <button data-tab="meta">Meta</button>
+    </div>
+    <div class="tab-panel active" data-tab-panel="runner">
+      <div class="cards" id="runner-cards"></div>
+    </div>
+    <div class="tab-panel" data-tab-panel="templates">
+      <div class="cards" id="template-cards"></div>
+    </div>
+    <div class="tab-panel" data-tab-panel="assessment">
+      <div class="output html-output" id="assessment-output"></div>
+    </div>
+    <div class="tab-panel" data-tab-panel="meta">
+      <div class="output code" id="meta-output"></div>
+    </div>
+  </section>
+</div>
+
+</div>
+<script>
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+function setTabsAll(){
+  $$('[data-tab-nav]').forEach(nav => {
+    const container = nav.parentElement || document;
+    const panels = $$('[data-tab-panel]', container);
+    nav.addEventListener('click', e => {
+      const btn = e.target.closest('[data-tab]');
+      if(!btn) return;
+      const id = btn.dataset.tab;
+      $$('[data-tab]', nav).forEach(b => b.classList.toggle('active', b===btn));
+      panels.forEach(p => p.classList.toggle('active', p.dataset.tabPanel===id));
+    });
+  });
+}
+function readJSONFile(file){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{ try{ resolve(JSON.parse(fr.result)); }catch(err){ reject(err); } };
+    fr.onerror = reject;
+    fr.readAsText(file);
+  });
+}
+function readTextFile(file){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = ()=> resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsText(file);
+  });
+}
+function downloadText(filename, text, type='text/plain'){
+  const blob = new Blob([text], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 100);
+}
+function downloadJSON(filename, data){ downloadText(filename, JSON.stringify(data, null, 2), 'application/json'); }
+function csvEscape(v){ return `"${String(v ?? '').replace(/"/g,'""')}"`; }
+function rowsToCSV(rows){
+  if(!rows.length) return '';
+  const cols = Array.from(rows.reduce((set,row)=>{ Object.keys(row).forEach(k=>set.add(k)); return set;}, new Set()));
+  const head = cols.map(csvEscape).join(',');
+  const body = rows.map(row => cols.map(c => csvEscape(row[c])).join(',')).join('\n');
+  return head + '\n' + body;
+}
+function uid(prefix='id'){ return `${prefix}_${Math.random().toString(36).slice(2,10)}${Date.now().toString(36).slice(-4)}`; }
+function store(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback; }catch{ return fallback; } }
+function mountSplash(){
+  const splash = $('.splash');
+  if(!splash) return;
+  requestAnimationFrame(()=>{ setTimeout(()=> splash.classList.add('hide'), 850); });
+}
+function textBlocks(text){ return String(text||'').split(/\n{2,}/).map(s=>s.trim()).filter(Boolean); }
+function lines(text){ return String(text||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean); }
+function slugify(v){ return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'item'; }
+</script>
+<script src="app.js"></script>
+<script>
+mountSplash();
+setTabsAll();
+if('serviceWorker' in navigator) window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body>
+</html>

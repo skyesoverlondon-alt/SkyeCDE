@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trust Pack — Skye Mail Vault</title>
+  <link rel="stylesheet" href="/assets/css/trust.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skye Mail Vault Logo" />
+        <div>
+          <div class="t">Skye Mail Vault</div>
+          <div class="s">Business Email Center</div>
+        </div>
+      </div>
+
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/trust/">Trust Pack</a>
+        <a href="/login.html">Login</a>
+        <a href="/dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h1 class="h1">Trust Pack</h1>
+      <p class="sub">
+        This page summarizes security, privacy, and operational controls for Skye Mail Vault — Business Email Center.
+        It’s designed for procurement reviews, vendor risk assessments, and security questionnaires.
+      </p>
+
+      <div class="trustNav">
+        <a href="/trust/">Overview</a>
+        <a href="/trust/controls">SOC2‑ish Controls</a>
+        <a href="/trust/subprocessors">Subprocessors</a>
+        <a href="/trust/retention">Retention & Legal Hold</a>
+        <a href="/trust/audit-format">Audit Export Format</a>
+      </div>
+
+      <div class="grid">
+        <div class="tile">
+          <div class="k">Confidentiality</div>
+          <div class="v">Ciphertext‑at‑rest messaging</div>
+          <div class="sub">Message bodies, subjects, and attachments are stored encrypted. Notifications contain no message content.</div>
+        </div>
+        <div class="tile">
+          <div class="k">Access Controls</div>
+          <div class="v">SSO + Org RBAC</div>
+          <div class="sub">Org roles (owner/admin/viewer), SAML SSO (SP‑initiated) and SCIM provisioning support.</div>
+        </div>
+        <div class="tile">
+          <div class="k">Monitoring</div>
+          <div class="v">SIEM export stream</div>
+          <div class="sub">Audit events can be streamed to Splunk HEC or Datadog via an outbox + scheduled drain.</div>
+        </div>
+        <div class="tile">
+          <div class="k">Governance</div>
+          <div class="v">DLP + Legal Hold</div>
+          <div class="sub">DLP policies can block or quarantine content. Legal holds prevent deletion. eDiscovery exports ciphertext + metadata.</div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2 class="h2">Documents</h2>
+      <div class="list">
+        <a class="row" href="/trust/controls">
+          <div class="rowMain">
+            <div class="rowTitle">SOC2‑ish Controls Summary</div>
+            <div class="rowSub">Security, availability, confidentiality, privacy controls mapped in a procurement-friendly format.</div>
+          </div>
+          <div class="pill">Open</div>
+        </a>
+
+        <a class="row" href="/trust/subprocessors">
+          <div class="rowMain">
+            <div class="rowTitle">Subprocessors</div>
+            <div class="rowSub">List of vendors and what data they process (Netlify, Neon, Resend, Cloudflare, etc.).</div>
+          </div>
+          <div class="pill">Open</div>
+        </a>
+
+        <a class="row" href="/trust/retention">
+          <div class="rowMain">
+            <div class="rowTitle">Retention & Legal Hold</div>
+            <div class="rowSub">Retention windows, immutability rules, and legal-hold enforcement posture.</div>
+          </div>
+          <div class="pill">Open</div>
+        </a>
+
+        <a class="row" href="/trust/audit-format">
+          <div class="rowMain">
+            <div class="rowTitle">Audit Log Export Format</div>
+            <div class="rowSub">Schema definitions for JSONL and CSV exports, and examples for SIEM ingestion.</div>
+          </div>
+          <div class="pill">Open</div>
+        </a>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="sub">
+        Need a security review packet? Use the full Due Diligence Room included in the deployment package.
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

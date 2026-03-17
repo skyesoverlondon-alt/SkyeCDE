@@ -1,0 +1,15 @@
+{
+  "schemas": [
+    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+  ],
+  "Operations": [
+    {
+      "op": "Replace",
+      "path": "",
+      "value": {
+        "active": true,
+        "userName": "renamed@contoso.com"
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+Contact: mailto:security@solenterprises.org
+Contact: https://solenterprises.org/pages/contact-hub
+Expires: 2027-01-01T00:00:00Z
+Encryption: https://solenterprises.org/pages/contact-hub
+Preferred-Languages: en
+Policy: /trust/controls.html
+Acknowledgments: /trust/index.html

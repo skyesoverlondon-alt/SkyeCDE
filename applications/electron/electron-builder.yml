@@ -1,6 +1,6 @@
 appId: com.skyes.overlondon
 productName: Skyes Over London
-copyright: Copyright © 2020-2025 Eclipse Foundation, Inc
+copyright: Copyright © 2020-2026 Skyes Over London Authors
 electronDist: ../../node_modules/electron/dist
 electronVersion: 39.7.0
 asar: true
@@ -32,13 +32,13 @@ win:
     - nsis
   publish:
     provider: generic
-    url: "https://download.eclipse.org/theia/ide/${version}/windows"
+    url: "https://github.com/SkyeCDE/SkyeCDE/releases/download/stable"
     useMultipleRangeRequest: false
 mac:
   icon: resources/icons/MacLauncherIcons/icon.icns
   category: public.app-category.developer-tools
   protocols:
-    - name: theia
+    - name: skyes-over-london
       schemes:
         - skyes-over-london
   darkModeSupport: true
@@ -47,10 +47,11 @@ mac:
     - zip
   publish:
     provider: generic
-    url: "https://download.eclipse.org/theia/ide/latest/macos"
+    url: "https://github.com/SkyeCDE/SkyeCDE/releases/download/stable"
 linux:
   icon: resources/icons/LinuxLauncherIcons
   category: Development
+  maintainer: Skyes Over London <noreply@skyesoverlondon.dev>
   mimeTypes:
     - inode/directory
   vendor: Skyes Over London
@@ -59,7 +60,7 @@ linux:
     - AppImage
   publish:
     provider: generic
-    url: "https://download.eclipse.org/theia/ide/latest/linux"
+    url: "https://github.com/SkyeCDE/SkyeCDE/releases/download/stable"
 
 nsis:
   menuCategory: true

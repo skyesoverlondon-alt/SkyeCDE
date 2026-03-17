@@ -1,0 +1,45 @@
+/u/:handle  /send.html?to=:handle  200
+/inbox     /dashboard.html        200
+/message   /message.html          200
+/ai        /ai.html               200
+/founder   /founder.html          200
+/login     /login.html            200
+/signup    /signup.html           200
+/thread     /thread.html          200
+/keys       /keys.html            200
+
+/forgot    /forgot.html           200
+/reset     /reset.html            200
+/verify    /verify.html           200
+
+/audit    /audit.html           200
+
+/accept-invite    /accept-invite.html     200
+
+/org      /org.html              200
+
+/sso/saml/login    /.netlify/functions/sso-saml-login    200
+/sso/saml/acs      /.netlify/functions/sso-saml-acs      200
+
+# SCIM v2
+/scim/v2/Users    /.netlify/functions/scim-users    200
+/scim/v2/Users/*  /.netlify/functions/scim-users    200
+/scim/v2/Groups   /.netlify/functions/scim-groups   200
+/scim/v2/Groups/* /.netlify/functions/scim-groups   200
+/procurement    /procurement.html    200
+
+/trust    /trust/index.html   200
+/trust/   /trust/index.html   200
+/trust/index   /trust/index.html   200
+/trust/controls   /trust/controls.html   200
+/trust/subprocessors  /trust/subprocessors.html  200
+/trust/retention  /trust/retention.html  200
+/trust/audit-format /trust/audit-format.html 200
+
+/sso    /sso.html                 200
+/sso/oidc/login   /.netlify/functions/sso-oidc-login   200
+/sso/oidc/callback /.netlify/functions/sso-oidc-callback 200
+/siem   /siem.html                200
+
+/oidc/discovery   /.netlify/functions/oidc-discovery   200
+/sso/oidc/discovery /.netlify/functions/oidc-discovery 200

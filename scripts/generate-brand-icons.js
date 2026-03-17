@@ -2,7 +2,7 @@
 // @ts-check
 
 /*
- * Generates branded desktop icons for the Skye Creative Workspace packaging pipeline.
+ * Generates branded desktop icons for the Skyes Over London packaging pipeline.
  *
  * Inputs:
  *   - theia-extensions/product/src/browser/icons/SkyeCreativeMark.svg
@@ -12,12 +12,13 @@
  *   - applications/electron/resources/icons/WindowIcon/512-512.png
  *   - applications/electron/resources/icons/LinuxLauncherIcons/512x512.png
  *   - applications/electron/resources/icons/512x512.png
- *   - applications/electron/resources/icons/WindowsLauncherIcons/TheiaIDE.ico
+ *   - applications/electron/resources/icons/WindowsLauncherIcons/SkyesOverLondon.ico
  *   - applications/electron/resources/icons/MacLauncherIcons/icon.icns (when iconutil is available)
  *   - next-channel PNG equivalents under applications/electron-next/resources/icons/
  *
- * Requires ImageMagick (`convert`) for PNG/ICO generation.
+ * Regenerating assets requires ImageMagick (`convert`) for PNG/ICO generation.
  * macOS ICNS generation additionally requires `iconutil`.
+ * If the expected PNG assets are already present, Linux packaging can reuse them.
  */
 
 const fs = require('fs');
@@ -102,6 +103,14 @@ function generateIcns(svgPath, outputPath) {
     }
 }
 
+function existingPngOutputs(variant) {
+    return [
+        path.join(variant.targetDir, 'WindowIcon/512-512.png'),
+        path.join(variant.targetDir, 'LinuxLauncherIcons/512x512.png'),
+        path.join(variant.targetDir, '512x512.png'),
+    ];
+}
+
 function generateVariant(variantName) {
     const variant = VARIANTS[variantName];
     if (!variant) {
@@ -113,7 +122,17 @@ function generateVariant(variantName) {
     }
 
     if (!hasCommand('convert')) {
-        throw new Error('ImageMagick `convert` is required to generate branded desktop icons.');
+        const reusableOutputs = existingPngOutputs(variant);
+        const missingOutputs = reusableOutputs.filter(output => !fs.existsSync(output));
+        if (missingOutputs.length === 0) {
+            console.warn(
+                `ImageMagick \`convert\` is not available. Reusing existing branded icon assets for ${variantName}.`
+            );
+            return;
+        }
+        throw new Error(
+            'ImageMagick `convert` is required to generate branded desktop icons when prebuilt assets are missing.'
+        );
     }
 
     console.log(`Generating ${variantName} branded icons from ${path.relative(ROOT, variant.source)}`);
@@ -123,7 +142,7 @@ function generateVariant(variantName) {
     generatePng(variant.source, path.join(variant.targetDir, '512x512.png'), 512);
 
     if (variant.generateWindows) {
-        generateIco(variant.source, path.join(variant.targetDir, 'WindowsLauncherIcons/TheiaIDE.ico'));
+        generateIco(variant.source, path.join(variant.targetDir, 'WindowsLauncherIcons/SkyesOverLondon.ico'));
     }
 
     if (variant.generateMac) {

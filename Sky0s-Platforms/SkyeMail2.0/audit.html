@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audit Log — Skye Mail Vault</title>
+
+  <link rel="stylesheet" href="/assets/css/audit.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div class="name">
+          <b>Skye Mail Vault</b>
+          <span>Enterprise audit log • Immutable event trail</span>
+        </div>
+      </div>
+      <div class="navlinks">
+<a class="pill" href="/">Home</a>
+        <a class="pill" href="/trust/">Trust Pack</a>
+        <a class="pill" href="/sso.html">SSO</a>
+        <a class="pill" href="/siem.html">SIEM</a>
+        <a class="pill" href="/dashboard.html">Inbox</a>
+        <a class="pill" href="/keys.html">Keys</a>
+        <a class="pill" href="/audit.html">Audit</a>
+        <a class="pill" href="/sessions.html">Sessions</a>
+        <a class="pill" href="/ai.html">AI</a>
+      
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="h1">Audit Log</div>
+          <div class="sub">Shows security + mailbox events for your organization. No plaintext message content is logged.</div>
+        </div>
+        <div class="right">
+          <div id="who" class="mono">…</div>
+          <button class="btn" id="btnLogout">Logout</button>
+        </div>
+      </div>
+
+      <div class="auditActions">
+        <input id="q" placeholder="Search (action / actor / target)"/>
+        <button class="btn gold" id="btnRefresh">Refresh</button>
+      </div>
+
+      <div class="hr"></div>
+      <div id="status" class="mono">Loading…</div>
+
+      <div class="tableWrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Target</th>
+              <th>IP Hash</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="hr"></div>
+      <div class="sub">Tip: export via your browser copy/paste or add a CSV export in your org policy pack.</div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/pages/audit.js" defer></script>
+</body>
+</html>

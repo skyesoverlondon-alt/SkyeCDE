@@ -1,0 +1,11 @@
+{
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:Group"
+  ],
+  "displayName": "Admins",
+  "members": [
+    {
+      "value": "33333333-3333-3333-3333-333333333333"
+    }
+  ]
+}

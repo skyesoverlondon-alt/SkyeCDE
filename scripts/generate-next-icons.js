@@ -2,7 +2,7 @@
 // @ts-check
 
 /**
- * Generates next icons by recoloring the Theia IDE blue (#00ADEE) to
+ * Generates next icons by recoloring the Skyes Over London accent blue (#00ADEE) to
  * next purple (#8B5CF6), matching the next splash screen color scheme.
  * White text and transparency are preserved.
  *
@@ -27,7 +27,7 @@ const ICON_MAPPINGS = [
     { src: '512x512.png', dest: '512x512.png' },
 ];
 
-// Theia blue → next purple (same as splash screen logo)
+// Accent blue -> next purple (same as splash screen logo)
 const THEIA_BLUE = '#00ADEE';
 const NEXT_PURPLE = '#8B5CF6';
 

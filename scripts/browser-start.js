@@ -15,7 +15,7 @@ function run(command, args, cwd) {
         env: {
             ...process.env,
             NODE_NO_WARNINGS: '1',
-            NODE_OPTIONS: '--max-old-space-size=8192 --no-deprecation'
+            NODE_OPTIONS: '--max-old-space-size=4096 --no-deprecation'
         }
     });
 

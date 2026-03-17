@@ -1,0 +1,51 @@
+{
+  "name": "ChromeBoard",
+  "short_name": "ChromeBoard",
+  "description": "ChromeBoard is a Chromebook semi-home-screen launcher for files, folders, web apps, and imported browser links.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080312",
+  "theme_color": "#12061f",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/",
+  "share_target": {
+    "action": "/?cb_action=import",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Add local files",
+      "short_name": "Files",
+      "url": "/#settings",
+      "description": "Open ChromeBoard and add local files."
+    },
+    {
+      "name": "Paste clipboard link",
+      "short_name": "Paste link",
+      "url": "/#bridge",
+      "description": "Open the bridge area for quick link imports."
+    },
+    {
+      "name": "New desktop",
+      "short_name": "New desktop",
+      "url": "/#desktop",
+      "description": "Jump into the desktop area."
+    }
+  ]
+}

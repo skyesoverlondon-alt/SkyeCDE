@@ -1,11 +1,8 @@
-# Contributing to Eclipse Theia
+# Contributing to Skyes Over London
 
-Theia is a young open-source project with a modular architecture. One of the
-goals is to make sure that we can customize and enhance any Theia application
-through extensions.  So while the main Theia repository contains some common
-functionality for IDE-like applications, like a file system or a navigator
-view, most functionality doesn't necessarily need to be put into the core
-repository but can be developed separately.
+Skyes Over London is a product distribution built on the Theia platform. This
+repository contains product branding, packaging, updater integration, launcher
+behavior, and application composition on top of upstream Theia packages.
 
 ## How Can I Contribute?
 
@@ -13,10 +10,10 @@ In the following some of the typical ways of contribution are described.
 
 ### Asking Questions
 
-It's totally fine to ask questions by opening an issue in the Theia GitHub
-repository. We will close it once it's answered and tag it with the 'question'
-label. Please check if the question has been asked before there or on [Stack
-Overflow](https://stackoverflow.com).
+Open questions in the SkyeCDE repository when they are about this product,
+packaging flow, release assets, or branded behavior. If the question is about
+upstream Theia platform APIs, architecture, or extension behavior, use the
+upstream Theia project instead.
 
 ### Reporting Bugs
 
@@ -36,35 +33,24 @@ behind it.
 
 ### Pull Requests
 
-Before you get started investing significant time in something you want to get
-merged and maintained as part of Theia, you should talk with the team through
-an issue. Simply choose the issue you would want to work on, and tell everyone
-that you are willing to do so and how you would approach it. The team will be
-happy to guide you and give feedback.
+Before you invest significant time in a larger change, open or claim an issue
+first so the product direction, branding constraints, and packaging impact are
+clear.
 
-We follow the contributing and reviewing pull request guidelines described
-[here](https://github.com/eclipse-theia/theia/blob/master/doc/pull-requests.md).
+For upstream platform-wide behavior, discuss the change in
+[eclipse-theia/theia](https://github.com/eclipse-theia/theia) if it should live
+outside this product wrapper.
 
 ## Coding Guidelines
 
-We follow the coding guidelines described
-[here](https://github.com/eclipse-theia/theia/wiki/Coding-Guidelines).
+Keep changes focused, avoid unnecessary reformatting, preserve the existing
+package structure, and do not rename internal `@theia/*` integration unless the
+change explicitly requires it.
 
-## Eclipse Contributor Agreement
+## Sign-Off
 
-Before your contribution can be accepted by the project team contributors must
-electronically sign the Eclipse Contributor Agreement (ECA).
-
-* https://www.eclipse.org/legal/ECA.php
-
-Commits that are provided by non-committers must have a Signed-off-by field in
-the footer indicating that the author is aware of the terms by which the
-contribution has been provided to the project. The non-committer must
-additionally have an Eclipse Foundation account and must have a signed Eclipse
-Contributor Agreement (ECA) on file.
-
-For more information, please see the Eclipse Committer Handbook:
-https://www.eclipse.org/projects/handbook/#resources-commit
+Use a `Signed-off-by:` trailer in each commit message for contributed changes.
+That keeps authorship explicit and matches the DCO text below.
 
 ## Sign your work
 

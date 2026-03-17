@@ -28,7 +28,7 @@ import { URI as VSCodeURI } from 'vscode-uri';
 
 export namespace TheiaUpdaterCommands {
 
-    const category = 'Theia Electron Updater';
+    const category = 'Skyes Over London Updater';
 
     export const CHECK_FOR_UPDATES: Command = {
         id: 'electron-theia:check-for-updates',
@@ -192,8 +192,8 @@ export class TheiaUpdaterFrontendContribution implements CommandContribution, Me
 
     protected async handleDownloadUpdate(updateInfo?: UpdateInfo): Promise<void> {
         const message = updateInfo
-            ? `Update to version ${updateInfo.version} found, do you want to update?`
-            : 'Updates found, do you want to update?';
+            ? `Skyes Over London ${updateInfo.version} is available. Download it now?`
+            : 'A Skyes Over London update is available. Download it now?';
         const actions = ['Not now', 'Yes'];
         const checkForUpdates = this.preferenceService.get<boolean>('updates.checkForUpdates', true);
         if (checkForUpdates) {
@@ -222,7 +222,7 @@ export class TheiaUpdaterFrontendContribution implements CommandContribution, Me
     }
 
     protected async handleNoUpdate(): Promise<void> {
-        this.messageService.info('Already using the latest version');
+        this.messageService.info('Skyes Over London is already up to date');
     }
 
     protected async handleUpdatesAvailable(): Promise<void> {
@@ -231,8 +231,8 @@ export class TheiaUpdaterFrontendContribution implements CommandContribution, Me
             this.stopProgress();
         }
         const message = this.currentUpdateInfo
-            ? `An update to version ${this.currentUpdateInfo.version} has been downloaded and will be automatically installed on exit. Do you want to restart now?`
-            : 'An update has been downloaded and will be automatically installed on exit. Do you want to restart now?';
+            ? `Skyes Over London ${this.currentUpdateInfo.version} has been downloaded and will install on exit. Restart now?`
+            : 'A Skyes Over London update has been downloaded and will install on exit. Restart now?';
         const answer = await this.messageService.info(message, 'No', 'Yes');
         if (answer === 'Yes') {
             this.updater.onRestartToUpdateRequested();

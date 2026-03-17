@@ -94,7 +94,7 @@ export class TheiaDesktopFileServiceEndpoint implements BackendApplicationContri
         const createOrUpdate = request.body.create;
         const applicationName: string = request.body.applicationName || 'Skyes Over London';
         const createUrlHandler: boolean = request.body.createUrlHandler !== false;
-        const uriScheme: string = request.body.uriScheme || 'skye';
+        const uriScheme: string = request.body.uriScheme || 'skyes-over-london';
         const appId = applicationName.toLowerCase().replace(/\s+/g, '-');
 
         if (createOrUpdate) {
@@ -155,7 +155,7 @@ Comment=Royal neon creative command deck for cloud and desktop
 Categories=Development;IDE;`;
     }
 
-    protected getDesktopURLFileContents(applicationName: string, appImagePath: string, imagePath: string, uriScheme: string = 'theia'): string {
+    protected getDesktopURLFileContents(applicationName: string, appImagePath: string, imagePath: string, uriScheme: string = 'skyes-over-london'): string {
         return `[Desktop Entry]
 Name=${applicationName} - URL Handler
 GenericName=Creative Command Deck

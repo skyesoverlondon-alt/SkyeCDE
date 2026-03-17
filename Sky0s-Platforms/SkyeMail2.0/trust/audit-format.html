@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audit Log Export Format — Skye Mail Vault Trust Pack</title>
+  <link rel="stylesheet" href="/assets/css/trust.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div>
+          <div class="t">Skye Mail Vault</div>
+          <div class="s">Business Email Center • Trust Pack</div>
+        </div>
+      </div>
+
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/login.html">Login</a>
+        <a href="/dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="trustNav">
+      <a href="/trust/controls.html">SOC2-ish Controls</a>
+      <a href="/trust/subprocessors.html">Subprocessors</a>
+      <a href="/trust/retention.html">Retention</a>
+      <a href="/trust/audit-format.html">Audit Export Format</a>
+    </div>
+    <div class="card">
+      <h1 class="h1">Audit Log Export Format</h1>
+      
+<p class="sub">Two recommended formats: JSON Lines (JSONL) and CSV.</p>
+<div class="hr"></div>
+<h2 class="h2">JSONL record</h2>
+<div class="codebox">{"ts":"2026-02-22T17:12:33.120Z","org_id":"...","actor_user_id":"...","actor_email":"...","event":"MESSAGE_READ","target_type":"message","target_id":"...","ip_hash":"...","meta":{"key_version":3,"thread_id":"..."},"retain_until":"2027-02-22T00:00:00.000Z"}</div>
+<div class="hr"></div>
+<h2 class="h2">CSV columns</h2>
+<div class="codebox">ts,org_id,actor_user_id,actor_email,event,target_type,target_id,ip_hash,retain_until,meta_json</div>
+<p class="sub">The <span class="mono">meta_json</span> field is a serialized JSON object for extensibility.</p>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

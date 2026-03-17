@@ -7,25 +7,21 @@
  * SPDX-License-Identifier: MIT
  ********************************************************************************/
 
-import * as fs from 'fs-extra';
-import * as http from 'http';
-import * as os from 'os';
-import * as path from 'path';
 import { ElectronMainApplication, ElectronMainApplicationContribution } from '@theia/core/lib/electron-main/electron-main-application';
 import { TheiaUpdater, TheiaUpdaterClient, UpdaterSettings } from '../../common/updater/theia-updater';
 import { injectable } from '@theia/core/shared/inversify';
 import { isOSX, isWindows } from '@theia/core';
 import { CancellationToken } from 'builder-util-runtime';
 
-const STABLE_CHANNEL_WINDOWS = 'https://download.eclipse.org/theia/ide/version/windows';
-const STABLE_CHANNEL_MACOS = 'https://download.eclipse.org/theia/ide/latest/macos';
-const STABLE_CHANNEL_MACOS_ARM = 'https://download.eclipse.org/theia/ide/latest/macos-arm';
-const STABLE_CHANNEL_LINUX = 'https://download.eclipse.org/theia/ide/latest/linux';
+const STABLE_CHANNEL_WINDOWS = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/stable';
+const STABLE_CHANNEL_MACOS = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/stable';
+const STABLE_CHANNEL_MACOS_ARM = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/stable';
+const STABLE_CHANNEL_LINUX = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/stable';
 
-const PREVIEW_CHANNEL_WINDOWS = 'https://download.eclipse.org/theia/ide-preview/version/windows';
-const PREVIEW_CHANNEL_MACOS = 'https://download.eclipse.org/theia/ide-preview/latest/macos';
-const PREVIEW_CHANNEL_MACOS_ARM = 'https://download.eclipse.org/theia/ide-preview/latest/macos-arm';
-const PREVIEW_CHANNEL_LINUX = 'https://download.eclipse.org/theia/ide-preview/latest/linux';
+const PREVIEW_CHANNEL_WINDOWS = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/preview';
+const PREVIEW_CHANNEL_MACOS = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/preview';
+const PREVIEW_CHANNEL_MACOS_ARM = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/preview';
+const PREVIEW_CHANNEL_LINUX = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/preview';
 
 // Next updates are currently only available for Linux.
 // The feed is served from GitHub Release assets (rolling "next" tag).
@@ -114,18 +110,6 @@ export class TheiaUpdaterImpl implements TheiaUpdater, ElectronMainApplicationCo
         autoUpdater.logger.info('Downloading update');
         this.cancellationToken = new CancellationToken();
         autoUpdater.downloadUpdate(this.cancellationToken);
-
-        // record download stat, ignore errors
-        fs.mkdtemp(path.join(os.tmpdir(), 'updater-'))
-            .then(tmpDir => {
-                const file = fs.createWriteStream(path.join(tmpDir, 'update'));
-                http.get('https://www.eclipse.org/downloads/download.php?file=/theia/update&r=1', response => {
-                    response.pipe(file);
-                    file.on('finish', () => {
-                        file.close();
-                    });
-                });
-            });
     }
 
     onStart(application: ElectronMainApplication): void {
@@ -172,15 +156,13 @@ export class TheiaUpdaterImpl implements TheiaUpdater, ElectronMainApplicationCo
 
     protected getFeedURL(channel: string): string {
         if (isWindows) {
-            const curVersion = autoUpdater.currentVersion.toString();
-            // Next not yet available on Windows, fall back to stable
-            return (channel === 'preview') ? PREVIEW_CHANNEL_WINDOWS.replace('version', curVersion) : STABLE_CHANNEL_WINDOWS.replace('version', curVersion);
+            return channel === 'preview' ? PREVIEW_CHANNEL_WINDOWS : STABLE_CHANNEL_WINDOWS;
         } else if (isOSX) {
             // Next not yet available on macOS, fall back to stable
             if (process.arch === 'arm64') {
-                return (channel === 'preview') ? PREVIEW_CHANNEL_MACOS_ARM : STABLE_CHANNEL_MACOS_ARM;
+                return channel === 'preview' ? PREVIEW_CHANNEL_MACOS_ARM : STABLE_CHANNEL_MACOS_ARM;
             } else {
-                return (channel === 'preview') ? PREVIEW_CHANNEL_MACOS : STABLE_CHANNEL_MACOS;
+                return channel === 'preview' ? PREVIEW_CHANNEL_MACOS : STABLE_CHANNEL_MACOS;
             }
         } else {
             if (channel === 'next') {

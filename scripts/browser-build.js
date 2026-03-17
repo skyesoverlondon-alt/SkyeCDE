@@ -6,7 +6,8 @@ const childProcess = require('child_process');
 
 const workspaceRoot = path.resolve(__dirname, '..');
 const browserRoot = path.join(workspaceRoot, 'applications', 'browser');
-const theiaCli = path.join(workspaceRoot, 'node_modules', '.bin', 'theia');
+const webpackCli = path.join(workspaceRoot, 'node_modules', '.bin', 'webpack');
+const mode = process.argv[2] === 'production' ? 'production' : 'development';
 
 function run(command, args, cwd) {
     const result = childProcess.spawnSync(command, args, {
@@ -15,7 +16,7 @@ function run(command, args, cwd) {
         env: {
             ...process.env,
             NODE_NO_WARNINGS: '1',
-            NODE_OPTIONS: '--max-old-space-size=8192 --no-deprecation'
+            NODE_OPTIONS: '--max-old-space-size=4096 --no-deprecation'
         }
     });
 
@@ -24,5 +25,5 @@ function run(command, args, cwd) {
     }
 }
 
-run('node', [path.join(workspaceRoot, 'scripts', 'ensure-browser-start.js')], workspaceRoot);
-run(theiaCli, ['build', '--app-target=browser', '--mode', 'development'], browserRoot);
+run(webpackCli, ['--config', 'webpack.config.js', '--config-name', 'browser-main', '--mode', mode], browserRoot);
+run(webpackCli, ['--config', 'webpack.config.js', '--config-name', 'browser-secondary-window', '--mode', mode], browserRoot);

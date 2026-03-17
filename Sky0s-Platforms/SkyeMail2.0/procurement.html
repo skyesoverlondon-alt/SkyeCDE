@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Procurement Admin — Skye Mail Vault</title>
+
+  <link rel="stylesheet" href="/assets/css/procurement.css"/>
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="nav">
+      <div class="brand">
+        <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="Skyes Over London LC Logo" />
+        <div>
+          <div class="t">Skye Mail Vault</div>
+          <div class="s">Procurement Tier Admin</div>
+        </div>
+      </div>
+      <div class="links"><a href="/dashboard.html">Inbox</a>
+        <a href="/org.html">Org</a>
+        <a href="/audit.html">Audit</a>
+        <a href="/procurement.html">Procurement</a>
+        <button class="btn" id="btnLogout">Logout</button>
+      
+        <a href="/trust/">Trust Pack</a></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="h1">Procurement Controls</div>
+      <div class="sub" id="who"></div>
+      <div class="hr"></div>
+      <div id="status" class="mono">Ready.</div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="h2">KMS / Key Management</div>
+        <div class="sub">Switch org to KMS-managed keys for SSO+SCIM procurement posture.</div>
+
+        <label>Mode</label>
+        <select id="kmsMode">
+          <option value="passphrase">passphrase</option>
+          <option value="kms">kms</option>
+        </select>
+
+        <label>AWS KMS Key ID (org)</label>
+        <input id="kmsKeyId" placeholder="arn:aws:kms:... or key-id" />
+
+        <div class="btnrow">
+          <button class="btn gold" id="btnSaveKms">Save</button>
+        </div>
+        <div id="kmsStatus" class="mono"></div>
+      </div>
+
+      <div class="card">
+        <div class="h2">SIEM Export</div>
+        <div class="sub">Stream audit events to Splunk HEC or Datadog Logs via outbox + scheduled drain.</div>
+
+        <label>Provider</label>
+        <select id="siemProvider">
+          <option value="splunk">splunk</option>
+          <option value="datadog">datadog</option>
+        </select>
+
+        <label>Endpoint URL</label>
+        <input id="siemEndpoint" placeholder="https://... endpoint" />
+
+        <label>Token (stored KMS-encrypted)</label>
+        <input id="siemToken" placeholder="token" />
+
+        <label><input type="checkbox" id="siemEnabled" /> Enabled</label>
+
+        <div class="btnrow">
+          <button class="btn gold" id="btnSaveSiem">Save</button>
+        </div>
+        <div id="siemStatus" class="mono"></div>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="h2">SAML SSO (SP‑initiated)</div>
+      <div class="sub">Configure IdP details and certificate for XML signature validation. IdP‑initiated is rejected.</div>
+
+      <label>Enable SAML</label>
+      <label><input type="checkbox" id="samlEnabled" /> Enabled</label>
+
+      <label>Organization Slug</label>
+      <input id="samlSlug" placeholder="acme-co" />
+
+      <label>IdP Entity ID</label>
+      <input id="samlIdpEntity" placeholder="https://idp.example.com/metadata" />
+
+      <label>IdP SSO URL</label>
+      <input id="samlIdpSso" placeholder="https://idp.example.com/sso" />
+
+      <label>SP Entity ID</label>
+      <input id="samlSpEntity" placeholder="https://yourdomain/saml/sp" />
+
+      <label>IdP X.509 Certificate (PEM or base64)</label>
+      <textarea id="samlIdpCert" placeholder="-----BEGIN CERTIFICATE-----"></textarea>
+
+
+      <div class="grid2">
+        <div>
+          <label class="toggle"><input type="checkbox" id="samlWantAssertionsSigned" checked/> Require Assertion Signed</label>
+          <div class="sub">Enable this if your IdP signs the Assertion (common default).</div>
+        </div>
+        <div>
+          <label class="toggle"><input type="checkbox" id="samlWantResponseSigned" /> Require Response Signed</label>
+          <div class="sub">Enable this if your IdP signs only the Response (some Entra tenants).</div>
+        </div>
+      </div>
+
+
+
+      <div class="btnrow">
+        <button class="btn" id="btnSamlPresetOkta">Preset: Okta Default</button>
+        <button class="btn" id="btnSamlPresetEntraResponse">Preset: Entra Response-Signed</button>
+      </div>
+      <div class="sub">Presets set the signature requirements for common IdP behaviors so admins don’t have to guess.</div>
+
+      <div class="btnrow">
+        <button class="btn gold" id="btnSaveSaml">Save SAML Config</button>
+        <a class="btn" id="btnTestSaml" href="#" target="_blank" rel="noopener">Test Login</a>
+      </div>
+
+      <div id="samlStatus" class="mono"></div>
+    </div>
+
+
+    <div class="grid2">
+      <div class="card">
+        
+    <div class="card">
+      <div class="h2">OIDC SSO</div>
+      <div class="sub">Configure OIDC issuer + client. OIDC requires KMS mode to provision keys for JIT users.</div>
+
+      <label>Enable OIDC</label>
+      <label class="toggle"><input type="checkbox" id="oidcEnabled"/> Enabled</label>
+
+      <div class="grid">
+        <div>
+          <label>Issuer</label>
+          <input id="oidcIssuer" placeholder="https://login.microsoftonline.com/{tenant}/v2.0" />
+        </div>
+        <div>
+          <label>Client ID</label>
+          <input id="oidcClientId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+        </div>
+      </div>
+
+      <label>Client Secret (write-only)</label>
+      <input id="oidcClientSecret" placeholder="paste secret; stored encrypted (KMS)" />
+
+      <div class="grid">
+        <div>
+          <label>Scopes</label>
+          <input id="oidcScopes" placeholder="openid email profile" />
+        </div>
+        <div>
+          <label>Allowed domains (CSV, optional)</label>
+          <input id="oidcDomains" placeholder="acme.com,acme.org" />
+        </div>
+
+        <div>
+          <label>Allowed tenant IDs (CSV, Entra multi-tenant optional)</label>
+          <input id="oidcTenants" placeholder="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee,..." />
+        </div>
+      </div>
+
+
+      <div class="btnrow">
+        <button class="btn" id="btnOidcDiscover">Discover OIDC endpoints</button>
+      </div>
+      <div id="oidcDiscovery" class="mono"></div>
+
+      <label>SSO preferred</label>
+      <select id="ssoPreferred">
+        <option value="saml">SAML</option>
+        <option value="oidc">OIDC</option>
+      </select>
+
+      <div class="btnrow">
+        <button class="btn gold" id="btnSaveOidc">Save</button>
+        <a class="btn" href="/sso.html" target="_blank" rel="noopener">Open SSO portal</a>
+      </div>
+
+      <div id="oidcStatus" class="mono"></div>
+    </div>
+
+<div class="h2">SCIM Provisioning</div>
+        <div class="sub">Create a SCIM bearer token (shown once). Configure your IdP to hit /scim/v2/Users.</div>
+
+        <div class="btnrow">
+          <button class="btn gold" id="btnCreateScim">Create SCIM Token</button>
+        </div>
+
+        <label>SCIM Token (copy now)</label>
+        <input id="scimTokenOut" readonly />
+
+        <div id="scimStatus" class="mono"></div>
+      </div>
+
+      <div class="card">
+        <div class="h2">DLP Policy</div>
+        <div class="sub">Keyword-based DLP pre-checks on encrypted web submits + server-side enforcement on plaintext inbound.</div>
+
+        <label>Action</label>
+        <select id="dlpAction">
+          <option value="off">off</option>
+          <option value="warn">warn</option>
+          <option value="block">block</option>
+        </select>
+
+        <label>Keywords (one per line)</label>
+        <textarea id="dlpKeywords" placeholder="ssn&#10;credit card&#10;passport"></textarea>
+
+        <div class="btnrow">
+          <button class="btn gold" id="btnSaveDlp">Save</button>
+        </div>
+        <div id="dlpStatus" class="mono"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="h2">eDiscovery Export</div>
+      <div class="sub">Export ciphertext+metadata for messages and the audit trail. Use for legal holds and compliance evidence.</div>
+
+      <div class="btnrow">
+        <button class="btn gold" id="btnExportMsgs">Export Messages (JSON)</button>
+        <button class="btn" id="btnExportAudit">Export Audit (JSON)</button>
+      </div>
+      <div id="edStatus" class="mono"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/assets/pages/procurement.js" defer></script>
+</body>
+</html>

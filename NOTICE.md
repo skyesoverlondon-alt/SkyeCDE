@@ -1,12 +1,12 @@
-# Notices for Eclipse Theia
+# Notices for Skyes Over London
 
-This content is produced and maintained by the Eclipse Theia project.
+This content is produced and maintained by the Skyes Over London project.
 
-* Project home: https://projects.eclipse.org/projects/ecd.theia
+* Project home: https://github.com/SkyeCDE/SkyeCDE
 
 ## Trademarks
 
-Eclipse Theia is a trademark of the Eclipse Foundation.
+Theia is a trademark of the Eclipse Foundation.
 
 ## Copyright
 

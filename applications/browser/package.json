@@ -129,10 +129,10 @@
     "build:product": "yarn --cwd ../../theia-extensions/product build",
     "prepare:runtime": "node ../../scripts/prepare-browser-runtime.js",
     "ensure:start": "node ../../scripts/ensure-browser-start.js",
-    "build": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' theia build --app-target=\"browser\" --mode development",
-    "build:prod": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' theia build --app-target=\"browser\"",
+    "build": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && node ../../scripts/browser-build.js development",
+    "build:prod": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && node ../../scripts/browser-build.js production",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
-    "start": "yarn ensure:start && NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' theia start --plugins=local-dir:../../plugins --log-level=error",
+    "start": "yarn ensure:start && NODE_OPTIONS='--max-old-space-size=4096 --no-deprecation' theia start --plugins=local-dir:../../plugins --log-level=error",
     "watch": "concurrently --kill-others -n tsc,build -c red,yellow \"tsc -b -w --preserveWatchOutput\" \"yarn -s watch:bundle\"",
     "update:theia": "ts-node ../../scripts/update-theia-version.ts",
     "update:next": "ts-node ../../scripts/update-theia-version.ts next"

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfferForge Proposal Builder</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b1020">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="splash">
+  <div class="splash-card">
+    <img src="assets/logo.png" alt="logo">
+    <div class="s-kicker">Skyes Over London LC</div>
+    <div class="s-title">OfferForge Proposal Builder</div>
+  </div>
+</div>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="logo">
+      <div class="brand-block">
+        <div class="kicker">Skyes Over London LC</div>
+        <div class="title">OfferForge Proposal Builder</div>
+        <div class="sub">Scope · pricing · proposal output</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="export-app">Export JSON</button>
+      <button class="ghost" id="import-app-trigger">Import JSON</button>
+      <input type="file" id="import-app" class="hidden" accept=".json,application/json">
+      <button class="danger" id="reset-app">Reset</button>
+    </div>
+  </header>
+  <nav class="nav" data-tab-nav>
+    <button data-tab="main" class="active">Workspace</button>
+  </nav>
+  
+<div class="grid two">
+  <section class="panel stack">
+    <div class="row">
+      <label>Client<input id="client-name"></label>
+      <label>Contact<input id="client-contact"></label>
+    </div>
+    <div class="row">
+      <label>Company<input id="company-name"></label>
+      <label>Prepared Date<input id="prepared-date" type="date"></label>
+    </div>
+    <label>Offer Summary<textarea id="offer-summary"></textarea></label>
+    <label>Deliverables<textarea id="deliverables" placeholder="One per line"></textarea></label>
+    <label>Pricing Lines<textarea id="pricing-lines" placeholder="Label | Amount"></textarea></label>
+    <div class="row three">
+      <label>Deposit %<input id="deposit-pct" type="number" min="0" max="100" value="40"></label>
+      <label>Term Length<input id="term-length" value="30 days"></label>
+      <label>Timeline<input id="timeline" value="4 weeks"></label>
+    </div>
+    <label>Terms<textarea id="terms"></textarea></label>
+    <label>Proof / Notes<textarea id="proof-notes"></textarea></label>
+    <div class="toolbar">
+      <button class="primary" id="generate-proposal">Generate</button>
+      <button class="ghost" id="save-proposal">Save Snapshot</button>
+      <button class="ghost" id="load-sample-proposal">Load Sample</button>
+      <button class="gold" id="export-proposal-html">Export HTML</button>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="nav" data-tab-nav>
+      <button data-tab="proposal" class="active">Proposal</button>
+      <button data-tab="pricing">Pricing</button>
+      <button data-tab="library">Library</button>
+    </div>
+    <div class="tab-panel active" data-tab-panel="proposal">
+      <div class="output html-output" id="proposal-output"></div>
+    </div>
+    <div class="tab-panel" data-tab-panel="pricing">
+      <div class="cards" id="pricing-cards"></div>
+    </div>
+    <div class="tab-panel" data-tab-panel="library">
+      <div class="cards" id="proposal-library"></div>
+    </div>
+  </section>
+</div>
+
+</div>
+<script>
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+function setTabsAll(){
+  $$('[data-tab-nav]').forEach(nav => {
+    const container = nav.parentElement || document;
+    const panels = $$('[data-tab-panel]', container);
+    nav.addEventListener('click', e => {
+      const btn = e.target.closest('[data-tab]');
+      if(!btn) return;
+      const id = btn.dataset.tab;
+      $$('[data-tab]', nav).forEach(b => b.classList.toggle('active', b===btn));
+      panels.forEach(p => p.classList.toggle('active', p.dataset.tabPanel===id));
+    });
+  });
+}
+function readJSONFile(file){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{ try{ resolve(JSON.parse(fr.result)); }catch(err){ reject(err); } };
+    fr.onerror = reject;
+    fr.readAsText(file);
+  });
+}
+function readTextFile(file){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = ()=> resolve(fr.result);
+    fr.onerror = reject;
+    fr.readAsText(file);
+  });
+}
+function downloadText(filename, text, type='text/plain'){
+  const blob = new Blob([text], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 100);
+}
+function downloadJSON(filename, data){ downloadText(filename, JSON.stringify(data, null, 2), 'application/json'); }
+function csvEscape(v){ return `"${String(v ?? '').replace(/"/g,'""')}"`; }
+function rowsToCSV(rows){
+  if(!rows.length) return '';
+  const cols = Array.from(rows.reduce((set,row)=>{ Object.keys(row).forEach(k=>set.add(k)); return set;}, new Set()));
+  const head = cols.map(csvEscape).join(',');
+  const body = rows.map(row => cols.map(c => csvEscape(row[c])).join(',')).join('\n');
+  return head + '\n' + body;
+}
+function uid(prefix='id'){ return `${prefix}_${Math.random().toString(36).slice(2,10)}${Date.now().toString(36).slice(-4)}`; }
+function store(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback; }catch{ return fallback; } }
+function mountSplash(){
+  const splash = $('.splash');
+  if(!splash) return;
+  requestAnimationFrame(()=>{ setTimeout(()=> splash.classList.add('hide'), 850); });
+}
+function textBlocks(text){ return String(text||'').split(/\n{2,}/).map(s=>s.trim()).filter(Boolean); }
+function lines(text){ return String(text||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean); }
+function slugify(v){ return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'item'; }
+</script>
+<script src="app.js"></script>
+<script>
+mountSplash();
+setTabsAll();
+if('serviceWorker' in navigator) window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body>
+</html>

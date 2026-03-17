@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "ChromeBoard Import Helper",
+  "version": "1.1.0",
+  "description": "Import pages, links, tabs, and bookmark bar items into ChromeBoard.",
+  "permissions": [
+    "bookmarks",
+    "contextMenus",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "ChromeBoard Import Helper",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "import-current-tab": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y"
+      },
+      "description": "Import the current tab to ChromeBoard"
+    }
+  },
+  "icons": {
+    "192": "icon-192.png",
+    "512": "icon-512.png"
+  }
+}
