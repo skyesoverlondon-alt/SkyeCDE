@@ -1,0 +1,22 @@
+{
+  "name": "SkyeHubs",
+  "short_name": "SkyeHubs",
+  "start_url": "./portal.html",
+  "display": "standalone",
+  "background_color": "#07020f",
+  "theme_color": "#5b21b6",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "description": "Airbnb Co-Host Network \u2014 onboarding, booking, calendar, photo proof, and messaging.",
+  "scope": "./"
+}

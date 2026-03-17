@@ -29,7 +29,7 @@ const PREVIEW_CHANNEL_LINUX = 'https://download.eclipse.org/theia/ide-preview/la
 
 // Next updates are currently only available for Linux.
 // The feed is served from GitHub Release assets (rolling "next" tag).
-const NEXT_CHANNEL_LINUX = 'https://github.com/eclipse-theia/theia-ide/releases/download/next';
+const NEXT_CHANNEL_LINUX = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/next';
 
 const { autoUpdater } = require('electron-updater');
 

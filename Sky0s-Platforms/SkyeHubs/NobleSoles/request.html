@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Noble Soul — Request Boarding</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="Noble Soul" />
+    <div class="brand__text">
+      <div class="brand__title">Noble Soul</div>
+      <div class="brand__sub">Client — Booking Request + Payment</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./portal.html">Portal</a>
+    <a class="btn btn--ghost" href="./client.html">Client Updates</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card hero">
+    <div class="hero__left">
+      <h1>Request Home Boarding 🐾</h1>
+      <p>
+        Submit a request, pay securely, and we’ll auto-match a vetted caregiver (or ops will place you manually if needed).
+      </p>
+      <div class="notice">
+        You’ll need a Firebase backend + Stripe keys to accept payments.
+        Setup is included in <code>README_SETUP.html</code>.
+      </div>
+    </div>
+    <div class="hero__right">
+      <div class="mini">
+        <div class="mini__row"><span>Step 1</span><span class="pill">Request</span></div>
+        <div class="mini__row"><span>Step 2</span><span class="pill">Pay</span></div>
+        <div class="mini__row"><span>Step 3</span><span class="pill">Matched</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="authCard">
+    <h2>Sign in</h2>
+    <p class="muted">Use the client account email/password you want linked to the booking.</p>
+    <div class="grid">
+      <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
+      <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
+    </div>
+    <div class="actions">
+      <button id="signInBtn" class="btn btn--primary" type="button">Sign in</button>
+      <button id="signUpBtn" class="btn btn--ghost" type="button">Create account</button>
+      <div id="authStatus" class="status"></div>
+    </div>
+  </section>
+
+  <section class="card" id="mainCard" style="display:none;">
+    <h2>Booking request</h2>
+    <p class="muted">Fill this out. You’ll see an instant price estimate. Then you’ll pay to confirm the request.</p>
+
+    <form id="reqForm" class="form" novalidate>
+      <div class="grid">
+        <label class="field"><span>Your name *</span><input name="clientName" required /></label>
+        <label class="field"><span>Phone *</span><input name="clientPhone" required /></label>
+        <label class="field"><span>City *</span><input name="city" required placeholder="Phoenix / Glendale / etc" /></label>
+        <label class="field"><span>ZIP *</span><input name="zip" required pattern="\d{5}" placeholder="#####"/></label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Service *</span>
+          <select name="service" required>
+            <option value="" selected disabled>Select</option>
+            <option value="boarding">Overnight home boarding</option>
+            <option value="daystay">Day stay (daycare)</option>
+            <option value="inhome">In-home sitting (client home)</option>
+          </select>
+        </label>
+        <label class="field"><span>Start date *</span><input name="startDate" type="date" required /></label>
+        <label class="field"><span>End date *</span><input name="endDate" type="date" required /></label>
+        <label class="field"><span>Pets count *</span>
+          <select name="petsCount" required>
+            <option value="" selected disabled>Select</option>
+            <option>1</option><option>2</option><option>3</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Pet name *</span><input name="petName" required /></label>
+        <label class="field"><span>Pet type *</span>
+          <select name="petType" required>
+            <option value="" selected disabled>Select</option>
+            <option>Dog</option>
+            <option>Cat</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label class="field"><span>Pet weight (lbs)</span><input name="petWeight" inputmode="numeric" placeholder="e.g. 42"/></label>
+        <label class="field"><span>Medication needed?</span>
+          <select name="meds">
+            <option>No</option>
+            <option>Yes (pills)</option>
+            <option>Yes (pills + liquids)</option>
+            <option>Yes (injections)</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Temperament / notes *</span>
+        <textarea name="notes" rows="4" required placeholder="Energy level, any reactivity, feeding schedule, crate needs, etc."></textarea>
+      </label>
+
+      <div class="grid">
+        <label class="field">
+          <span>Add-on: Pickup/Dropoff</span>
+          <select name="transportAddOn">
+            <option value="none">None</option>
+            <option value="pickup">Pickup only</option>
+            <option value="dropoff">Dropoff only</option>
+            <option value="both">Both (round-trip)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Add-on: Holiday / peak?</span>
+          <select name="peak">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+      </div>
+
+      <section class="card" style="margin-top:14px;">
+        <h2>Price estimate</h2>
+        <div id="quoteBox" class="review"></div>
+        <p class="muted">Final price can adjust if special handling is required. You’ll always be notified before changes.</p>
+      </section>
+
+      <div class="actions" style="margin-top:14px;">
+        <button id="payBtn" class="btn btn--primary" type="button">Pay & Submit Request</button>
+        <button id="saveReqBtn" class="btn btn--ghost" type="button">Save Draft</button>
+        <button id="loadReqBtn" class="btn btn--ghost" type="button">Load Draft</button>
+        <div id="reqStatus" class="status"></div>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script type="module" src="request.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>

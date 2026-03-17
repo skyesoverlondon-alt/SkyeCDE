@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sovereign Primitives Standalone</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Standalone Sovereign Infrastructure Console</p>
+        <h1>SKNore Zones · SKYE Capsules · Sign &amp; Seal · Guardrails</h1>
+        <p class="subcopy">
+          Offline-first primitives console for classified objects, encrypted bundle export, action guardrails,
+          signed release seals, and decision ledger tracking.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button id="seedDefaultsBtn" class="btn btn-ghost">Reset Defaults</button>
+        <button id="exportStateBtn" class="btn">Export State</button>
+        <label class="btn btn-ghost file-btn">
+          Import State
+          <input id="importStateInput" type="file" accept="application/json" hidden />
+        </label>
+      </div>
+    </header>
+
+    <section class="stats" id="statsBar"></section>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="zones">Zones</button>
+      <button class="tab" data-tab="objects">Objects</button>
+      <button class="tab" data-tab="guardrails">Guardrails</button>
+      <button class="tab" data-tab="capsules">Capsules</button>
+      <button class="tab" data-tab="signseal">Sign &amp; Seal</button>
+      <button class="tab" data-tab="ledger">Ledger</button>
+    </nav>
+
+    <main>
+      <section class="panel active" data-panel="zones">
+        <div class="panel-header">
+          <div>
+            <h2>SKNore Zones</h2>
+            <p>Classify files and objects into sovereign policy zones with explicit action rules.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Create / Edit Zone</h3>
+            <form id="zoneForm" class="stack form-grid">
+              <input type="hidden" id="zoneEditId" />
+              <label>
+                Zone ID
+                <input id="zoneId" required placeholder="CROWN" />
+              </label>
+              <label>
+                Label
+                <input id="zoneLabel" required placeholder="Crown Files" />
+              </label>
+              <label class="full">
+                Description
+                <textarea id="zoneDescription" rows="3" placeholder="Files never exposed to AI or release."></textarea>
+              </label>
+              <fieldset class="full rule-grid">
+                <legend>Rules</legend>
+                <label><input type="checkbox" id="ruleAiRead" /> AI Read</label>
+                <label><input type="checkbox" id="ruleAiSummarize" /> AI Summarize</label>
+                <label><input type="checkbox" id="ruleAiRewrite" /> AI Rewrite</label>
+                <label><input type="checkbox" id="ruleAiDelete" /> AI Delete</label>
+                <label><input type="checkbox" id="ruleExport" /> Export</label>
+                <label><input type="checkbox" id="rulePublish" /> Publish</label>
+                <label><input type="checkbox" id="ruleRelease" /> Release</label>
+                <label><input type="checkbox" id="ruleDeploy" /> Deploy</label>
+                <label><input type="checkbox" id="ruleBackup" /> Backup</label>
+                <label><input type="checkbox" id="ruleShare" /> Share</label>
+                <label><input type="checkbox" id="ruleHumanEdit" checked /> Human Edit</label>
+              </fieldset>
+              <div class="actions full">
+                <button class="btn" type="submit">Save Zone</button>
+                <button class="btn btn-ghost" type="button" id="cancelZoneEditBtn">Clear</button>
+              </div>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Zone Registry</h3>
+            <div id="zoneList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="objects">
+        <div class="panel-header">
+          <div>
+            <h2>Objects &amp; Labels</h2>
+            <p>Create text objects or import files, then assign sovereign zone labels.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Create Text Object</h3>
+            <form id="objectForm" class="stack form-grid">
+              <label>
+                Name
+                <input id="objectName" required placeholder="Founder Notes" />
+              </label>
+              <label>
+                Type
+                <input id="objectType" required placeholder="document" />
+              </label>
+              <label>
+                Zone
+                <select id="objectZone"></select>
+              </label>
+              <label class="full">
+                Content
+                <textarea id="objectContent" rows="8" placeholder="Paste text content here."></textarea>
+              </label>
+              <div class="actions full">
+                <button class="btn" type="submit">Save Object</button>
+              </div>
+            </form>
+            <hr />
+            <div class="stack">
+              <h3>Import Files</h3>
+              <label class="btn file-btn">
+                Add Files
+                <input id="objectFileInput" type="file" multiple hidden />
+              </label>
+              <label>
+                Assign Zone
+                <select id="importZone"></select>
+              </label>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Object Registry</h3>
+            <div id="objectList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="guardrails">
+        <div class="panel-header">
+          <div>
+            <h2>Execution Guardrails</h2>
+            <p>Evaluate action permissions by subject type, action, zone, and object label. Every decision is logged.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Evaluate Action</h3>
+            <form id="guardrailForm" class="stack form-grid">
+              <label>
+                Subject Type
+                <select id="guardrailSubject">
+                  <option value="ai_agent">AI Agent</option>
+                  <option value="kaixu_generate">kAIxU Generate</option>
+                  <option value="operator">Operator</option>
+                  <option value="deploy_worker">Deploy Worker</option>
+                  <option value="publisher">Publisher</option>
+                </select>
+              </label>
+              <label>
+                Action
+                <select id="guardrailAction">
+                  <option value="ai_read">AI Read</option>
+                  <option value="ai_summarize">AI Summarize</option>
+                  <option value="ai_rewrite">AI Rewrite</option>
+                  <option value="ai_delete">AI Delete</option>
+                  <option value="export">Export</option>
+                  <option value="publish">Publish</option>
+                  <option value="release">Release</option>
+                  <option value="deploy">Deploy</option>
+                  <option value="share">Share</option>
+                  <option value="human_edit">Human Edit</option>
+                </select>
+              </label>
+              <label class="full">
+                Object
+                <select id="guardrailObject"></select>
+              </label>
+              <label class="full">
+                Evidence / Notes
+                <textarea id="guardrailEvidence" rows="5" placeholder="Why this action is being attempted."></textarea>
+              </label>
+              <div class="actions full">
+                <button class="btn" type="submit">Evaluate</button>
+              </div>
+            </form>
+            <div id="guardrailResult" class="result"></div>
+          </div>
+          <div class="card">
+            <h3>Capability Matrix</h3>
+            <div id="capabilityMatrix" class="matrix"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="capsules">
+        <div class="panel-header">
+          <div>
+            <h2>SKYE Capsule</h2>
+            <p>Create encrypted bundle exports for one or many objects, then import and decrypt them offline.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Create Capsule</h3>
+            <form id="capsuleForm" class="stack form-grid">
+              <label class="full">
+                Capsule Name
+                <input id="capsuleName" required placeholder="founder-pack-001" />
+              </label>
+              <label class="full">
+                Include Objects
+                <div id="capsuleObjectChecklist" class="checklist"></div>
+              </label>
+              <label>
+                Capsule Zone
+                <select id="capsuleZone"></select>
+              </label>
+              <label>
+                Passphrase
+                <input id="capsulePassphrase" type="password" required placeholder="Enter passphrase" />
+              </label>
+              <label>
+                Confirm Passphrase
+                <input id="capsulePassphraseConfirm" type="password" required placeholder="Confirm passphrase" />
+              </label>
+              <div class="actions full">
+                <button class="btn" type="submit">Export Capsule</button>
+              </div>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Import Capsule</h3>
+            <div class="stack">
+              <label class="btn file-btn">
+                Load Capsule File
+                <input id="capsuleImportInput" type="file" accept="application/json,.skycap,.json" hidden />
+              </label>
+              <label>
+                Passphrase
+                <input id="capsuleImportPassphrase" type="password" placeholder="Enter passphrase" />
+              </label>
+              <div class="actions">
+                <button id="capsuleDecryptBtn" class="btn" type="button">Decrypt Capsule</button>
+                <button id="capsuleImportObjectsBtn" class="btn btn-ghost" type="button" disabled>Import Objects</button>
+              </div>
+              <div id="capsuleImportResult" class="result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="signseal">
+        <div class="panel-header">
+          <div>
+            <h2>SKYE Sign &amp; Release Seal</h2>
+            <p>Generate a local signing keypair, preview releases, sign a release seal, and verify seal integrity.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Signing Keys</h3>
+            <div class="stack">
+              <div id="signingStatus" class="result muted"></div>
+              <div class="actions">
+                <button id="generateKeypairBtn" class="btn" type="button">Generate Keypair</button>
+                <button id="exportPublicKeyBtn" class="btn btn-ghost" type="button">Export Public Key</button>
+              </div>
+            </div>
+            <hr />
+            <h3>Release Seal Preview</h3>
+            <form id="sealForm" class="stack form-grid">
+              <label>
+                Target
+                <select id="sealTarget">
+                  <option value="netlify_deploy">Netlify Deploy</option>
+                  <option value="github_push">GitHub Push</option>
+                  <option value="public_release">Public Release</option>
+                  <option value="capsule_export">Capsule Export</option>
+                </select>
+              </label>
+              <label>
+                Operator Name
+                <input id="sealOperator" placeholder="Skyes Over London" />
+              </label>
+              <label class="full">
+                Include Objects
+                <div id="sealObjectChecklist" class="checklist"></div>
+              </label>
+              <label class="full checkbox-line">
+                <input id="sealOperatorApproved" type="checkbox" />
+                Operator Approved
+              </label>
+              <div class="actions full">
+                <button class="btn" type="submit">Preview &amp; Sign Seal</button>
+              </div>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Seal Result</h3>
+            <div id="sealResult" class="result"></div>
+            <div class="actions">
+              <button id="verifyLatestSealBtn" class="btn btn-ghost" type="button">Verify Latest Seal</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="ledger">
+        <div class="panel-header">
+          <div>
+            <h2>Decision Ledger</h2>
+            <p>Review all evaluated actions, capsule events, and release seal history stored in the local sovereign ledger.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Action Decisions</h3>
+            <div id="decisionLedger" class="list tall"></div>
+          </div>
+          <div class="card">
+            <h3>Capsules &amp; Seals</h3>
+            <div id="capsuleSealLedger" class="list tall"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="statTemplate">
+    <article class="stat-card">
+      <span class="stat-label"></span>
+      <strong class="stat-value"></strong>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

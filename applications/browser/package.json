@@ -1,18 +1,18 @@
 {
   "private": true,
   "name": "theia-ide-browser-app",
-  "description": "Eclipse Theia IDE browser product",
-  "productName": "Theia IDE",
+  "description": "Skyes Over London browser product",
+  "productName": "Skyes Over London",
   "version": "1.69.0",
   "license": "MIT",
-  "author": "Eclipse Theia <theia-dev@eclipse.org>",
-  "homepage": "https://github.com/eclipse-theia/theia-ide#readme",
+  "author": "Skyes Over London",
+  "homepage": "https://github.com/SkyeCDE/SkyeCDE#readme",
   "bugs": {
-    "url": "https://github.com/eclipse-theia/theia/issues"
+    "url": "https://github.com/SkyeCDE/SkyeCDE/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eclipse-theia/theia-ide.git"
+    "url": "git+https://github.com/SkyeCDE/SkyeCDE.git"
   },
   "engines": {
     "yarn": ">=1.7.0 <2",
@@ -21,7 +21,7 @@
   "theia": {
     "frontend": {
       "config": {
-        "applicationName": "Theia IDE",
+        "applicationName": "Skyes Over London",
         "warnOnPotentiallyInsecureHostPattern": false,
         "preferences": {
           "toolbar.showToolbar": true,
@@ -36,7 +36,7 @@
         "warnOnPotentiallyInsecureHostPattern": false,
         "startupTimeout": -1,
         "resolveSystemPlugins": false,
-        "configurationFolder": ".theia-ide",
+        "configurationFolder": ".skyes-over-london",
         "frontendConnectionTimeout": 3000
       }
     },
@@ -126,10 +126,13 @@
   },
   "scripts": {
     "clean": "theia clean && rimraf node_modules",
-    "build": "yarn -s rebuild && theia build --app-target=\"browser\" --mode development",
-    "build:prod": "yarn -s rebuild && theia  build --app-target=\"browser\"",
+    "build:product": "yarn --cwd ../../theia-extensions/product build",
+    "prepare:runtime": "node ../../scripts/prepare-browser-runtime.js",
+    "ensure:start": "node ../../scripts/ensure-browser-start.js",
+    "build": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' theia build --app-target=\"browser\" --mode development",
+    "build:prod": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' theia build --app-target=\"browser\"",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
-    "start": "theia start --plugins=local-dir:../../plugins",
+    "start": "yarn ensure:start && NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' theia start --plugins=local-dir:../../plugins --log-level=error",
     "watch": "concurrently --kill-others -n tsc,build -c red,yellow \"tsc -b -w --preserveWatchOutput\" \"yarn -s watch:bundle\"",
     "update:theia": "ts-node ../../scripts/update-theia-version.ts",
     "update:next": "ts-node ../../scripts/update-theia-version.ts next"

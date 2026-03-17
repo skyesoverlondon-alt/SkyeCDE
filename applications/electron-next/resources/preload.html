@@ -3,66 +3,167 @@
 
 <head>
     <style>
+        :root {
+            --skye-bg-0: #05060b;
+            --skye-bg-1: #120b1f;
+            --skye-panel: rgba(14, 10, 24, 0.84);
+            --skye-border: rgba(168, 106, 255, 0.28);
+            --skye-gold: #ffd660;
+            --skye-purple: #a243ff;
+            --skye-cyan: #27f2ff;
+            --skye-text: #f7f2ff;
+            --skye-muted: #c9bedf;
+            --skye-shadow: 0 24px 80px rgba(0, 0, 0, .45);
+        }
+
         html,
         body {
-            background-color: black;
+            margin: 0;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 14% 12%, rgba(162, 67, 255, .22), transparent 28%),
+                radial-gradient(circle at 82% 18%, rgba(39, 242, 255, .16), transparent 28%),
+                radial-gradient(circle at 50% 90%, rgba(255, 214, 96, .09), transparent 24%),
+                linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 56%, #05070d);
+            color: var(--skye-text);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
         .theia-preload {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            /* Above styles copied from https://github.com/eclipse-theia/theia/blob/5aeef6c0c683b4e91713ab736957e6655b486adc/packages/core/src/browser/style/index.css#L147-L151 */
-            /* Otherwise, there is a flickering when Theia's CSS loads. */
-
+            inset: 0;
             background-image: none;
         }
 
-        .theia-preload::after {
-            /* remove default loading animation */
-            content: none;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(168, 106, 255, .07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(39, 242, 255, .06) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(1000px) rotateX(73deg) scale(1.25);
+            transform-origin: center top;
+            opacity: .18;
         }
+
+        .theia-preload::after { content: none; }
 
         .spinner-container {
             display: flex;
-            flex-direction: center;
-            align-self: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             width: 100vw;
+            position: relative;
+            z-index: 1;
         }
 
         .custom-spinner {
-            align-self: center;
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
+            gap: 28px;
+            width: min(1100px, calc(100vw - 64px));
+            padding: 18px;
+            background: transparent;
+            overflow: visible;
         }
 
-        .custom-spinner svg {
-            width: 16vw;
-            height: 16vh;
-            animation-delay: 0;
-            animation-duration: 2s;
-            animation-iteration-count: infinite;
-            animation-name: theia-ide-spinner;
-            animation-timing-function: ease;
+        .custom-spinner::before { content: none; }
+
+        .splash-copy,
+        .splash-visual { position: relative; z-index: 1; }
+
+        .splash-badge {
+            display: inline-flex;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(39, 242, 255, .28);
+            background: rgba(39, 242, 255, .08);
+            color: var(--skye-cyan);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: .76rem;
+            margin-bottom: 18px;
         }
 
-        @keyframes theia-ide-spinner {
-            0% {
-                filter: brightness(1) saturate(1);
-                transform: scale(1.0);
-            }
+        .splash-copy h1 {
+            margin: 0;
+            font-size: clamp(2.1rem, 4vw, 4rem);
+            line-height: 1.02;
+            letter-spacing: -.03em;
+        }
 
-            50% {
-                filter: brightness(1.35) saturate(0.75);
-                transform: scale(0.8);
-            }
+        .splash-copy h1 span { color: var(--skye-cyan); }
 
-            100% {
-                filter: brightness(1) saturate(1);
-                transform: scale(1.0);
-            }
+        .splash-copy p {
+            max-width: 58ch;
+            color: var(--skye-muted);
+            line-height: 1.7;
+            margin: 16px 0 0;
+        }
+
+        .splash-status {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .splash-status-card {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(39, 242, 255, .18);
+        }
+
+        .splash-status-card strong { display: block; margin-bottom: 6px; color: var(--skye-text); font-size: .95rem; }
+        .splash-status-card span { color: var(--skye-muted); font-size: .88rem; }
+
+        .splash-visual { min-height: 280px; }
+
+        .splash-logo {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            width: min(340px, 75vw);
+            height: auto;
+            transform: translate(-50%, -50%);
+            animation: sol-logo-float 4.8s ease-in-out infinite, sol-logo-pulse 3.2s ease-in-out infinite;
+            filter: drop-shadow(0 0 28px rgba(141, 61, 255, .34)) drop-shadow(0 0 38px rgba(255, 214, 96, .22));
+        }
+
+        .splash-orb { position: absolute; border-radius: 999px; filter: blur(8px); }
+        .splash-orb-primary { width: 240px; height: 240px; top: 10px; right: 8px; background: radial-gradient(circle, rgba(39, 242, 255, .48), rgba(39, 242, 255, 0)); }
+        .splash-orb-secondary { width: 180px; height: 180px; left: 10px; bottom: 8px; background: radial-gradient(circle, rgba(162, 67, 255, .34), rgba(162, 67, 255, 0)); }
+
+        .splash-loader { position: absolute; left: 18px; right: 18px; bottom: 16px; height: 4px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, .08); }
+        .splash-loader::after {
+            content: "";
+            display: block;
+            width: 42%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--skye-purple), var(--skye-cyan), var(--skye-gold));
+            animation: splash-loader 2.2s ease-in-out infinite;
+        }
+
+        @keyframes sol-logo-float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-12px); }
+        }
+
+        @keyframes sol-logo-pulse {
+            0%, 100% { opacity: .94; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes splash-loader {
+            0% { transform: translateX(-10%); }
+            50% { transform: translateX(130%); }
+            100% { transform: translateX(-10%); }
         }
     </style>
 </head>
@@ -70,20 +171,22 @@
 <body>
     <div class='spinner-container'>
         <div class='custom-spinner'>
-            <svg id="spinner" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" preserveAspectRatio="xMinYMin meet"
-                viewBox="0, 0, 1150, 540.6">
-                <g id="Layer_1" fill="#8B5CF6">
-                    <path
-                        d="M880.199,2.8 C1028.1,2.8 1147.9,122.6 1147.9,270.5 C1147.9,418.3 1028.1,538.2 880.2,538.2 L290.1,538.2 C269,538.2 251.9,521.1 251.9,500 C251.9,478.9 269,461.8 290.1,461.8 L427.6,461.8 C448.6,461.8 465.7,444.7 465.7,423.6 C465.7,402.5 448.6,385.4 427.6,385.4 L396.999,385.4 C375.9,385.4 358.8,368.3 358.8,347.2 C358.8,326.1 375.9,309 397,309 L488.703,309 C509.918,308.941 526.373,291.65 526.9,270.8 C526.9,249.7 509.8,232.6 488.7,232.6 L167.8,232.6 C146.7,232.6 129.6,215.5 129.6,194.4 C129.6,173.3 146.7,156.2 167.8,156.2 L404.604,156.2 C425.818,156.141 442.273,138.85 442.8,118 C442.8,96.9 425.7,79.8 404.6,79.8 L351.2,79.8 C330.1,79.8 313,62.7 313,41.6 C313,20.5 330.1,2.4 351.2,2.4 L880.199,2.8 z M837.4,92 L837.4,92 C755.2,92 688.7,158.6 688.7,240.7 L688.7,300.2 C688.7,382.4 755.2,448.9 837.4,448.9 C919.5,448.9 986.1,382.4 986.1,300.2 L986.1,240.7 C986.1,158.6 919.5,92 837.4,92 L837.4,92 z M888.2,232.6 C908,232.6 924.1,248.7 924.1,268.5 L924.1,273.1 C924.1,292.9 908,309 888.2,309 L776.6,309 C756.8,309 740.7,292.9 740.7,273.1 L740.7,268.5 C740.7,248.7 756.8,232.6 776.6,232.6 L888.2,232.6 z" />
-                    <path
-                        d="M170.1,461.8 C190,461.8 206,477.8 206,497.7 L206,502.3 C206,522.1 190,538.2 170.1,538.2 L38,538.2 C18.2,538.2 2.1,522.1 2.1,502.3 L2.1,497.7 C2.1,477.8 18.2,461.8 38,461.8 L170.1,461.8 z" />
-                    <path
-                        d="M231.3,3.4 C251.1,3.4 267.1,19.5 267.1,39.3 L267.1,44 C267.1,63.8 251.1,79.8 231.3,79.8 L83.8,79.8 C64,79.8 47.9,63.8 47.9,44 L47.9,39.3 C47.9,19.5 64,3.4 83.8,3.4 L231.3,3.4 z" />
-                    <path
-                        d="M277.1,309 C296.9,309 313,325.1 313,344.9 L313,349.5 C313,369.3 296.9,385.4 277.1,385.4 L196.1,385.4 C176.3,385.4 160.2,369.3 160.2,349.5 L160.2,344.9 C160.2,325.1 176.3,309 196.1,309 L277.1,309 z" />
-                </g>
-            </svg>
+            <div class="splash-copy">
+                <div class="splash-badge">Royal neon next channel</div>
+                <h1>Skyes <span>Over London Next</span></h1>
+                <p>Loading the floating preview channel for experimental studio surfaces, evolving workflows and deeper product customization.</p>
+                <div class="splash-status">
+                    <div class="splash-status-card"><strong>Preview</strong><span>Early product surfaces and UI experiments</span></div>
+                    <div class="splash-status-card"><strong>Studio</strong><span>Design, media and automation in one shell</span></div>
+                    <div class="splash-status-card"><strong>AI</strong><span>Prompt, agent and workflow iteration tools</span></div>
+                </div>
+            </div>
+            <div class="splash-visual" aria-hidden="true">
+                <div class="splash-orb splash-orb-primary"></div>
+                <div class="splash-orb splash-orb-secondary"></div>
+                <img class="splash-logo" src="./SKYESOVERLONDONDIETYLOGO.png" alt="Skyes Over London logo" />
+                <div class="splash-loader"></div>
+            </div>
         </div>
     </div>
 </body>

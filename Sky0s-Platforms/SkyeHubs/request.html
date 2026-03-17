@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SkyeHubs — Request Co-Host Service</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="SkyeHubs" />
+    <div class="brand__text">
+      <div class="brand__title">SkyeHubs</div>
+      <div class="brand__sub">Host — Turnovers, Restock, Guest Comms</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./portal.html">Portal</a>
+    <a class="btn btn--ghost" href="./host.html">Host Portal</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card hero">
+    <div class="hero__left">
+      <h1>Co-hosting that runs like clockwork 🛏️🧼</h1>
+      <p>
+        Book a one-time turnover or start a subscription. You’ll get per-stay photo proof, restock logs,
+        issue reporting, and direct messaging with your assigned co-host.
+      </p>
+      <div class="notice">
+        Requires Firebase + Stripe. Setup in <code>README_SETUP.html</code>.
+      </div>
+    </div>
+    <div class="hero__right">
+      <div class="mini">
+        <div class="mini__row"><span>Step 1</span><span class="pill">Request</span></div>
+        <div class="mini__row"><span>Step 2</span><span class="pill">Pay</span></div>
+        <div class="mini__row"><span>Step 3</span><span class="pill">Scheduled</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="authCard">
+    <h2>Sign in</h2>
+    <p class="muted">Use the email you want linked to your listing history and subscriptions.</p>
+    <div class="grid">
+      <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
+      <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
+    </div>
+    <div class="actions">
+      <button id="signInBtn" class="btn btn--primary" type="button">Sign in</button>
+      <button id="signUpBtn" class="btn btn--ghost" type="button">Create account</button>
+      <div id="authStatus" class="status"></div>
+    </div>
+  </section>
+
+  <section class="card" id="mainCard" style="display:none;">
+    <h2>Host request</h2>
+    <p class="muted">Enter listing + turnover details. You’ll see an instant estimate. Then pay to confirm.</p>
+
+    <form id="reqForm" class="form" novalidate>
+      <div class="grid">
+        <label class="field"><span>Host name *</span><input name="hostName" required /></label>
+        <label class="field"><span>Phone *</span><input name="hostPhone" required /></label>
+        <label class="field"><span>City *</span><input name="city" required placeholder="Phoenix / Scottsdale / etc" /></label>
+        <label class="field"><span>ZIP *</span><input name="zip" required pattern="\d{5}" placeholder="#####"/></label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Request type *</span>
+          <select name="requestType" required>
+            <option value="" selected disabled>Select</option>
+            <option value="one_time">One-time turnover</option>
+            <option value="subscription">Monthly co-host subscription</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Plan (subscription only)</span>
+          <select name="plan">
+            <option value="none">Not a subscription</option>
+            <option value="lite">LITE — up to 4 turnovers/mo</option>
+            <option value="plus">PLUS — up to 8 turnovers/mo</option>
+            <option value="pro">PRO — up to 16 turnovers/mo</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Service type *</span>
+          <select name="serviceType" required>
+            <option value="" selected disabled>Select</option>
+            <option value="turnover">Turnover clean + reset</option>
+            <option value="restock">Restock-only run</option>
+            <option value="inspection">Mid-stay inspection</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Guest comms needed?</span>
+          <select name="guestComms">
+            <option value="no">No</option>
+            <option value="yes">Yes (messages + issues)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Listing name *</span><input name="listingName" required placeholder="e.g. 'Desert Loft • Old Town'" /></label>
+        <label class="field"><span>Address *</span><input name="address" required placeholder="Street address (not shown to co-host until assigned if you prefer)" /></label>
+        <label class="field"><span>Bedrooms *</span>
+          <select name="bedrooms" required>
+            <option value="" selected disabled>Select</option>
+            <option>Studio</option><option>1</option><option>2</option><option>3</option><option>4+</option>
+          </select>
+        </label>
+        <label class="field"><span>Bathrooms *</span>
+          <select name="bathrooms" required>
+            <option value="" selected disabled>Select</option>
+            <option>1</option><option>1.5</option><option>2</option><option>2.5</option><option>3+</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Turnover date *</span><input name="turnoverDate" type="date" required /></label>
+        <label class="field"><span>Start date (optional)</span><input name="startDate" type="date" /></label>
+        <label class="field"><span>End date (optional)</span><input name="endDate" type="date" /></label>
+        <label class="field"><span>Estimated hours</span><input name="hours" inputmode="decimal" placeholder="e.g. 3.5"/></label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Add-on: Laundry/linens</span>
+          <select name="laundry">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+        <label class="field"><span>Add-on: Supplies restock</span>
+          <select name="restock">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+        <label class="field"><span>Add-on: Deep clean</span>
+          <select name="deepClean">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+        <label class="field"><span>Urgent same-day?</span>
+          <select name="urgent">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Notes *</span>
+        <textarea name="notes" rows="4" required placeholder="Access notes, parking, lockbox, focus areas, guest complaints, etc."></textarea>
+      </label>
+
+      <section class="card" style="margin-top:14px;">
+        <h2>Price estimate</h2>
+        <div id="quoteBox" class="review"></div>
+        <p class="muted">Final may adjust for extreme conditions. Any change requires approval.</p>
+      </section>
+
+      <div class="actions" style="margin-top:14px;">
+        <button id="payBtn" class="btn btn--primary" type="button">Pay & Submit</button>
+        <button id="saveReqBtn" class="btn btn--ghost" type="button">Save Draft</button>
+        <button id="loadReqBtn" class="btn btn--ghost" type="button">Load Draft</button>
+        <div id="reqStatus" class="status"></div>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script type="module" src="request.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>

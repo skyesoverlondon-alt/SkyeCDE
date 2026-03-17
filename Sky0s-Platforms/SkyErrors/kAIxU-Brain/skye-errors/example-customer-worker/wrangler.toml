@@ -1,0 +1,14 @@
+name = "skye-errors-example-customer-worker"
+main = "src/index.js"
+compatibility_date = "2026-03-02"
+workers_dev = true
+
+[vars]
+# Point this at your Brain URL (the worker that now hosts /v1/errors/*)
+KAIXU_BRAIN_URL = "https://<your-brain>.workers.dev"
+
+# Your Kaixu app token (same one you already use for /v1/generate)
+KAIXU_APP_TOKEN = "REPLACE_ME"
+
+RELEASE = "dev"
+ENVIRONMENT = "dev"

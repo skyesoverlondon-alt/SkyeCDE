@@ -1,0 +1,1 @@
+Open index.html to browse locally. All pages include physical navigation with explicit paths for offline review. Static site package prepared for website handoff.

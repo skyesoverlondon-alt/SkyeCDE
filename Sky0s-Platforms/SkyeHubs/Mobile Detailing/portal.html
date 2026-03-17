@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOL Mobile Detailing Network — Client & Detailer Portal</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="SOL Mobile Detailing Network" />
+    <div class="brand__text">
+      <div class="brand__title">SOL Mobile Detailing Network Vehicle Sanctuary</div>
+      <div class="brand__sub">Client & Detailer Portal</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./index.html">Detailer Intake</a>
+    <a class="btn btn--ghost" href="./admin.html">Admin</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card hero">
+    <div class="hero__left">
+      <h1>Service Updates + Messaging 🐶📸💬</h1>
+      <p>
+        Clients can view service job updates (photos + notes) and message the detailer.
+        Detailers can upload daily job updates and chat with clients for each booking.
+      </p>
+      <div class="notice">
+        This portal requires a Firebase backend. Paste your config in <code>firebase-config.js</code> then reload.
+      </div>
+    </div>
+    <div class="hero__right">
+      <div class="mini">
+        <div class="mini__row"><span>Updates</span><span class="pill">Photos + Notes</span></div>
+        <div class="mini__row"><span>Messaging</span><span class="pill">Client ↔ Detailer</span></div>
+        <div class="mini__row"><span>Privacy</span><span class="pill">Per booking</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>New booking</h2>
+    <p class="muted">Create and pay for a new request (clients). Then use the portal to view job updates.</p>
+    <a class="btn btn--primary" href="./request.html" style="display:inline-block; text-decoration:none;">Request Detailing</a>
+  </section>
+
+  <section class="card">
+    <h2>Choose your portal</h2>
+    <p class="muted">Sign in with your email/password. Bookings are linked to your account by UID.</p>
+    <div class="grid">
+      <a class="btn btn--primary" href="./client.html" style="text-align:center; padding:16px; display:block;">I’m a Client</a>
+      <a class="btn btn--primary" href="./detailer.html" style="text-align:center; padding:16px; display:block;">I’m a Detailer</a>
+    </div>
+  </section>
+
+  <section class="card fineprint">
+    <p class="muted">
+      Bookings are created by Admin (SOL ops). If you don’t see your booking after signing in, contact ops with your email address.
+    </p>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>

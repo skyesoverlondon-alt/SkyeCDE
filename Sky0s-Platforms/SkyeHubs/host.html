@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SkyeHubs — Client Portal</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="SkyeHubs" />
+    <div class="brand__text">
+      <div class="brand__title">SkyeHubs</div>
+      <div class="brand__sub">Client Portal — Updates & Messages</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./portal.html">Portal Home</a>
+    <button id="signOutBtn" class="btn btn--ghost" type="button">Sign out</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card" id="authCard">
+    <h2>Sign in</h2>
+    <p class="muted">Use the email you gave the partner/business (or SOL ops) when stay.</p>
+    <div class="grid">
+      <div>
+        <div id="calendar" class="review" style="margin-bottom:12px;"></div>
+      </div>
+      <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
+      <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
+    </div>
+    <div class="actions">
+      <button id="signInBtn" class="btn btn--primary" type="button">Sign in</button>
+      <button id="signUpBtn" class="btn btn--ghost" type="button">Create account</button>
+      <div id="authStatus" class="status"></div>
+    </div>
+  </section>
+
+  <section class="card" id="mainCard" style="display:none;">
+    <h2>Your stays</h2>
+    <p class="muted">Select a stay to view updates and message your cohost.</p>
+    <div class="grid">
+      <div>
+        <div id="stayList" class="review" style="max-height:520px; overflow:auto;"></div>
+      </div>
+      <div>
+        <div class="review" id="stayDetails"></div>
+
+        <h2 style="margin-top:14px;">Stay updates</h2>
+        <div id="updates" class="review" style="max-height:360px; overflow:auto;"></div>
+
+        <h2 style="margin-top:14px;">Messages</h2>
+        <div id="messages" class="review" style="max-height:260px; overflow:auto;"></div>
+
+        <div class="actions" style="margin-top:10px;">
+          <input id="msgText" class="btn" style="flex:1; min-width:220px;" placeholder="Type a message…" />
+          <button id="sendMsgBtn" class="btn btn--primary" type="button">Send</button>
+        </div>
+        <div id="msgStatus" class="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card fineprint">
+    <p class="muted">
+      If you can’t sign in, contact ops. Stays must be linked to your account email by admin.
+    </p>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script type="module" src="host.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>

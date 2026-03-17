@@ -1,0 +1,10 @@
+{
+  "name": "noble-soul-intake-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Noble Soul Caregiver Intake + Client/Caregiver Portal + Stripe checkout (Netlify)",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "stripe": "^15.12.0"
+  }
+}

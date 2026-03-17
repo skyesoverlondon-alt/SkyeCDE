@@ -10,7 +10,19 @@
 import * as React from 'react';
 import { AboutDialog, AboutDialogProps, ABOUT_CONTENT_CLASS } from '@theia/core/lib/browser/about-dialog';
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { renderDocumentation, renderDownloads, renderProductName, renderSourceCode, renderSupport, renderTickets, renderWhatIs } from './branding-util';
+import {
+    renderDocumentation,
+    renderDownloads,
+    renderProductName,
+    renderProductTagline,
+    renderSourceCode,
+    renderStudioApps,
+    renderStudioBrandStrip,
+    renderStudioWorkflow,
+    renderSupport,
+    renderTickets,
+    renderWhatIs
+} from './branding-util';
 import { VSXEnvironment } from '@theia/vsx-registry/lib/common/vsx-environment';
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
 @injectable()
@@ -43,16 +55,44 @@ export class TheiaIDEAboutDialog extends AboutDialog {
 
     protected renderContent(): React.ReactNode {
         return <div className='ad-container'>
-            <div className='ad-float'>
-                <div className='ad-logo'>
+            <div className='skye-dashboard-layout'>
+                <div className='skye-dashboard-main'>
+                    <section className='skye-hero-panel'>
+                        <div className='skye-hero-copy'>
+                            <span className='skye-badge'>About this product</span>
+                            {renderProductName()}
+                            {renderProductTagline()}
+                            {this.renderVersion()}
+                        </div>
+                        <div className='skye-hero-visual' aria-hidden='true'>
+                            <div className='skye-hero-orb skye-hero-orb-primary'></div>
+                            <div className='skye-hero-orb skye-hero-orb-secondary'></div>
+                            <div className='ad-logo skye-hero-logo'></div>
+                        </div>
+                    </section>
                 </div>
-                {this.renderExtensions()}
+                <div className='skye-dashboard-rail'>
+                    <div className='gs-section'>
+                        <h3 className='gs-section-header'>Installed extensions</h3>
+                        {this.renderExtensions()}
+                    </div>
+                </div>
             </div>
-            {this.renderTitle()}
+            {renderStudioBrandStrip()}
             <hr className='gs-hr' />
             <div className='flex-grid'>
                 <div className='col'>
+                    {renderStudioApps(this.windowService)}
+                </div>
+            </div>
+            <div className='flex-grid'>
+                <div className='col'>
                     {renderWhatIs(this.windowService)}
+                </div>
+            </div>
+            <div className='flex-grid'>
+                <div className='col'>
+                    {renderStudioWorkflow(this.windowService)}
                 </div>
             </div>
             <div className='flex-grid'>
@@ -82,13 +122,6 @@ export class TheiaIDEAboutDialog extends AboutDialog {
             </div>
         </div>;
 
-    }
-
-    protected renderTitle(): React.ReactNode {
-        return <div className='gs-header'>
-            {renderProductName()}
-            {this.renderVersion()}
-        </div>;
     }
 
     protected renderVersion(): React.ReactNode {

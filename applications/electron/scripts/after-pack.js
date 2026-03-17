@@ -56,8 +56,7 @@ exports.default = async function (context) {
 
     // Only continue for macOS during CI
     if ((( branch === 'master' || releaseDryRun)  && running_ci && running_on_mac)) {
-        console.log('Detected Theia IDE Release on Mac ' + releaseDryRun ? ' (dry-run)' : ''
-            + ' - proceeding with signing and notarizing');
+        console.log(`Detected Skyes Over London release on Mac${releaseDryRun ? ' (dry-run)' : ''} - proceeding with signing and notarizing`);
     } else {
         if (running_on_mac) {
             console.log('Not a release or dry-run requiring signing/notarizing - skipping');

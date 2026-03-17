@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkAIxu Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #fff; font-family: 'Inter', sans-serif; }
+        .glass-panel { background: rgba(10, 10, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="p-8 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-screen">
+    <div class="glass-panel p-10 rounded-2xl w-full max-w-lg text-center space-y-8">
+        <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto text-red-500 border border-red-500/30">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        
+        <div>
+            <h1 class="text-3xl font-black mb-2 tracking-tight uppercase">Admin Access Granted</h1>
+            <p class="text-slate-400 text-sm">Welcome back, Administrator.</p>
+        </div>
+
+        <div class="space-y-4 w-full">
+            <a href="diagnostics.html" class="block w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M2 12h20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
+                Launch Diagnostics
+            </a>
+            
+            <a href="index.html" class="block w-full bg-white/5 hover:bg-white/10 py-3 rounded-xl font-medium text-sm transition-colors text-slate-300">
+                Return to IDE
+            </a>
+
+            <button onclick="window.close()" class="block w-full bg-red-900/20 hover:bg-red-900/40 border border-red-500/20 hover:border-red-500/40 py-3 rounded-xl font-medium text-sm transition-all text-red-400 hover:text-red-300">
+                Close Window
+            </button>
+        </div>
+        
+        <div class="pt-6 border-t border-white/5">
+            <p class="text-[10px] text-slate-600 font-mono uppercase tracking-widest">System Status: SECURE</p>
+        </div>
+    </div>
+</body>
+</html>

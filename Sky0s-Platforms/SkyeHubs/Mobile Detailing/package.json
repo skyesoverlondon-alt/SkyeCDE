@@ -1,0 +1,10 @@
+{
+  "name": "sol-mobile-detailing-network",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SOL Mobile Detailing Network \u2014 intake + approval + request + payments + job portal + photo proof (Netlify)",
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "stripe": "^15.12.0"
+  }
+}

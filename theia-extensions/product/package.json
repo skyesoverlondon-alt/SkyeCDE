@@ -2,10 +2,11 @@
   "private": true,
   "name": "theia-ide-product-ext",
   "version": "1.69.0",
-  "description": "Eclipse Theia IDE Product Branding",
+  "description": "Skyes Over London product branding",
   "dependencies": {
     "@theia/core": "1.70.0-next.11",
     "@theia/getting-started": "1.70.0-next.11",
+    "@theia/navigator": "1.70.0-next.11",
     "@theia/vsx-registry": "1.70.0-next.11",
     "@theia/workspace": "1.70.0-next.11",
     "inversify": "^6.0.1"
@@ -27,12 +28,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/eclipse-theia/theia-ide.git"
+    "url": "https://github.com/SkyeCDE/SkyeCDE.git"
   },
   "bugs": {
-    "url": "https://github.com/eclipse-theia/theia-ide/issues"
+    "url": "https://github.com/SkyeCDE/SkyeCDE/issues"
   },
-  "homepage": "https://github.com/eclipse-theia/theia-ide",
+  "homepage": "https://github.com/SkyeCDE/SkyeCDE",
   "files": [
     "lib",
     "src"

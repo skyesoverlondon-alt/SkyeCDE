@@ -37,13 +37,13 @@ export class CreateLauncherCommandContribution implements FrontendApplicationCon
             if (!initialized) {
                 const messageContainer = document.createElement('div');
                 // eslint-disable-next-line max-len
-                messageContainer.textContent = nls.localizeByDefault(`Would you like to install a shell command that launches the application?\nYou will be able to run ${applicationName} from the command line by typing '${uriScheme}'.`);
+                messageContainer.textContent = nls.localizeByDefault(`Install a shell command for ${applicationName}?\nYou will be able to open the studio from the command line by typing '${uriScheme}'.`);
                 messageContainer.setAttribute('style', 'white-space: pre-line');
                 const details = document.createElement('p');
-                details.textContent = 'Administrator privileges are required, you will need to enter your password next.';
+                details.textContent = nls.localizeByDefault('Administrator privileges are required for installation. You may be prompted for your password next.');
                 messageContainer.appendChild(details);
                 const dialog = new ConfirmDialog({
-                    title: nls.localizeByDefault('Create launcher'),
+                    title: nls.localizeByDefault('Install studio launcher'),
                     msg: messageContainer,
                     ok: Dialog.YES,
                     cancel: Dialog.NO
@@ -60,10 +60,10 @@ export class CreateLauncherCommandContribution implements FrontendApplicationCon
             if (!initialized) {
                 const messageContainer = document.createElement('div');
                 // eslint-disable-next-line max-len
-                messageContainer.textContent = nls.localizeByDefault(`Would you like to create a .desktop file for ${applicationName}?\nThis will make it easier to open ${applicationName} directly\nfrom your applications menu and enables further features.`);
+                messageContainer.textContent = nls.localizeByDefault(`Create an applications-menu entry for ${applicationName}?\nThis adds a .desktop file so the studio is easier to launch directly from your desktop environment.`);
                 messageContainer.setAttribute('style', 'white-space: pre-line');
                 const dialog = new ConfirmDialog({
-                    title: nls.localizeByDefault('Create .desktop file'),
+                    title: nls.localizeByDefault('Install desktop entry'),
                     msg: messageContainer,
                     ok: Dialog.YES,
                     cancel: Dialog.NO

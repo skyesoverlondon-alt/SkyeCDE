@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOL Mobile Detailing — Book or Subscribe</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="SOL Mobile Detailing Network" />
+    <div class="brand__text">
+      <div class="brand__title">SOL Mobile Detailing Network</div>
+      <div class="brand__sub">Client — Booking / Subscription + Photo Proof</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./portal.html">Portal</a>
+    <a class="btn btn--ghost" href="./client.html">My Jobs</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card hero">
+    <div class="hero__left">
+      <h1>Mobile detailing that proves itself 📸✨</h1>
+      <p>
+        Book a one-time service or start a monthly subscription. You’ll get before/after photo proof, job notes,
+        and direct messaging with your assigned detailer.
+      </p>
+      <div class="notice">
+        Requires Firebase + Stripe to accept payments. Setup inside <code>README_SETUP.html</code>.
+      </div>
+    </div>
+    <div class="hero__right">
+      <div class="mini">
+        <div class="mini__row"><span>Step 1</span><span class="pill">Request</span></div>
+        <div class="mini__row"><span>Step 2</span><span class="pill">Pay</span></div>
+        <div class="mini__row"><span>Step 3</span><span class="pill">Assigned</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="authCard">
+    <h2>Sign in</h2>
+    <p class="muted">Use the email you want linked to your subscription and job history.</p>
+    <div class="grid">
+      <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
+      <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
+    </div>
+    <div class="actions">
+      <button id="signInBtn" class="btn btn--primary" type="button">Sign in</button>
+      <button id="signUpBtn" class="btn btn--ghost" type="button">Create account</button>
+      <div id="authStatus" class="status"></div>
+    </div>
+  </section>
+
+  <section class="card" id="mainCard" style="display:none;">
+    <h2>Service request</h2>
+    <p class="muted">Tell us the vehicle + service level. You’ll see an instant estimate. Then pay to lock it in.</p>
+
+    <form id="reqForm" class="form" novalidate>
+      <div class="grid">
+        <label class="field"><span>Your name *</span><input name="clientName" required /></label>
+        <label class="field"><span>Phone *</span><input name="clientPhone" required /></label>
+        <label class="field"><span>Service address *</span><input name="address" required placeholder="Street + city" /></label>
+        <label class="field"><span>ZIP *</span><input name="zip" required pattern="\d{5}" placeholder="#####"/></label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Request type *</span>
+          <select name="requestType" required>
+            <option value="" selected disabled>Select</option>
+            <option value="one_time">One-time detail</option>
+            <option value="subscription">Monthly subscription</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Preferred date *</span><input name="preferredDate" type="date" required /></label>
+
+        <label class="field"><span>Time window *</span>
+          <select name="timeWindow" required>
+            <option value="" selected disabled>Select</option>
+            <option>8am–11am</option>
+            <option>11am–2pm</option>
+            <option>2pm–5pm</option>
+            <option>5pm–8pm</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Vehicle count *</span>
+          <select name="vehicleCount" required>
+            <option value="" selected disabled>Select</option>
+            <option>1</option><option>2</option><option>3</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Vehicle type *</span>
+          <select name="vehicleType" required>
+            <option value="" selected disabled>Select</option>
+            <option value="sedan">Sedan/Coupe</option>
+            <option value="suv">SUV/Crossover</option>
+            <option value="truck">Truck</option>
+            <option value="van">Van</option>
+            <option value="luxury">Luxury/Exotic</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Service level *</span>
+          <select name="serviceLevel" required>
+            <option value="" selected disabled>Select</option>
+            <option value="express">Express Wash + Wipe (45–75m)</option>
+            <option value="standard">Standard Detail (2–3h)</option>
+            <option value="premium">Premium Detail (3–5h)</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Interior?</span>
+          <select name="interior">
+            <option value="yes">Yes</option>
+            <option value="no">No (Exterior only)</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Pet hair / heavy soil?</span>
+          <select name="heavySoil">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Subscription plan</span>
+          <select name="plan">
+            <option value="none">Not a subscription</option>
+            <option value="spark">SPARK — 1x/mo Standard</option>
+            <option value="glow">GLOW — 2x/mo Standard</option>
+            <option value="obsidian">OBSIDIAN — 4x/mo Express</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Add-on: Engine bay</span>
+          <select name="engine">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Add-on: Headlight restore</span>
+          <select name="headlights">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+
+        <label class="field"><span>Add-on: Odor treatment</span>
+          <select name="odor">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Notes *</span>
+        <textarea name="notes" rows="4" required placeholder="Gate codes, water access, areas to focus, stains, etc."></textarea>
+      </label>
+
+      <section class="card" style="margin-top:14px;">
+        <h2>Price estimate</h2>
+        <div id="quoteBox" class="review"></div>
+        <p class="muted">Final may adjust for extreme conditions. Any change requires approval before work continues.</p>
+      </section>
+
+      <div class="actions" style="margin-top:14px;">
+        <button id="payBtn" class="btn btn--primary" type="button">Pay & Submit</button>
+        <button id="saveReqBtn" class="btn btn--ghost" type="button">Save Draft</button>
+        <button id="loadReqBtn" class="btn btn--ghost" type="button">Load Draft</button>
+        <div id="reqStatus" class="status"></div>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script type="module" src="request.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>
