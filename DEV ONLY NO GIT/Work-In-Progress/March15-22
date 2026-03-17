@@ -1,0 +1,175 @@
+# March 15–22 — Detailed Build & Implementation Guide
+
+## 0) Source Intake Status (Read First)
+- Source file reviewed: `DEV ONLY NO GIT/Patches&Upgrades`.
+- Current status: file is empty (`0 bytes`).
+- Impact: no concrete patches/upgrades were provided to convert into executable tasks.
+
+This guide therefore provides a **systematic implementation framework** that AI can execute end-to-end once items are added to `Patches&Upgrades`.
+
+---
+
+## 1) Objective
+Create a repeatable, auditable workflow for turning every patch/upgrade note into:
+1. a scoped implementation plan,
+2. code/config/docs changes,
+3. verification evidence,
+4. release-ready deliverables.
+
+---
+
+## 2) Required Output Format for `Patches&Upgrades`
+To ensure full implementation coverage, each requested change should follow this structure:
+
+```
+[ID] <short title>
+Type: feature | fix | refactor | infra | docs | security
+Priority: P0 | P1 | P2
+Scope: <paths/modules/services>
+Problem: <what is wrong/missing>
+Goal: <expected end-state>
+Implementation Notes: <constraints, dependencies, UX/behavior>
+Acceptance Criteria:
+  - [ ] <testable condition 1>
+  - [ ] <testable condition 2>
+Validation:
+  - unit: <required tests>
+  - integration/e2e: <required checks>
+Risk: low | medium | high
+Rollback: <how to safely revert>
+```
+
+If entries are free-form, AI must normalize each one into this structure before coding.
+
+---
+
+## 3) End-to-End Execution Pipeline
+
+### Phase A — Discovery & Normalization
+1. Parse every entry from `Patches&Upgrades`.
+2. Assign IDs if missing (`PU-001`, `PU-002`, ...).
+3. Classify by type and priority.
+4. Resolve ambiguous language into explicit, testable acceptance criteria.
+5. Produce a dependency map (what must happen first).
+
+**Deliverable:** `implementation_backlog.md` with all normalized items.
+
+### Phase B — Technical Design Per Item
+For each backlog item:
+1. Identify touched files/modules.
+2. Define data-flow or control-flow changes.
+3. Identify compatibility constraints and migration needs.
+4. Define test strategy (unit, integration, smoke).
+5. Define rollback strategy.
+
+**Deliverable:** `design_notes/<ID>.md`.
+
+### Phase C — Build Execution
+For each item in dependency order:
+1. Create a working branch/task context.
+2. Implement minimal, scoped changes.
+3. Add/update tests.
+4. Run lint/typecheck/build/test.
+5. Capture outputs and fix regressions before moving to next item.
+
+**Deliverable:** code + test updates mapped to each ID.
+
+### Phase D — Verification
+Run full validation matrix:
+1. Static checks (lint, types, formatting).
+2. Automated tests (unit/integration/e2e where available).
+3. Manual QA checklist for user-visible behavior.
+4. Performance/security sanity checks for relevant items.
+
+**Deliverable:** `verification_report.md` with pass/fail and evidence.
+
+### Phase E — Release Readiness
+1. Summarize implemented IDs.
+2. Document breaking changes and migration steps.
+3. Prepare release notes.
+4. Confirm rollback plan for high-risk items.
+
+**Deliverable:** `release_notes_draft.md` + changelog updates.
+
+---
+
+## 4) Implementation Algorithm (AI-Executable)
+Use this deterministic loop:
+
+1. `LOAD_SOURCE_NOTES`
+   - Read `DEV ONLY NO GIT/Patches&Upgrades`.
+   - If empty: stop coding, produce intake warning + request structured entries.
+
+2. `PARSE_ITEMS`
+   - Split into discrete requests.
+   - Extract: problem, goal, constraints, acceptance checks.
+
+3. `RANK_AND_SEQUENCE`
+   - Sort by priority and dependency.
+   - Flag blockers.
+
+4. `PLAN_ITEM(<ID>)`
+   - Define touched files and exact change set.
+   - Define tests needed.
+
+5. `IMPLEMENT_ITEM(<ID>)`
+   - Apply smallest viable patch.
+   - Keep changes scoped to acceptance criteria.
+
+6. `VALIDATE_ITEM(<ID>)`
+   - Run target tests + lint/typecheck/build gates.
+   - Record command + result.
+
+7. `DOCUMENT_ITEM(<ID>)`
+   - Add implementation summary and evidence.
+
+8. Repeat steps 4–7 until all IDs are complete.
+
+9. `FINALIZE`
+   - Run full regression checks.
+   - Produce release notes and verification report.
+
+---
+
+## 5) Task Tracking Template
+Use this table to track all items:
+
+| ID | Title | Priority | Status | Owner | Dependencies | Files Touched | Tests Added/Updated | Verification | Notes |
+|----|-------|----------|--------|-------|--------------|---------------|---------------------|--------------|-------|
+| PU-001 | TBD | P1 | Not Started | AI | None | TBD | TBD | Pending | Source entry needed |
+
+**Status values:** Not Started → In Progress → In Review → Verified → Done.
+
+---
+
+## 6) Quality Gates (Must Pass)
+An item is only complete when all gates pass:
+1. Acceptance criteria satisfied.
+2. No lint/type/build failures in touched scope.
+3. New/updated tests pass.
+4. No unintended changes outside declared scope.
+5. Documentation updated when behavior/config changes.
+6. Verification evidence recorded.
+
+---
+
+## 7) Risk & Rollback Framework
+For each medium/high risk item:
+- Define blast radius.
+- Add feature flag or safe-guard where possible.
+- Prepare rollback command/commit strategy.
+- Record pre/post state checks.
+
+Rollback minimum:
+- Revert commit(s) for item ID.
+- Re-run validation matrix.
+- Confirm production-safe state.
+
+---
+
+## 8) What To Do Next (Actionable)
+1. Populate `DEV ONLY NO GIT/Patches&Upgrades` with concrete entries using the template in Section 2.
+2. Re-run this implementation workflow.
+3. Execute items in dependency order and track in Section 5.
+
+Until source entries are added, no actual patch/upgrade implementation can be performed faithfully.
