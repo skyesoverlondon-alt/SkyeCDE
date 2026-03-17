@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SkyeHubs — Co-Host Intake</title>
+  <meta name="description" content="Co-Host intake & oncohosting for SkyeHubs (powered by Skyes Over London LC)." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand__logo" src="assets/logo.svg" alt="SkyeHubs" />
+      <div class="brand__text">
+        <div class="brand__title">SkyeHubs</div>
+        <div class="brand__sub">Co-Host Intake & Oncohosting</div>
+      </div>
+    </div>
+    <div class="topbar__actions">
+      <a class="btn btn--ghost" href="./portal.html" title="Client/Co-Host Portal">Portal</a>
+      <button id="saveDraftBtn" class="btn btn--ghost" type="button" title="Save draft locally">Save Draft</button>
+      <button id="resumeDraftBtn" class="btn btn--ghost" type="button" title="Resume saved draft">Resume Draft</button>
+      <button id="resetBtn" class="btn btn--ghost" type="button" title="Clear form">Reset</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card hero">
+      <div class="hero__left">
+        <h1>Become a Vetted Home Co-Host 🐾</h1>
+        <p>
+          This oncohosting collects your background, home setup, availability, guest preferences, and photos of the areas
+          where guests will stay. Submitting this form does <b>not</b> guarantee acceptance. If approved, you’ll receive
+          follow-up steps (background check verification, interview, and final activation).
+        </p>
+        <div class="notice">
+          <b>Heads up:</b> You’ll upload photos. On mobile, pick from your camera roll or take new ones.
+          We recommend having 8–15 minutes to complete the full intake.
+        </div>
+      </div>
+
+      <div class="hero__right">
+        <div class="progress">
+          <div class="progress__bar"><div id="progressFill" class="progress__fill"></div></div>
+          <div class="progress__meta">
+            <span id="stepLabel">Step 1 of 7</span>
+            <span id="progressPct">0%</span>
+          </div>
+        </div>
+
+        <div class="mini">
+          <div class="mini__row"><span>Secure submission</span><span class="pill">Encrypted in transit</span></div>
+          <div class="mini__row"><span>Draft saving</span><span class="pill">On-device</span></div>
+          <div class="mini__row"><span>Photo uploads</span><span class="pill">Home areas</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="firebaseGate" id="firebaseGate">
+        <h2>Connect to submit</h2>
+        <p>
+          This intake uses a secure backend to store your submission and photos.
+          Add your Firebase config in <code>firebase-config.js</code>, then reload.
+        </p>
+        <div class="gateActions">
+          <button id="retryFirebaseBtn" class="btn btn--primary" type="button">I added config — Retry</button>
+          <a class="btn btn--ghost" href="README_SETUP.html" target="_blank" rel="noreferrer">Setup Guide</a>
+        </div>
+        <div id="firebaseStatus" class="status"></div>
+      </div>
+
+      <form id="intakeForm" class="form" novalidate>
+        <!-- Stepper -->
+        <div class="stepper" aria-label="Steps">
+          <button type="button" class="stepper__item is-active" data-step="0"><span>1</span><b>Basics</b></button>
+          <button type="button" class="stepper__item" data-step="1"><span>2</span><b>Background</b></button>
+          <button type="button" class="stepper__item" data-step="2"><span>3</span><b>Home</b></button>
+          <button type="button" class="stepper__item" data-step="3"><span>4</span><b>Experience</b></button>
+          <button type="button" class="stepper__item" data-step="4"><span>5</span><b>Availability</b></button>
+          <button type="button" class="stepper__item" data-step="5"><span>6</span><b>Uploads</b></button>
+          <button type="button" class="stepper__item" data-step="6"><span>7</span><b>Review</b></button>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps">
+          <!-- Step 1: Basics -->
+          <section class="step is-active" data-step="0">
+            <h2>Basics</h2>
+            <div class="grid">
+              <label class="field">
+                <span>First name *</span>
+                <input name="firstName" autocomplete="given-name" required />
+              </label>
+              <label class="field">
+                <span>Last name *</span>
+                <input name="lastName" autocomplete="family-name" required />
+              </label>
+              <label class="field">
+                <span>Email *</span>
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+              <label class="field">
+                <span>Phone *</span>
+                <input name="phone" type="tel" autocomplete="tel" placeholder="(###) ###-####" required />
+              </label>
+              <label class="field">
+                <span>City *</span>
+                <input name="city" required />
+              </label>
+              <label class="field">
+                <span>ZIP *</span>
+                <input name="zip" inputmode="numeric" pattern="\d{5}" placeholder="#####"
+                       required />
+              </label>
+            </div>
+
+            <div class="grid">
+              <label class="field">
+                <span>Preferred contact method *</span>
+                <select name="contactPref" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Email</option>
+                  <option>Phone call</option>
+                  <option>Text</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Do you have reliable transportation? *</span>
+                <select name="transport" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Are you 18+? *</span>
+                <select name="age18" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>What services can you provide? *</span>
+                <select name="services" multiple required aria-describedby="servicesHelp">
+                  <option>Overnight home cohosting</option>
+                  <option>Day stay (daycare)</option>
+                  <option>In-home sitting (client home)</option>
+                  <option>Drop-in visits</option>
+                  <option>Dog walking</option>
+                  <option>Administering medication</option>
+                  <option>Transport pick-up/drop-off</option>
+                </select>
+                <small id="servicesHelp">Hold Ctrl/Command to select multiple.</small>
+              </label>
+            </div>
+
+            <div class="notice">
+              Your submission will be reviewed by SkyeHubs / SOL ops. If you select “No” for 18+, do not submit.
+            </div>
+          </section>
+
+          <!-- Step 2: Background -->
+          <section class="step" data-step="1">
+            <h2>Background & Compliance</h2>
+
+            <div class="grid">
+              <label class="field">
+                <span>Legal name (for screening) *</span>
+                <input name="legalName" required />
+              </label>
+
+              <label class="field">
+                <span>Date of birth *</span>
+                <input name="dob" type="date" required />
+              </label>
+
+              <label class="field">
+                <span>Driver’s license state</span>
+                <input name="dlState" maxlength="2" placeholder="AZ" />
+              </label>
+
+              <label class="field">
+                <span>Background check consent *</span>
+                <select name="bgConsent" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Yes, I consent</option>
+                  <option>No</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Any prior animal-related incidents? (bite, escape, injury, property damage) *</span>
+              <textarea name="incidentHistory" rows="4" required placeholder="If none, write: None."></textarea>
+            </label>
+
+            <label class="field">
+              <span>Any restrictions we should know? (cannot lift heavy dogs, allergies, etc.) *</span>
+              <textarea name="restrictions" rows="3" required placeholder="If none, write: None."></textarea>
+            </label>
+
+            <div class="grid">
+              <label class="field">
+                <span>Emergency contact name *</span>
+                <input name="emergencyName" required />
+              </label>
+              <label class="field">
+                <span>Emergency contact phone *</span>
+                <input name="emergencyPhone" type="tel" required />
+              </label>
+              <label class="field">
+                <span>CPR / First Aid experience?</span>
+                <select name="firstAid">
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes (basic)</option>
+                  <option>Yes (animal-specific)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Preferred maximum dog weight</span>
+                <select name="maxWeight">
+                  <option value="" selected disabled>Select</option>
+                  <option>Up to 25 lbs</option>
+                  <option>Up to 50 lbs</option>
+                  <option>Up to 75 lbs</option>
+                  <option>Any size</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <!-- Step 3: Home -->
+          <section class="step" data-step="2">
+            <h2>Home Environment</h2>
+
+            <div class="grid">
+              <label class="field">
+                <span>Housing type *</span>
+                <select name="housingType" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>House</option>
+                  <option>Townhome</option>
+                  <option>Apartment</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Do you rent? *</span>
+                <select name="rent" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>No (own)</option>
+                  <option>Yes (rent)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Landlord allows guests/cohosting?</span>
+                <select name="landlordOk">
+                  <option value="" selected disabled>Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                  <option>Not applicable</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Fenced yard? *</span>
+                <select name="fencedYard" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="grid">
+              <label class="field">
+                <span>Children in home?</span>
+                <select name="kids">
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes (under 6)</option>
+                  <option>Yes (6–12)</option>
+                  <option>Yes (13+)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Other guests in home? *</span>
+                <select name="otherGuests" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes (dog)</option>
+                  <option>Yes (cat)</option>
+                  <option>Yes (multiple)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Smoking in home? *</span>
+                <select name="smoking" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes (outside only)</option>
+                  <option>Yes (indoors)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Where will guests sleep? *</span>
+                <select name="sleepArea" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Crate (provided by owner)</option>
+                  <option>Crate (provided by cohost)</option>
+                  <option>Guest bed in separate room</option>
+                  <option>Guest bed in common area</option>
+                  <option>Other (explain in notes)</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Describe your guest-safe areas and rules *</span>
+              <textarea name="homeNotes" rows="5" required placeholder="Example: Guests stay in living room + bedroom, no kitchen, gates on stairs, no off-leash outside, etc."></textarea>
+            </label>
+          </section>
+
+          <!-- Step 4: Experience -->
+          <section class="step" data-step="3">
+            <h2>Experience & Preferences</h2>
+
+            <div class="grid">
+              <label class="field">
+                <span>Years of guest care experience *</span>
+                <select name="experienceYears" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>0–1</option>
+                  <option>2–3</option>
+                  <option>4–7</option>
+                  <option>8+</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Comfort with reactive dogs? *</span>
+                <select name="reactive" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes (mild)</option>
+                  <option>Yes (moderate)</option>
+                  <option>Yes (experienced handler)</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Comfort with cats? *</span>
+                <select name="catsOk" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Medication administration? *</span>
+                <select name="medsOk" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>No</option>
+                  <option>Yes (pills only)</option>
+                  <option>Yes (pills + liquids)</option>
+                  <option>Yes (including injections)</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>What guests do you prefer (and which do you avoid)? *</span>
+              <textarea name="guestPrefs" rows="4" required placeholder="Example: Prefer small/medium dogs; avoid strong pullers over 75 lbs."></textarea>
+            </label>
+
+            <div class="grid">
+              <label class="field">
+                <span>Reference #1 name *</span>
+                <input name="ref1Name" required />
+              </label>
+              <label class="field">
+                <span>Reference #1 phone/email *</span>
+                <input name="ref1Contact" required />
+              </label>
+              <label class="field">
+                <span>Reference #2 name</span>
+                <input name="ref2Name" />
+              </label>
+              <label class="field">
+                <span>Reference #2 phone/email</span>
+                <input name="ref2Contact" />
+              </label>
+            </div>
+          </section>
+
+          <!-- Step 5: Availability -->
+          <section class="step" data-step="4">
+            <h2>Availability & Capacity</h2>
+
+            <div class="grid">
+              <label class="field">
+                <span>Max client guests at once (recommended 1–2) *</span>
+                <select name="maxGuests" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Can you separate guests if needed? *</span>
+                <select name="separateGuests" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Typical weekday availability *</span>
+                <select name="weekdayAvail" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Mostly home</option>
+                  <option>Away 1–4 hours</option>
+                  <option>Away 4–8 hours</option>
+                  <option>Away 8+ hours</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Typical weekend availability *</span>
+                <select name="weekendAvail" required>
+                  <option value="" selected disabled>Select</option>
+                  <option>Mostly home</option>
+                  <option>Away 1–4 hours</option>
+                  <option>Away 4–8 hours</option>
+                  <option>Away 8+ hours</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Days you can accept cohostings *</span>
+              <div class="checks">
+                <label><input type="checkbox" name="days" value="Mon" /> Mon</label>
+                <label><input type="checkbox" name="days" value="Tue" /> Tue</label>
+                <label><input type="checkbox" name="days" value="Wed" /> Wed</label>
+                <label><input type="checkbox" name="days" value="Thu" /> Thu</label>
+                <label><input type="checkbox" name="days" value="Fri" /> Fri</label>
+                <label><input type="checkbox" name="days" value="Sat" /> Sat</label>
+                <label><input type="checkbox" name="days" value="Sun" /> Sun</label>
+              </div>
+              <small>At least one day is required.</small>
+            </label>
+
+            <label class="field">
+              <span>Any blackout dates / travel plans?</span>
+              <textarea name="blackouts" rows="3" placeholder="Example: Out of town Mar 3–9."></textarea>
+            </label>
+          </section>
+
+          <!-- Step 6: Uploads -->
+          <section class="step" data-step="5">
+            <h2>Photo Uploads</h2>
+            <p class="muted">
+              Upload clear photos of the spaces guests will occupy. You can take photos from your phone. We recommend
+              at least 6 photos. File uploads are stored securely with your submission.
+            </p>
+
+            <div class="uploadGrid">
+              <div class="uploadCard">
+                <b>Living/common area *</b>
+                <input type="file" name="photoLiving" accept="image/*" multiple required />
+                <small>Show the main area where guests will spend time.</small>
+              </div>
+
+              <div class="uploadCard">
+                <b>Sleeping area *</b>
+                <input type="file" name="photoSleep" accept="image/*" multiple required />
+                <small>Where guests sleep (crate/bed/room).</small>
+              </div>
+
+              <div class="uploadCard">
+                <b>Yard/outdoor area (if any)</b>
+                <input type="file" name="photoYard" accept="image/*" multiple />
+                <small>If no yard, skip.</small>
+              </div>
+
+              <div class="uploadCard">
+                <b>Entry/exit safety (doors/gates) *</b>
+                <input type="file" name="photoEntry" accept="image/*" multiple required />
+                <small>Show the main entry points to prevent escapes.</small>
+              </div>
+
+              <div class="uploadCard">
+                <b>Optional: ID photo (for verification)</b>
+                <input type="file" name="photoID" accept="image/*" multiple />
+                <small>Optional, but helps speed verification.</small>
+              </div>
+            </div>
+
+            <div class="notice">
+              Don’t upload anything you’re not comfortable storing (no sensitive documents other than optional ID).
+            </div>
+          </section>
+
+          <!-- Step 7: Review -->
+          <section class="step" data-step="6">
+            <h2>Review & Submit</h2>
+
+            <div id="reviewBox" class="review"></div>
+
+            <label class="field">
+              <span>Signature (type your full name) *</span>
+              <input name="signature" required placeholder="Full name" />
+              <small>Typing your name acts as your electronic signature for this intake submission.</small>
+            </label>
+
+            <label class="checkline">
+              <input type="checkbox" name="agree" required />
+              <span>
+                I certify the information provided is accurate. I understand SkyeHubs / Skyes Over London LC may verify
+                information, request a background check, and decline applicants at any time.
+              </span>
+            </label>
+
+            <div class="actions">
+              <button id="submitBtn" class="btn btn--primary" type="submit">Submit Intake</button>
+              <div id="submitStatus" class="status"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Nav -->
+        <div class="nav">
+          <button id="backBtn" class="btn btn--ghost" type="button">Back</button>
+          <button id="nextBtn" class="btn btn--primary" type="button">Next</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card fineprint">
+      <p class="muted">
+        This intake is for <b>SkyeHubs</b> cohost network operations, managed through <b>Skyes Over London LC</b>.
+        Do not submit private medical information. For urgent issues, contact the ops team directly.
+      </p>
+    </section>
+  </main>
+
+  <script src="firebase-config.js"></script>
+  <script type="module" src="app.js"></script>
+  <script>
+    // Register service worker (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    }
+  </script>
+</body>
+</html>

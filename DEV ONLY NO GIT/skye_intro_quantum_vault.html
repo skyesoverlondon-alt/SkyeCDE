@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skye Intro · Quantum Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#05060c;--panel:#0d1120;--gold:#ffd567;--purple:#9b4eff;--cyan:#42f1ff;--text:#eef4ff}
+    *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000} body{font-family:Inter,system-ui,sans-serif}
+    #intro{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%, rgba(155,78,255,.16), transparent 24%),linear-gradient(180deg,#03050a,#070b14 50%, #04050a)}
+    .grid,.field,.noise,.vault,.content,.logoWrap,.progress,.shutters,.flash{position:absolute;inset:0}
+    .grid{inset:-25%;background-image:linear-gradient(rgba(66,241,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(66,241,255,.06) 1px,transparent 1px);background-size:44px 44px;transform:perspective(1200px) rotateX(78deg) translateY(22%);opacity:.28;z-index:1}
+    .field{background:radial-gradient(circle at 50% 50%, rgba(66,241,255,.12), transparent 20%), radial-gradient(circle at 50% 50%, rgba(255,213,103,.08), transparent 34%);filter:blur(24px);animation:field 6s ease-in-out infinite alternate;z-index:2}
+    .noise{opacity:.06;mix-blend-mode:screen;z-index:4;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E")}
+    .vault{z-index:5;display:grid;place-items:center}
+    .door,.door2,.door3{position:absolute;border-radius:28px;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg, rgba(15,22,38,.82), rgba(7,10,18,.88));box-shadow:0 0 28px rgba(66,241,255,.08), inset 0 0 24px rgba(255,255,255,.02)}
+    .door{width:min(54vw,520px);height:min(54vw,520px)}
+    .door2{width:min(44vw,420px);height:min(44vw,420px);border-radius:24px;border-color:rgba(66,241,255,.22)}
+    .door3{width:min(34vw,320px);height:min(34vw,320px);border-radius:18px;border-color:rgba(255,213,103,.18)}
+    .door::before,.door2::before,.door3::before{content:"";position:absolute;inset:14px;border:1px dashed rgba(255,255,255,.08);border-radius:inherit}
+    .vaultBeam{position:absolute;width:2px;height:min(42vw,390px);background:linear-gradient(180deg, transparent, rgba(66,241,255,.95), transparent);box-shadow:0 0 20px rgba(66,241,255,.35);animation:beam 2.6s ease-in-out infinite}
+    .logoWrap{z-index:8;display:grid;place-items:center;pointer-events:none}
+    .logoWrap img{width:min(16vw,144px);opacity:0;transform:scale(.9);filter:drop-shadow(0 0 24px rgba(66,241,255,.26)) drop-shadow(0 0 34px rgba(155,78,255,.2))}
+    .content{z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
+    .eyebrow,.appName,.hud{font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.22em}
+    .eyebrow{font-size:clamp(.56rem,1.35vw,.78rem);color:rgba(238,244,255,.48);opacity:0;transform:translateY(14px)}
+    h1{margin:.9rem 0 .3rem;font-family:Orbitron,sans-serif;font-size:clamp(2.6rem,8.2vw,5.7rem);font-weight:900;line-height:.98;color:var(--text);opacity:0;transform:translateY(10px) scale(.96);text-shadow:0 0 24px rgba(66,241,255,.18),0 0 48px rgba(155,78,255,.18)}
+    .rule{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--purple),transparent);box-shadow:0 0 16px rgba(66,241,255,.22)}
+    .tagline{margin-top:1rem;color:rgba(238,244,255,.72);font-size:clamp(.82rem,1.9vw,1rem);opacity:0;transform:translateY(10px)}
+    .appName{margin-top:.95rem;color:rgba(66,241,255,.94);font-size:clamp(.64rem,1.5vw,.84rem);opacity:0;transform:translateY(10px)}
+    .hud{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);z-index:10;color:rgba(238,244,255,.35);font-size:clamp(.52rem,1.2vw,.66rem);opacity:0}
+    .progress{z-index:10;display:flex;align-items:flex-start;justify-content:center;padding-top:42px;pointer-events:none}
+    .progress .bar{width:min(320px,68vw);height:1px;background:rgba(255,255,255,.08);position:relative;overflow:hidden;opacity:0}
+    .progress .bar::after{content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold),var(--purple));box-shadow:0 0 16px rgba(66,241,255,.22)}
+    .shutters::before,.shutters::after{content:"";position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(180deg, rgba(9,12,22,.92), rgba(2,3,8,.98));z-index:7;animation-duration:1.05s;animation-fill-mode:forwards;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+    .shutters::before{left:0;animation-name:leftShutter}.shutters::after{right:0;animation-name:rightShutter}
+    .flash{background:#fff;opacity:0;z-index:11;pointer-events:none}
+    .exit{animation:fadeOut .75s cubic-bezier(.16,1,.3,1) forwards}
+    @keyframes field{from{transform:scale(1);opacity:.82}to{transform:scale(1.06);opacity:1}}
+    @keyframes beam{0%,100%{opacity:.32;height:min(34vw,320px)}50%{opacity:1;height:min(44vw,420px)}}
+    @keyframes leftShutter{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+    @keyframes rightShutter{0%{transform:translateX(0)}100%{transform:translateX(100%)}}
+    @keyframes fadeOut{to{opacity:0;visibility:hidden}}
+  </style>
+</head>
+<body>
+  <div id="intro">
+    <div class="grid"></div>
+    <div class="field"></div>
+    <div class="shutters"></div>
+    <div class="vault">
+      <div class="door"></div>
+      <div class="door2"></div>
+      <div class="door3"></div>
+      <div class="vaultBeam"></div>
+    </div>
+    <div class="logoWrap"><img id="logo" alt="logo"></div>
+    <div class="content">
+      <div class="eyebrow" id="company"></div>
+      <h1 id="title"></h1>
+      <div class="rule" id="rule"></div>
+      <div class="tagline" id="tagline"></div>
+      <div class="appName" id="app"></div>
+    </div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="hud" id="hud"></div>
+    <div class="noise"></div>
+    <div class="flash" id="flash"></div>
+  </div>
+  <script>
+    const CONFIG = {
+      COMPANY_NAME:'Skyes Over London LC',
+      TITLE:'Skye Vault',
+      TAGLINE:'Protected Command Surfaces · Sealed Runtime',
+      APP_NAME:'Quantum Vault Intro',
+      DURATION:6400,
+      LOGO_URL:'https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png'
+    };
+    const intro=document.getElementById('intro');
+    const company=document.getElementById('company');
+    const title=document.getElementById('title');
+    const tagline=document.getElementById('tagline');
+    const app=document.getElementById('app');
+    const rule=document.getElementById('rule');
+    const bar=document.getElementById('bar');
+    const logo=document.getElementById('logo');
+    const hud=document.getElementById('hud');
+    const flash=document.getElementById('flash');
+    company.textContent=CONFIG.COMPANY_NAME;
+    title.textContent=CONFIG.TITLE;
+    tagline.textContent=CONFIG.TAGLINE;
+    app.textContent=CONFIG.APP_NAME ? `< ${CONFIG.APP_NAME} >` : '';
+    hud.textContent='SEAL // VERIFY // EXECUTE // ASCEND';
+    logo.src=CONFIG.LOGO_URL;
+    const show=(el,css,delay)=>setTimeout(()=>Object.assign(el.style,css),delay);
+    show(company,{opacity:'1',transform:'translateY(0)'},1200);
+    show(logo,{opacity:'1',transform:'scale(1)',transition:'opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1)'},1600);
+    show(title,{opacity:'1',transform:'translateY(0) scale(1)',transition:'opacity .6s ease, transform .6s cubic-bezier(.16,1,.3,1)'},1850);
+    setTimeout(()=>{rule.style.transition='width .9s cubic-bezier(.16,1,.3,1)'; rule.style.width='min(360px,72vw)';},2450);
+    show(tagline,{opacity:'1',transform:'translateY(0)',transition:'opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1)'},2850);
+    if(CONFIG.APP_NAME) show(app,{opacity:'1',transform:'translateY(0)',transition:'opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1)'},3250);
+    show(hud,{opacity:'1',transition:'opacity .45s ease'},450);
+    show(bar,{opacity:'1',transition:'opacity .35s ease'},180);
+    setTimeout(()=>{bar.insertAdjacentHTML('beforeend','<i style="position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold),var(--purple));box-shadow:0 0 16px rgba(66,241,255,.22)"></i>'); const fill=bar.querySelector('i'); fill.style.transition=`width ${CONFIG.DURATION - 420}ms cubic-bezier(.25,1,.5,1)`; requestAnimationFrame(()=>fill.style.width='100%');},220);
+    setTimeout(()=>{flash.style.transition='opacity .12s ease'; flash.style.opacity='.42'; setTimeout(()=>flash.style.opacity='0', 120);}, CONFIG.DURATION - 820);
+    setTimeout(()=>intro.classList.add('exit'), CONFIG.DURATION);
+  </script>
+</body>
+</html>

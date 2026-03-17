@@ -1,5 +1,5 @@
-appId: eclipse.theia.next
-productName: TheiaIDENext
+appId: com.skyes.overlondon.next
+productName: Skyes Over London Next
 copyright: Copyright © 2020-2025 Eclipse Foundation, Inc
 electronDist: ../../node_modules/electron/dist
 electronVersion: 39.7.0
@@ -19,7 +19,7 @@ files:
   - src-gen
   - lib
   - resources/icons/WindowIcon/512-512.png
-  - resources/TheiaIDENextSplash.svg
+  - resources/SkyesOverLondonNextSplash.svg
   - scripts
   - "!**node_modules/**"
 extraResources:
@@ -31,14 +31,14 @@ linux:
   category: Development
   mimeTypes:
     - inode/directory
-  vendor: Eclipse Foundation, Inc
+  vendor: Skyes Over London
   target:
     - deb
     - AppImage
 
 deb:
-  artifactName: ${productName}.${ext}
+  artifactName: skyes-over-london-next.${ext}
 appImage:
-  artifactName: ${productName}.${ext}
+  artifactName: skyes-over-london-next.${ext}
 
 afterPack: ./scripts/after-pack.js

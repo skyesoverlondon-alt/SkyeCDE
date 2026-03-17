@@ -92,9 +92,9 @@ export class TheiaDesktopFileServiceEndpoint implements BackendApplicationContri
         }
 
         const createOrUpdate = request.body.create;
-        const applicationName: string = request.body.applicationName || 'Theia IDE';
+        const applicationName: string = request.body.applicationName || 'Skyes Over London';
         const createUrlHandler: boolean = request.body.createUrlHandler !== false;
-        const uriScheme: string = request.body.uriScheme || 'theia';
+        const uriScheme: string = request.body.uriScheme || 'skye';
         const appId = applicationName.toLowerCase().replace(/\s+/g, '-');
 
         if (createOrUpdate) {
@@ -151,21 +151,21 @@ Terminal=false
 Type=Application
 Icon=${imagePath}
 StartupWMClass=${applicationName}
-Comment=IDE for cloud and desktop
+Comment=Royal neon creative command deck for cloud and desktop
 Categories=Development;IDE;`;
     }
 
     protected getDesktopURLFileContents(applicationName: string, appImagePath: string, imagePath: string, uriScheme: string = 'theia'): string {
         return `[Desktop Entry]
 Name=${applicationName} - URL Handler
-GenericName=Integrated Development Environment
+GenericName=Creative Command Deck
 Exec=${appImagePath} --open-url %U
 Terminal=false
 Type=Application
 NoDisplay=true
 Icon=${imagePath}
 MimeType=x-scheme-handler/${uriScheme};
-Comment=IDE for cloud and desktop
+Comment=Royal neon creative command deck for cloud and desktop
 Categories=Development;IDE;`;
     }
 }

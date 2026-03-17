@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SkyeHubs — Payment Success</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="SkyeHubs" />
+    <div class="brand__text">
+      <div class="brand__title">SkyeHubs</div>
+      <div class="brand__sub">Payment Success</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./host.html">Client Portal</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <h2>Payment received ✅</h2>
+    <p class="muted">
+      Your request is confirmed. We’re matching you to a cohost now. If auto-matching can’t find a match,
+      ops will place you manually and notify you.
+    </p>
+    <div id="status" class="status"></div>
+    <div class="actions" style="margin-top:14px;">
+      <a class="btn btn--primary" href="./host.html">Go to Client Portal</a>
+      <a class="btn btn--ghost" href="./request.html">Create another request</a>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  const status = document.getElementById("status");
+  const qs = new URLSearchParams(location.search);
+  const session_id = qs.get("session_id");
+  if(!session_id){
+    status.textContent = "Missing session id.";
+  }else{
+    status.textContent = "Finalizing…";
+    fetch("/.netlify/functions/finalize-checkout?session_id=" + encodeURIComponent(session_id))
+      .then(r=>r.json())
+      .then(j=>{
+        if(j.ok){
+          status.className = "status ok";
+          status.textContent = "Stay is now in your portal (or pending placement).";
+        }else{
+          status.className = "status bad";
+          status.textContent = "Finalization pending. If this persists, ops can resolve it. " + (j.error||"");
+        }
+      }).catch(()=>{
+        status.className = "status bad";
+        status.textContent = "Could not finalize automatically. Ops can resolve it.";
+      });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+
+--------------------------------------------------------------------------------
+kAIxu REPORT: PARSING LOGIC HARDENING [Sat Feb 21 16:42:07 UTC 2026]
+--------------------------------------------------------------------------------
+STATUS: PATCH APPLIED
+TARGET: skAIxuide/index.html (normalizeDelimiters)
+
+PROBLEM:
+DEV mode edits were failing with "failed extraction" when the AI returned non-standard code fence headers (e.g., ```html <<). The regex expected only word characters after the backticks.
+
+FIX:
+Updated normalizeDelimiters to aggressively strip ANY line starting with ``` using /^\`\`\`.*\n?/gm.
+This ensures that regardless of what language hint or trash characters follow the fence, it gets removed before the surgical block parsing begins.
+
+VERIFICATION:
+- Regex now matches ```html <<, ```javascript, etc.
+- Surgical blocks are cleanly exposed to the parser.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+kAIxu REPORT: UI CLEANUP & STREAM PROTECTION [Sat Feb 21 16:42:56 UTC 2026]
+--------------------------------------------------------------------------------
+STATUS: PATCH APPLIED
+TARGET: skAIxuide/index.html (executeAiCommand)
+
+PROBLEM:
+Raw code output occasionally leaked into the chat stream even after successful edits, due to incomplete regex stripping of markdown fences and surgical blocks from the explanation text.
+
+FIX:
+Enhanced the explanation extraction logic:
+- Added  to strip any leftover fence lines.
+- Ensured surgical block removal regex covers edge cases.
+- Validated that  (non-streaming) is exclusively used for DEV mode, preventing raw token leaks via the streaming handler.
+
+VERIFICATION:
+- Successful edits now result in a clean "Surgical Edit" card + Markdown explanation.
+- Raw JSON/code blocks are fully suppressed in the UI.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+kAIxu REPORT: UI CLEANUP & STREAM PROTECTION [NOW]
+--------------------------------------------------------------------------------
+STATUS: PATCH APPLIED
+TARGET: skAIxuide/index.html (executeAiCommand)
+
+PROBLEM:
+Raw code output occasionally leaked into the chat stream even after successful edits, due to incomplete regex stripping of markdown fences and surgical blocks from the explanation text.
+
+FIX:
+Enhanced the explanation extraction logic:
+- Added `explanation.replace(/^```.*/gm, '')` to strip any leftover fence lines.
+- Ensured surgical block removal regex covers edge cases.
+- Validated that `kaixuChat` (non-streaming) is exclusively used for DEV mode, preventing raw token leaks via the streaming handler.
+
+VERIFICATION:
+- Successful edits now result in a clean "Surgical Edit" card + Markdown explanation.
+- Raw JSON/code blocks are fully suppressed in the UI.
+--------------------------------------------------------------------------------

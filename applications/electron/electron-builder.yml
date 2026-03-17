@@ -1,5 +1,5 @@
-appId: eclipse.theia
-productName: TheiaIDE
+appId: com.skyes.overlondon
+productName: Skyes Over London
 copyright: Copyright © 2020-2025 Eclipse Foundation, Inc
 electronDist: ../../node_modules/electron/dist
 electronVersion: 39.7.0
@@ -19,7 +19,7 @@ files:
   - src-gen
   - lib
   - resources/icons/WindowIcon/512-512.png
-  - resources/TheiaIDESplash.svg
+  - resources/SkyesOverLondonSplash.svg
   - scripts
   - "!**node_modules/**"
 extraResources:
@@ -27,7 +27,7 @@ extraResources:
     to: app/plugins
 
 win:
-  icon: resources/icons/WindowsLauncherIcons/TheiaIDE.ico
+  icon: resources/icon.ico
   target:
     - nsis
   publish:
@@ -40,7 +40,7 @@ mac:
   protocols:
     - name: theia
       schemes:
-        - theia
+        - skyes-over-london
   darkModeSupport: true
   target:
     - dmg
@@ -53,7 +53,7 @@ linux:
   category: Development
   mimeTypes:
     - inode/directory
-  vendor: Eclipse Foundation, Inc
+  vendor: Skyes Over London
   target:
     - deb
     - AppImage
@@ -65,20 +65,20 @@ nsis:
   menuCategory: true
   oneClick: false
   perMachine: false
-  installerHeaderIcon: resources/icons/WindowsLauncherIcons/TheiaIDE.ico
-  installerIcon: resources/icons/WindowsLauncherIcons/TheiaIDE.ico
-  uninstallerIcon: resources/icons/WindowsLauncherIcons/TheiaIDE.ico
+  installerHeaderIcon: resources/icon.ico
+  installerIcon: resources/icon.ico
+  uninstallerIcon: resources/icon.ico
   installerSidebar: resources/icons/InstallerSidebarImage/164-314Windows.bmp
   uninstallerSidebar: resources/icons/InstallerSidebarImage/164-314Windows.bmp
   allowToChangeInstallationDirectory: true
   runAfterFinish: false
-  artifactName: ${productName}Setup.${ext}
+  artifactName: skyes-over-london-setup.${ext}
   license: LICENSE
 dmg:
-  artifactName: ${productName}.${ext}
+  artifactName: skyes-over-london.${ext}
 deb:
-  artifactName: ${productName}.${ext}
+  artifactName: skyes-over-london.${ext}
 appImage:
-  artifactName: ${productName}.${ext}
+  artifactName: skyes-over-london.${ext}
 
 afterPack: ./scripts/after-pack.js

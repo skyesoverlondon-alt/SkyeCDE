@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Noble Soul — Admin Intake Viewer</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="Noble Soul" />
+    <div class="brand__text">
+      <div class="brand__title">Noble Soul</div>
+      <div class="brand__sub">Admin — Intake Viewer</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./index.html">Caregiver Intake</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <h2>Admin Sign-in</h2>
+    <p class="muted">Use an admin email/password account (Firebase Auth). You must also configure Firestore rules to allow read for your admin UID.</p>
+    <div class="grid">
+      <label class="field">
+        <span>Email</span>
+        <input id="adminEmail" type="email" autocomplete="email" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="adminPass" type="password" autocomplete="current-password" />
+      </label>
+    </div>
+    <button id="adminLogin" class="btn btn--primary" type="button">Sign in</button>
+    <div id="adminStatus" class="status"></div>
+  </section>
+
+  <section class="card">
+    <h2>Submissions</h2>
+    <div class="actions">
+      <button id="refreshBtn" class="btn btn--ghost" type="button">Refresh</button>
+      <button id="exportBtn" class="btn btn--ghost" type="button">Export JSON</button>
+    </div>
+    <div id="list" class="review" style="margin-top:12px; max-height:520px; overflow:auto;"></div>
+  </section>
+
+  <section class="card">
+    <h2>Selected Submission</h2>
+    <div id="details" class="review"></div>
+<div class="actions" style="margin-top:10px;">
+  <button id="approveCaregiverBtn" class="btn btn--primary" type="button">Approve & Create Caregiver Account/Profile</button>
+  <div id="approveStatus" class="status"></div>
+</div>
+<div class="notice" style="margin-top:10px;">
+  This creates a caregiver Auth user (if needed), sets role, creates a matching profile, and marks the intake approved.
+</div>
+  </section>
+
+  <section class="card">
+    <h2>Admin — Create booking</h2>
+    <p class="muted">Create a booking and link it to an existing client account (client UID) and caregiver account (caregiver UID). This enables updates + messaging.</p>
+    <div class="grid">
+      <label class="field"><span>Client UID *</span><input id="bkClientUid" placeholder="Firebase Auth UID" /></label>
+      <label class="field"><span>Client name</span><input id="bkClientName" /></label>
+      <label class="field"><span>Client email</span><input id="bkClientEmail" type="email" /></label>
+      <label class="field"><span>Caregiver UID *</span><input id="bkCaregiverUid" placeholder="Firebase Auth UID" /></label>
+      <label class="field"><span>Caregiver name</span><input id="bkCaregiverName" /></label>
+      <label class="field"><span>Pet name *</span><input id="bkPetName" /></label>
+      <label class="field"><span>Pet type</span><input id="bkPetType" placeholder="Dog/Cat/Other" /></label>
+      <label class="field"><span>Start date *</span><input id="bkStart" type="date" /></label>
+      <label class="field"><span>End date *</span><input id="bkEnd" type="date" /></label>
+    </div>
+    <label class="field"><span>Booking notes</span><textarea id="bkNotes" rows="3" placeholder="Special instructions, meds, temperament, pickup info, etc."></textarea></label>
+    <div class="actions">
+      <button id="createBookingBtn" class="btn btn--primary" type="button">Create booking</button>
+      <div id="createBookingStatus" class="status"></div>
+    </div>
+    <div class="notice" style="margin-top:12px;">
+      Tip: To find a user UID, open Firebase Console → Authentication → Users.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Admin — Flag user role</h2>
+    <p class="muted">Set <code>/users/{uid}</code> to mark caregivers. Required for caregiver portal access.</p>
+    <div class="grid">
+      <label class="field"><span>User UID *</span><input id="roleUid" placeholder="Firebase Auth UID" /></label>
+      <label class="field"><span>Role *</span>
+        <select id="roleVal">
+          <option value="caregiver">caregiver</option>
+          <option value="client">client</option>
+          <option value="admin">admin</option>
+        </select>
+      </label>
+    </div>
+    <div class="actions">
+      <button id="setRoleBtn" class="btn btn--primary" type="button">Set role</button>
+      <div id="setRoleStatus" class="status"></div>
+    </div>
+  </section>
+</main>
+
+
+<script src="firebase-config.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  import { getFirestore, collection, getDocs, query, orderBy, addDoc, doc as docRef, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+  const $ = (id)=>document.getElementById(id);
+  const status = $("adminStatus");
+  const list = $("list");
+  const details = $("details");
+
+  function toast(msg, kind=""){
+    status.textContent = msg;
+    status.className = "status" + (kind ? (" " + kind):"");
+  }
+
+  function hasCfg(){
+    const c = window.NOBLE_SOUL_FIREBASE_CONFIG || {};
+    return c.apiKey && c.projectId && c.appId;
+  }
+
+  if(!hasCfg()){
+    toast("Missing Firebase config. Paste it in firebase-config.js, then reload.", "bad");
+    throw new Error("Missing config");
+  }
+
+  const app = initializeApp(window.NOBLE_SOUL_FIREBASE_CONFIG);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let cache = [];
+
+  async function loadAll(){
+    list.textContent = "Loading…";
+    details.textContent = "";
+    try{
+      const q = query(collection(db,"caregiver_intake"), orderBy("createdAt","desc"));
+      const snap = await getDocs(q);
+      cache = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderList();
+    }catch(e){
+      console.error(e);
+      list.textContent = "";
+      toast("Load failed. Check Firestore rules for admin read access. " + (e?.message||e), "bad");
+    }
+  }
+
+  function renderList(){
+    list.innerHTML = "";
+    if(!cache.length){
+      list.textContent = "No submissions found.";
+      return;
+    }
+    cache.forEach((row, idx)=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn";
+      btn.style.width = "100%";
+      btn.style.textAlign = "left";
+      btn.style.marginBottom = "10px";
+      const name = (row.firstName||"") + " " + (row.lastName||"");
+      const city = row.city || "";
+      const created = row.createdAt?.toDate ? row.createdAt.toDate().toISOString() : "";
+      btn.innerHTML = "<b>"+(name.trim()||row.id)+"</b><div style='color:rgba(255,255,255,.65); font-size:12px; margin-top:4px'>"+city+" • "+created+"</div>";
+      btn.addEventListener("click", ()=>showDetails(idx));
+      list.appendChild(btn);
+    });
+  }
+
+  function showDetails(idx){
+    const row = cache[idx];
+    details.innerHTML = "";
+    const pre = document.createElement("pre");
+    pre.textContent = JSON.stringify(row, null, 2);
+    details.appendChild(pre);
+
+    // Add upload links summary
+    const up = row.uploads || {};
+    const blocks = document.createElement("div");
+    blocks.style.marginTop = "12px";
+    blocks.style.display = "grid";
+    blocks.style.gap = "10px";
+    Object.entries(up).forEach(([bucket, arr])=>{
+      const box = document.createElement("div");
+      box.style.padding = "10px";
+      box.style.border = "1px solid rgba(255,255,255,0.12)";
+      box.style.borderRadius = "14px";
+      box.style.background = "rgba(0,0,0,0.20)";
+      const title = document.createElement("b");
+      title.textContent = bucket;
+      box.appendChild(title);
+      const ul = document.createElement("div");
+      ul.style.marginTop = "8px";
+      (arr||[]).forEach(file=>{
+        const a = document.createElement("a");
+        a.href = file.url;
+        a.target = "_blank";
+        a.rel = "noreferrer";
+        a.textContent = "• " + (file.name || file.path);
+        a.style.display = "block";
+        a.style.margin = "6px 0";
+        ul.appendChild(a);
+      });
+      box.appendChild(ul);
+      blocks.appendChild(box);
+    });
+    details.appendChild(blocks);
+  }
+
+  $("adminLogin").addEventListener("click", async ()=>{
+    const email = $("adminEmail").value.trim();
+    const pass = $("adminPass").value;
+    if(!email || !pass){
+      toast("Enter email + password.", "bad");
+      return;
+    }
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+      toast("Signed in ✅ Loading submissions…", "ok");
+      await loadAll();
+    }catch(e){
+      console.error(e);
+      toast("Sign-in failed: " + (e?.message||e), "bad");
+    }
+  });
+
+  $("refreshBtn").addEventListener("click", loadAll);
+
+  $("exportBtn").addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(cache, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "noble-soul-intake-export.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  
+  // Create booking
+  const createStatus = document.getElementById("createBookingStatus");
+  function toast2(el,msg,kind=""){
+    el.textContent = msg||"";
+    el.className = "status" + (kind ? (" " + kind):"");
+  }
+
+  document.getElementById("createBookingBtn")?.addEventListener("click", async ()=>{
+    toast2(createStatus, "", "");
+    const clientUid = document.getElementById("bkClientUid").value.trim();
+    const caregiverUid = document.getElementById("bkCaregiverUid").value.trim();
+    const petName = document.getElementById("bkPetName").value.trim();
+    const start = document.getElementById("bkStart").value;
+    const end = document.getElementById("bkEnd").value;
+
+    if(!clientUid || !caregiverUid || !petName || !start || !end){
+      toast2(createStatus, "Missing required fields.", "bad");
+      return;
+    }
+
+    const payload = {
+      clientUid,
+      clientName: document.getElementById("bkClientName").value.trim(),
+      clientEmail: document.getElementById("bkClientEmail").value.trim(),
+      caregiverUid,
+      caregiverName: document.getElementById("bkCaregiverName").value.trim(),
+      petName,
+      petType: document.getElementById("bkPetType").value.trim(),
+      startDate: start,
+      endDate: end,
+      notes: document.getElementById("bkNotes").value.trim(),
+      createdAt: serverTimestamp(),
+      status: "active"
+    };
+
+    try{
+      await addDoc(collection(db, "bookings"), payload);
+      toast2(createStatus, "Booking created ✅", "ok");
+    }catch(e){
+      console.error(e);
+      toast2(createStatus, "Create failed: " + (e?.message||e), "bad");
+    }
+  });
+
+  // Set user role (/users/{uid})
+  const roleStatus = document.getElementById("setRoleStatus");
+  document.getElementById("setRoleBtn")?.addEventListener("click", async ()=>{
+    toast2(roleStatus, "", "");
+    const uid = document.getElementById("roleUid").value.trim();
+    const role = document.getElementById("roleVal").value;
+    if(!uid){ toast2(roleStatus, "Enter a UID.", "bad"); return; }
+    try{
+      await setDoc(docRef(db, "users", uid), { role, updatedAt: serverTimestamp() }, { merge:true });
+      toast2(roleStatus, "Role saved ✅", "ok");
+    }catch(e){
+      console.error(e);
+      toast2(roleStatus, "Save failed: " + (e?.message||e), "bad");
+    }
+  });
+
+
+  // Approve intake -> create caregiver account/profile
+  let selectedSubmissionId = null;
+
+  function showApprove(msg, kind=""){
+    const el = document.getElementById("approveStatus");
+    el.textContent = msg || "";
+    el.className = "status" + (kind ? (" " + kind) : "");
+  }
+
+  document.getElementById("approveCaregiverBtn")?.addEventListener("click", async ()=>{
+    showApprove("", "");
+    if(!selectedSubmissionId){
+      showApprove("Select a submission first.", "bad");
+      return;
+    }
+    try{
+      showApprove("Approving…", "");
+      const resp = await fetch("/.netlify/functions/approve-caregiver", {
+        method: "POST",
+        headers: {"content-type":"application/json"},
+        body: JSON.stringify({ submissionId: selectedSubmissionId })
+      });
+      const j = await resp.json();
+      if(!j.ok) throw new Error(j.error || "approve_failed");
+      const msg = j.tempPassword
+        ? `Approved ✅ UID: ${j.uid}. TEMP PASSWORD (send to caregiver): ${j.tempPassword}`
+        : `Approved ✅ UID: ${j.uid}. (User already existed; no new password created)`;
+      showApprove(msg, "ok");
+    }catch(e){
+      console.error(e);
+      showApprove("Approve failed: " + (e?.message||e), "bad");
+    }
+  });
+
+details.textContent = "Sign in to view submissions.";
+</script>
+</body>
+</html>

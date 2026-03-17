@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOL Mobile Detailing Network — Detailer Portal</title>
+  <meta name="theme-color" content="#5b21b6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="brand__logo" src="assets/logo.svg" alt="SOL Mobile Detailing Network" />
+    <div class="brand__text">
+      <div class="brand__title">SOL Mobile Detailing Network</div>
+      <div class="brand__sub">Detailer Portal — Upload Updates</div>
+    </div>
+  </div>
+  <div class="topbar__actions">
+    <a class="btn btn--ghost" href="./portal.html">Portal Home</a>
+    <button id="signOutBtn" class="btn btn--ghost" type="button">Sign out</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card" id="authCard">
+    <h2>Detailer sign in</h2>
+    <p class="muted">Use your detailer account email/password (created after approval or by ops).</p>
+    <div class="grid">
+      <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
+      <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
+    </div>
+    <div class="actions">
+      <button id="signInBtn" class="btn btn--primary" type="button">Sign in</button>
+      <button id="signUpBtn" class="btn btn--ghost" type="button">Create account</button>
+      <div id="authStatus" class="status"></div>
+    </div>
+    <div class="notice" style="margin-top:12px;">
+      <b>Important:</b> Only users flagged as <code>role: detailer</code> can access detailer bookings (see setup guide).
+    </div>
+  </section>
+
+  <section class="card" id="mainCard" style="display:none;">
+    <h2>Your assigned jobs</h2>
+    <p class="muted">Select a booking, then upload job updates (photos + notes). Clients will see them immediately.</p>
+    <div class="grid">
+      <div>
+        <div id="bookingList" class="review" style="max-height:520px; overflow:auto;"></div>
+      </div>
+      <div>
+        <div class="review" id="bookingDetails"></div>
+
+        <h2 style="margin-top:14px;">Post service update</h2>
+        <label class="field">
+          <span>Update note *</span>
+          <textarea id="updateNote" rows="4" placeholder="Example: Completed exterior wash, dressed tires, vacuumed interior.. Ate full dinner. Calm energy."></textarea>
+        </label>
+        <label class="field">
+          <span>Photos (optional but encouraged)</span>
+          <input id="updatePhotos" type="file" accept="image/*" multiple />
+          <small>Upload 1–5 photos per update is a good rhythm.</small>
+        </label>
+        <div class="actions">
+          <button id="postUpdateBtn" class="btn btn--primary" type="button">Post update</button>
+          <div id="updateStatus" class="status"></div>
+        </div>
+
+        <h2 style="margin-top:14px;">Recent job updates</h2>
+        <div id="job updates" class="review" style="max-height:320px; overflow:auto;"></div>
+
+        <h2 style="margin-top:14px;">Messages</h2>
+        <div id="messages" class="review" style="max-height:220px; overflow:auto;"></div>
+        <div class="actions" style="margin-top:10px;">
+          <input id="msgText" class="btn" style="flex:1; min-width:220px;" placeholder="Message the client…" />
+          <button id="sendMsgBtn" class="btn btn--primary" type="button">Send</button>
+        </div>
+        <div id="msgStatus" class="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card fineprint">
+    <p class="muted">
+      Keep job updates factual and respectful. No medical diagnoses. Escapes/injuries must be reported to ops immediately.
+    </p>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script type="module" src="detailer.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+</body>
+</html>

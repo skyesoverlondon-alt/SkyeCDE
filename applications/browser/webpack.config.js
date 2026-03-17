@@ -8,6 +8,13 @@ const nodeConfig = require('./gen-webpack.node.config.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+const productExtensionPath = path.resolve(__dirname, '..', '..', 'theia-extensions', 'product');
+
+const benignWarnings = [
+    warning => /simpleWorker\.js/.test(warning.module?.resource || '') && /the request of a dependency is an expression/.test(warning.message || ''),
+    warning => /editorSimpleWorker\.js/.test(warning.module?.resource || '') && /the request of a dependency is an expression/.test(warning.message || '')
+];
+
 /**
  * Expose bundled modules on window.theia.moduleName namespace, e.g.
  * window['theia']['@theia/core/lib/common/uri'].
@@ -30,6 +37,18 @@ configs[0].plugins.push(
         ]
     })
 );
+
+configs.forEach(config => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        'theia-ide-product-ext': productExtensionPath
+    };
+    config.ignoreWarnings = [
+        ...(config.ignoreWarnings || []),
+        ...benignWarnings
+    ];
+});
 
 module.exports = [
     ...configs,

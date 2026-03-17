@@ -13,20 +13,24 @@ import { Command, CommandContribution, CommandRegistry } from '@theia/core/lib/c
 import { MenuContribution, MenuModelRegistry, MenuPath } from '@theia/core/lib/common/menu';
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
 
+const PRODUCT_SOURCE_URL = 'https://github.com/SkyeCDE/SkyeCDE';
+const PRODUCT_ISSUES_URL = `${PRODUCT_SOURCE_URL}/issues`;
+const PRODUCT_DOCS_URL = `${PRODUCT_SOURCE_URL}#readme`;
+
 export namespace TheiaIDEMenus {
     export const THEIA_IDE_HELP: MenuPath = [...CommonMenus.HELP, 'theia-ide'];
 }
 export namespace TheiaIDECommands {
-    export const CATEGORY = 'TheiaIDE';
+    export const CATEGORY = 'Skyes Over London';
     export const REPORT_ISSUE: Command = {
         id: 'theia-ide:report-issue',
         category: CATEGORY,
-        label: 'Report Issue'
+        label: 'Platform Issues'
     };
     export const DOCUMENTATION: Command = {
         id: 'theia-ide:documentation',
         category: CATEGORY,
-        label: 'Documentation'
+        label: 'Platform Docs'
     };
 }
 
@@ -36,8 +40,8 @@ export class TheiaIDEContribution implements CommandContribution, MenuContributi
     @inject(WindowService)
     protected readonly windowService: WindowService;
 
-    static REPORT_ISSUE_URL = 'https://github.com/eclipse-theia/theia-ide/issues/new?assignees=&labels=&template=bug_report.md';
-    static DOCUMENTATION_URL = 'https://theia-ide.org/docs/user_getting_started/';
+    static REPORT_ISSUE_URL = PRODUCT_ISSUES_URL;
+    static DOCUMENTATION_URL = PRODUCT_DOCS_URL;
 
     registerCommands(commandRegistry: CommandRegistry): void {
         commandRegistry.registerCommand(TheiaIDECommands.REPORT_ISSUE, {

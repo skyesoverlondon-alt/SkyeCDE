@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="446" height="276" viewBox="0 0 446 276" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="24" y1="18" x2="410" y2="258" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#07030F"/>
+      <stop offset="0.55" stop-color="#180827"/>
+      <stop offset="1" stop-color="#05040B"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(336 86) rotate(127) scale(144 124)">
+      <stop stop-color="#8D3DFF" stop-opacity="0.76"/>
+      <stop offset="1" stop-color="#8D3DFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(110 208) rotate(42) scale(120 92)">
+      <stop stop-color="#FFD86B" stop-opacity="0.48"/>
+      <stop offset="1" stop-color="#FFD86B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="446" height="276" rx="26" fill="url(#bg)"/>
+  <circle cx="336" cy="86" r="70" fill="url(#glowA)"/>
+  <circle cx="110" cy="208" r="54" fill="url(#glowB)"/>
+  <g opacity="0.18">
+    <path d="M0 214H446" stroke="#8D3DFF"/>
+    <path d="M0 242H446" stroke="#8D3DFF"/>
+    <path d="M112 0V276" stroke="#FFD86B"/>
+    <path d="M148 0V276" stroke="#FFD86B"/>
+  </g>
+  <text x="42" y="56" fill="#FFD86B" font-size="13" font-family="Segoe UI, Arial, sans-serif" letter-spacing="3">ROYAL NEON COMMAND DECK</text>
+  <text x="42" y="106" fill="#FBF5FF" font-size="38" font-weight="700" font-family="Segoe UI, Arial, sans-serif">Skyes Over London</text>
+  <text x="42" y="134" fill="#DBCDEA" font-size="14" font-family="Segoe UI, Arial, sans-serif">Floating creative workspace for design, media, automation and AI.</text>
+  <image href="SKYESOVERLONDONDIETYLOGO.png" x="228" y="56" width="174" height="116" preserveAspectRatio="xMidYMid meet"/>
+  <text x="228" y="218" fill="#FFD86B" font-size="12" font-family="Segoe UI, Arial, sans-serif" letter-spacing="2">PULSING BRAND MARK</text>
+</svg>

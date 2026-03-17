@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/eclipse-theia/theia-ide.git"
+    "url": "https://github.com/SkyeCDE/SkyeCDE.git"
   },
   "bugs": {
-    "url": "https://github.com/eclipse-theia/theia-ide/issues"
+    "url": "https://github.com/SkyeCDE/SkyeCDE/issues"
   },
-  "homepage": "https://github.com/eclipse-theia/theia-ide",
+  "homepage": "https://github.com/SkyeCDE/SkyeCDE",
   "files": [
     "lib",
     "src"

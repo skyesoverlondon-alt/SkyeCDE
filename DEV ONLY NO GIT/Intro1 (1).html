@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyes Over London - Premium Cinematic</title>
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --bg-base: #030407; /* Absolute midnight */
+            --gold-accent: #ffcc00;
+            --purple-glow: #aa00ff;
+            --text-light: #f5f7fa;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-base);
+            overflow: hidden;
+            font-family: "Didot", "Bodoni MT", "Times New Roman", serif;
+            color: var(--text-light);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- STAGE 1: ATMOSPHERE & WEATHER --- */
+        #cinematic-stage {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1500px;
+            background: radial-gradient(circle at 50% 100%, #0a0e17 0%, #030407 80%);
+            /* Smooth incredibly slow push inward */
+            animation: masterCameraPush 25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes masterCameraPush {
+            0% { transform: scale(1.0); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* Canvas Layers */
+        canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        #rain-layer { z-index: 10; opacity: 0.6; }
+        #lightning-layer { z-index: 5; mix-blend-mode: screen; }
+        #lens-layer { z-index: 45; opacity: 0.3; filter: blur(2px); mix-blend-mode: overlay; }
+
+        /* Atmospheric Fog */
+        .ambient-fog {
+            position: absolute;
+            width: 200vw; height: 150vh;
+            top: -25vh; left: -50vw;
+            background: radial-gradient(ellipse at center, rgba(16, 24, 40, 0.3) 0%, transparent 60%);
+            z-index: 8;
+            filter: blur(60px);
+            opacity: 0.5;
+            pointer-events: none;
+            animation: fogDrift 30s ease-in-out infinite alternate;
+        }
+
+        .ambient-fog.secondary {
+            background: radial-gradient(ellipse at center, rgba(30, 15, 45, 0.15) 0%, transparent 50%);
+            z-index: 9;
+            animation: fogDrift 40s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes fogDrift {
+            0% { transform: translateX(-10%) scale(1); }
+            100% { transform: translateX(10%) scale(1.1); }
+        }
+
+        /* Cinematic Overlays */
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, #000000 110%);
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        /* --- TYPOGRAPHY & BRANDING --- */
+        .branding-container {
+            position: relative;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .subtitle {
+            font-family: "Montserrat", sans-serif;
+            font-size: clamp(10px, 0.8vw, 14px);
+            letter-spacing: 0.6em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .main-title {
+            position: relative;
+            font-size: clamp(40px, 6vw, 100px);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin: 20px 0 0 0;
+            opacity: 0;
+            color: #ffffff;
+            text-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.5),
+                0 4px 30px rgba(170, 0, 255, 0.4);
+            transform: scale(0.95) translateZ(-50px);
+        }
+
+        #company-logo {
+            width: 30vw;
+            max-width: 480px;
+            min-width: 250px;
+            height: auto;
+            margin-top: 5vh;
+            opacity: 0;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.1));
+            transform: translateY(20px);
+        }
+
+        .tagline {
+            font-family: "Montserrat", sans-serif;
+            font-size: clamp(12px, 1.2vw, 18px);
+            letter-spacing: 0.7em;
+            text-transform: uppercase;
+            color: #e6e6ff;
+            text-shadow: 0 0 20px var(--purple-glow);
+            opacity: 0;
+            margin-top: 6vh;
+            transform: translateY(10px);
+        }
+
+        /* --- STAGE 2: KAIXU REVEAL --- */
+        #post-intro-stage {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            z-index: 60; 
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #post-intro-stage.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .architect-text {
+            font-family: "Didot", serif;
+            font-size: clamp(30px, 4.5vw, 80px);
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(170, 0, 255, 0.6);
+            opacity: 0;
+            transform: translateY(20px);
+            margin-bottom: 2vh;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .potential-text {
+            font-family: "Montserrat", sans-serif;
+            font-size: clamp(14px, 1.8vw, 28px);
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            text-align: center;
+        }
+
+        #kaixu-logo {
+            width: 50vw;
+            max-width: 900px;
+            min-width: 400px;
+            height: auto;
+            margin-top: 8vh;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* --- STAGE 3: THE VOID / NEXT SEQUENCE --- */
+        #void-stage {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000000;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        #void-stage.active { opacity: 1; pointer-events: all; }
+
+        .void-text {
+            font-family: "Montserrat", sans-serif;
+            color: #444;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        /* --- CONTROLS --- */
+        #skip-btn {
+            position: absolute;
+            bottom: 30px; right: 30px;
+            z-index: 200;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #888;
+            font-family: "Montserrat", sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        #skip-btn:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- CHOREOGRAPHY ANIMATION CLASSES --- */
+        .reveal-subtitle { animation: fadeBlurIn 3s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        .hide-subtitle { animation: fadeOutUp 2s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        
+        .reveal-title { animation: explosiveReveal 4s cubic-bezier(0.1, 1, 0.2, 1) forwards; }
+        .reveal-logo { animation: floatReveal 4s 0.5s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        .reveal-tagline { animation: fadeBlurIn 3s 1.5s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+
+        .reveal-architect { animation: fadeBlurIn 3s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        .reveal-potential { animation: fadeBlurIn 3s 1s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        .reveal-kaixu { animation: intenseGlowReveal 4s 2s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+
+        /* The Ultimate Vacuum Collapse */
+        .implosion-effect { animation: cinematicImplode 1.2s cubic-bezier(0.8, 0, 0.2, 1) forwards; }
+
+        /* --- KEYFRAMES --- */
+        @keyframes fadeBlurIn {
+            0% { opacity: 0; transform: translateY(15px); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0px); }
+        }
+
+        @keyframes fadeOutUp {
+            0% { opacity: 1; transform: translateY(0); filter: blur(0px); }
+            100% { opacity: 0; transform: translateY(-15px); filter: blur(5px); }
+        }
+
+        @keyframes explosiveReveal {
+            0% { opacity: 0; transform: scale(0.85) translateZ(-100px); filter: blur(20px) brightness(3); letter-spacing: 0.05em;}
+            20% { opacity: 1; filter: blur(0px) brightness(1.2); }
+            100% { opacity: 1; transform: scale(1) translateZ(0); filter: blur(0px) brightness(1); letter-spacing: 0.1em; }
+        }
+
+        @keyframes floatReveal {
+            0% { opacity: 0; transform: translateY(30px); filter: blur(15px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0px); }
+        }
+
+        @keyframes intenseGlowReveal {
+            0% { opacity: 0; transform: scale(0.9); filter: blur(20px) drop-shadow(0 0 0px rgba(255,204,0,0)); }
+            50% { filter: blur(0px) drop-shadow(0 0 40px rgba(255,204,0,0.4)); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0px) drop-shadow(0 0 20px rgba(255,204,0,0.8)); }
+        }
+
+        @keyframes cinematicImplode {
+            0% { transform: scale(1); filter: blur(0px) brightness(1) contrast(1); opacity: 1; }
+            30% { transform: scale(1.03); filter: blur(1px) brightness(1.5) contrast(1.2); opacity: 1; }
+            100% { transform: scale(0.01); filter: blur(40px) brightness(5) contrast(2); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STAGE 1: SKYES OVER LONDON -->
+    <div id="cinematic-stage">
+        <canvas id="lightning-layer"></canvas>
+        <canvas id="rain-layer"></canvas>
+        <canvas id="lens-layer"></canvas>
+        
+        <div class="ambient-fog"></div>
+        <div class="ambient-fog secondary"></div>
+        <div class="vignette"></div>
+
+        <div class="branding-container">
+            <div class="subtitle" id="subtitle">An Intelligence Ecosystem</div>
+            <h1 class="main-title" id="main-title">Skyes Over London</h1>
+            <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" id="company-logo" alt="Skyes Over London" />
+            <div class="tagline" id="tagline">Eminence In Motion</div>
+        </div>
+
+        <button id="skip-btn">Skip Cinematic</button>
+    </div>
+
+    <!-- STAGE 2: KAIXU THE ARCHITECT -->
+    <div id="post-intro-stage">
+        <h2 class="architect-text" id="architect-text">You are the ultimate architect.</h2>
+        <div class="potential-text" id="potential-text">Let's unleash your sole potential.</div>
+        <img src="https://cdn1.sharemyimage.com/2026/02/17/Logo-2-1.png" id="kaixu-logo" alt="Kaixu Logo" />
+    </div>
+
+    <!-- STAGE 3: TRANSITION -->
+    <div id="void-stage">
+        <div class="void-text">[ Next Sequence Revealed ]</div>
+    </div>
+
+    <script>
+        // --- AUDIO ENGINE ---
+        const ambientThunder = new Audio('https://actions.google.com/sounds/v1/weather/rolling_thunder.ogg');
+        ambientThunder.volume = 0.4;
+        ambientThunder.loop = true;
+
+        const strikeThunder = new Audio('https://actions.google.com/sounds/v1/weather/thunder_crack.ogg');
+        strikeThunder.volume = 0.6; 
+
+        // --- CANVAS SETUP ---
+        const rainCanvas = document.getElementById('rain-layer');
+        const rainCtx = rainCanvas.getContext('2d');
+        const lightCanvas = document.getElementById('lightning-layer');
+        const lightCtx = lightCanvas.getContext('2d');
+        const lensCanvas = document.getElementById('lens-layer');
+        const lensCtx = lensCanvas.getContext('2d');
+
+        let width, height;
+
+        function resizeCanvases() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            rainCanvas.width = width; rainCanvas.height = height;
+            lightCanvas.width = width; lightCanvas.height = height;
+            lensCanvas.width = width; lensCanvas.height = height;
+            initRain();
+            drawLensDrops();
+        }
+
+        // --- 1. LENS WATER DROPS (Static overlay) ---
+        function drawLensDrops() {
+            lensCtx.clearRect(0, 0, width, height);
+            for(let i=0; i<30; i++) {
+                let x = Math.random() * width;
+                let y = Math.random() * height;
+                let r = Math.random() * 40 + 10;
+                let opacity = Math.random() * 0.15 + 0.05;
+                
+                let gradient = lensCtx.createRadialGradient(x, y, 0, x, y, r);
+                gradient.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
+                gradient.addColorStop(0.8, `rgba(200, 220, 255, ${opacity * 0.5})`);
+                gradient.addColorStop(1, 'transparent');
+                
+                lensCtx.fillStyle = gradient;
+                lensCtx.beginPath();
+                lensCtx.arc(x, y, r, 0, Math.PI * 2);
+                lensCtx.fill();
+            }
+        }
+
+        // --- 2. PREMIUM PARALLAX RAIN ---
+        let drops = [];
+        function initRain() {
+            drops = [];
+            const dropCount = Math.floor(width * 0.5); 
+            for(let i = 0; i < dropCount; i++) {
+                const z = Math.random(); 
+                drops.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    z: z,
+                    len: (Math.random() * 30 + 15) * (z + 0.5),
+                    speed: (Math.random() * 20 + 15) * (z + 0.5),
+                    opacity: (Math.random() * 0.2 + 0.05) * (z + 0.5),
+                    wind: (Math.random() * 2 + 1)
+                });
+            }
+        }
+
+        function renderRain() {
+            rainCtx.clearRect(0, 0, width, height);
+            rainCtx.lineCap = 'round';
+            
+            for(let i = 0; i < drops.length; i++) {
+                let d = drops[i];
+                rainCtx.beginPath();
+                rainCtx.moveTo(d.x, d.y);
+                rainCtx.lineTo(d.x + d.wind, d.y + d.len);
+                rainCtx.strokeStyle = `rgba(180, 200, 240, ${d.opacity})`;
+                rainCtx.lineWidth = d.z * 1.5 + 0.5;
+                rainCtx.stroke();
+
+                d.y += d.speed;
+                d.x += d.wind;
+
+                if(d.y > height) {
+                    d.y = -d.len;
+                    d.x = Math.random() * width;
+                }
+            }
+            requestAnimationFrame(renderRain);
+        }
+
+        // --- 3. FRACTAL LIGHTNING ENGINE ---
+        function drawLightningBranch(x1, y1, x2, y2, thickness, opacity) {
+            lightCtx.beginPath();
+            lightCtx.moveTo(x1, y1);
+            lightCtx.lineTo(x2, y2);
+            lightCtx.lineWidth = thickness;
+            lightCtx.strokeStyle = `rgba(230, 240, 255, ${opacity})`;
+            lightCtx.shadowBlur = thickness * 5;
+            lightCtx.shadowColor = '#aa00ff'; // Purple hue to the electrical discharge
+            lightCtx.stroke();
+        }
+
+        function createFractalBolt(startX, startY, endY, isMainBolt = true) {
+            let currX = startX;
+            let currY = startY;
+            let segments = isMainBolt ? (Math.floor(Math.random() * 10) + 15) : (Math.floor(Math.random() * 5) + 5);
+            let segmentLength = (endY - startY) / segments;
+            
+            let currentThickness = isMainBolt ? (Math.random() * 3 + 3) : (Math.random() * 1.5 + 0.5);
+            let currentOpacity = isMainBolt ? 1 : 0.6;
+
+            for (let i = 0; i < segments; i++) {
+                let nextY = currY + segmentLength;
+                let nextX = currX + (Math.random() - 0.5) * (isMainBolt ? 100 : 50);
+                
+                drawLightningBranch(currX, currY, nextX, nextY, currentThickness, currentOpacity);
+                
+                // Branching logic
+                if (Math.random() > 0.7 && currentThickness > 1) {
+                    createFractalBolt(currX, currY, currY + (Math.random() * 200 + 100), false);
+                }
+                
+                currX = nextX;
+                currY = nextY;
+                currentThickness *= 0.9; // Taper off
+            }
+        }
+
+        function triggerStrike(intensity, isMassive = false) {
+            lightCtx.clearRect(0, 0, width, height);
+            
+            // Atmospheric sky flash
+            lightCtx.fillStyle = `rgba(170, 0, 255, ${intensity * 0.15})`;
+            lightCtx.fillRect(0, 0, width, height);
+            lightCtx.fillStyle = `rgba(255, 255, 255, ${intensity * 0.3})`;
+            lightCtx.fillRect(0, 0, width, height);
+
+            // Draw actual bolts
+            let numBolts = isMassive ? (Math.floor(Math.random() * 3) + 2) : 1;
+            for(let i=0; i<numBolts; i++) {
+                let startX = (Math.random() * 0.8 + 0.1) * width;
+                createFractalBolt(startX, -10, height * (Math.random() * 0.5 + 0.5), true);
+            }
+
+            // Quick fade out of the bolt
+            setTimeout(() => {
+                lightCtx.clearRect(0, 0, width, height);
+                // Lingering sky glow
+                lightCtx.fillStyle = `rgba(170, 0, 255, ${intensity * 0.05})`;
+                lightCtx.fillRect(0, 0, width, height);
+                setTimeout(() => lightCtx.clearRect(0, 0, width, height), 100);
+            }, 50);
+        }
+
+        // Init Canvases
+        window.addEventListener('resize', resizeCanvases);
+        resizeCanvases();
+        renderRain();
+
+        // --- CHOREOGRAPHY (THE TIMELINE) ---
+        const stage1 = document.getElementById('cinematic-stage');
+        const stage2 = document.getElementById('post-intro-stage');
+        const stage3 = document.getElementById('void-stage');
+        
+        const subtitle = document.getElementById('subtitle');
+        const mainTitle = document.getElementById('main-title');
+        const logo1 = document.getElementById('company-logo');
+        const tagline = document.getElementById('tagline');
+        
+        const architect = document.getElementById('architect-text');
+        const potential = document.getElementById('potential-text');
+        const logo2 = document.getElementById('kaixu-logo');
+        const skipBtn = document.getElementById('skip-btn');
+
+        let sequenceSkipped = false;
+
+        function runTimeline() {
+            // Attempt ambient audio
+            ambientThunder.play().catch(e => console.log("User interaction required for audio."));
+
+            // Show skip button slowly
+            setTimeout(() => { skipBtn.style.opacity = '0.5'; }, 2000);
+
+            // 1. Initial distant rumble / Subtitle appears
+            setTimeout(() => { triggerStrike(0.4, false); }, 500);
+            setTimeout(() => { subtitle.classList.add('reveal-subtitle'); }, 800);
+            setTimeout(() => { triggerStrike(0.2, false); }, 1200);
+
+            // 2. Subtitle hides, preparing for main reveal
+            setTimeout(() => { subtitle.classList.replace('reveal-subtitle', 'hide-subtitle'); }, 3800);
+
+            // 3. MASSIVE STRIKE + MAIN REVEAL
+            setTimeout(() => {
+                triggerStrike(1.0, true);
+                strikeThunder.play().catch(e=>e);
+                
+                mainTitle.classList.add('reveal-title');
+                logo1.classList.add('reveal-logo');
+                tagline.classList.add('reveal-tagline');
+
+                // Aftershocks
+                setTimeout(() => triggerStrike(0.5, true), 150);
+                setTimeout(() => triggerStrike(0.3, false), 400);
+
+            }, 5000);
+
+            // 4. Distant lingering strike
+            setTimeout(() => triggerStrike(0.4, false), 9000);
+
+            // 5. Transition to Stage 2 (Kaixu Reveal)
+            setTimeout(() => { if(!sequenceSkipped) executeTransition(); }, 12000);
+        }
+
+        function executeTransition() {
+            sequenceSkipped = true;
+            
+            // Fade audio
+            let fade = setInterval(() => {
+                if(ambientThunder.volume > 0.05) ambientThunder.volume -= 0.05;
+                else { ambientThunder.pause(); clearInterval(fade); }
+            }, 200);
+
+            // Fade out Stage 1
+            stage1.style.transition = 'opacity 2s ease';
+            stage1.style.opacity = '0';
+
+            // Bring in Stage 2
+            setTimeout(() => {
+                stage1.style.display = 'none';
+                stage2.classList.add('active');
+
+                // Trigger Stage 2 animations
+                architect.classList.add('reveal-architect');
+                potential.classList.add('reveal-potential');
+                logo2.classList.add('reveal-kaixu');
+
+                // 6. The Implosion / Vacuum
+                setTimeout(() => {
+                    stage2.classList.add('implosion-effect');
+                    
+                    // 7. Final Void
+                    setTimeout(() => {
+                        stage3.classList.add('active');
+                        stage2.style.display = 'none';
+                    }, 1200);
+
+                }, 8000); // Wait 8 seconds reading Kaixu before imploding
+
+            }, 2000);
+        }
+
+        skipBtn.addEventListener('click', executeTransition);
+
+        // Boot
+        window.onload = () => {
+            setTimeout(runTimeline, 300);
+        };
+    </script>
+</body>
+</html>

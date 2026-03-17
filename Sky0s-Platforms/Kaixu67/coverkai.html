@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>coverKai — AI Cover Letter · kAIxU</title>
+<style>
+  :root{--bg:#0d0d12;--surface:#14141c;--card:#1a1a26;--border:rgba(255,255,255,.08);--muted:#7a7a9a;--text:#f0f0f8;--accent:#c8a84b;--green:#4caf82;--red:#e05c5c;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05040a;color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+  
+  
+  header{background:rgba(3,3,7,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .logo{font-size:13px;font-weight:700;color:var(--accent);margin-right:8px}
+  .nav-link{font-size:11px;padding:4px 10px;border-radius:16px;text-decoration:none;background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border);transition:color .15s}
+  .nav-link:hover{color:#f2f0ff}
+  .nav-link.active{background:rgba(200,168,75,.2);color:var(--accent);border-color:rgba(200,168,75,.4)}
+  .health-dot{width:7px;height:7px;border-radius:50%;background:#444;margin-left:auto;flex-shrink:0}
+  .health-dot.ok{background:var(--green)}.health-dot.err{background:var(--red)}
+  main{flex:1;max-width:960px;width:100%;margin:0 auto;padding:28px 16px;display:grid;grid-template-columns:340px 1fr;gap:20px}
+  @media(max-width:700px){main{grid-template-columns:1fr}}
+  h1{font-size:20px;font-weight:700;margin-bottom:4px}
+  .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+  .panel{background:rgba(12,10,28,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px}
+  label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px}
+  input,textarea,select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:9px 12px;outline:none;font-family:inherit;resize:vertical}
+  input:focus,textarea:focus{border-color:rgba(200,168,75,.5)}
+  .btn-primary{background:var(--accent);color:#0d0d12;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;width:100%;transition:opacity .15s}
+  .btn-primary:hover{opacity:.85}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed}
+  .output-panel{display:flex;flex-direction:column;gap:10px}
+  .out-header{display:flex;align-items:center;justify-content:space-between}
+  .out-header h2{font-size:14px;font-weight:600;color:var(--muted)}
+  .out-actions{display:flex;gap:8px}
+  .btn-sm{font-size:11px;padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;transition:color .15s}
+  .btn-sm:hover{color:var(--text)}
+  .output-box{flex:1;min-height:460px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;overflow-y:auto}
+  .output-box.placeholder{color:var(--muted);font-style:italic}
+  .status{font-size:12px;color:var(--muted);text-align:center}
+  .status.err{color:var(--red)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spinner{width:14px;height:14px;border:2px solid rgba(200,168,75,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:5px}
+  @media print{header,#inputs,#statusEl{display:none}main{display:block;padding:0} .output-box{border:none;min-height:unset;font-size:12pt}}
+
+  /* ─── holographic boot background ─── */
+  .boot-sequence{position:fixed;inset:0;z-index:-1;background:#030307;display:flex;flex-direction:column;align-items:center;justify-content:center;perspective:1000px;overflow:hidden;pointer-events:none}
+  .bg-stars{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg-star{position:absolute;border-radius:50%;background:#fff;opacity:0;animation:bg-twinkle var(--twinkle-dur) var(--twinkle-del) ease-in-out infinite alternate,bg-drift var(--drift-dur) linear infinite alternate}
+  @keyframes bg-twinkle{0%{opacity:.1;box-shadow:0 0 2px var(--star-color);background:#fff}100%{opacity:1;box-shadow:0 0 10px var(--star-color),0 0 25px var(--star-color);background:var(--star-color)}}
+  @keyframes bg-drift{0%{transform:translate(0,0)}100%{transform:translate(var(--drift-x),var(--drift-y))}}
+  .scanlines{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,0) 50%,rgba(0,0,0,.2) 50%,rgba(0,0,0,.2));background-size:100% 4px;z-index:10;pointer-events:none;opacity:.45}
+  .vignette{position:absolute;inset:0;background:radial-gradient(circle at center,transparent 40%,rgba(0,0,0,.88) 100%);z-index:11;pointer-events:none}
+  .cyber-grid{position:absolute;bottom:-30%;left:-50%;width:200%;height:100%;background-image:linear-gradient(rgba(0,243,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,243,255,.1) 1px,transparent 1px);background-size:50px 50px;transform:rotateX(75deg);transform-origin:top center;animation:bg-gridScroll 3s linear infinite;z-index:1;mask-image:linear-gradient(to bottom,transparent 0%,black 40%,black 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 40%,black 100%)}
+  @keyframes bg-gridScroll{0%{transform:rotateX(75deg) translateY(0)}100%{transform:rotateX(75deg) translateY(50px)}}
+  .bg-console{position:relative;z-index:20;display:flex;flex-direction:column;align-items:center;width:100%;max-width:600px}
+  .holo-stage{position:relative;width:480px;height:480px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;transform-style:preserve-3d}
+  .holo-logo{width:340px;position:absolute;z-index:5;filter:drop-shadow(0 0 15px rgba(0,243,255,.4)) drop-shadow(0 0 30px rgba(162,67,255,.2));animation:bg-logoFloat 4s ease-in-out infinite,bg-logoGlitch 6s infinite}
+  .holo-ring{position:absolute;border-radius:50%;border:1px solid transparent;box-shadow:inset 0 0 15px rgba(255,255,255,.04),0 0 15px rgba(255,255,255,.04)}
+  .holo-ring-1{width:460px;height:460px;border-top:2px solid #00f3ff;border-bottom:2px solid #00f3ff;animation:bg-spin1 4s linear infinite}
+  .holo-ring-2{width:400px;height:400px;border-left:2px solid #a243ff;border-right:2px solid #a243ff;animation:bg-spin2 5s linear infinite}
+  .holo-ring-3{width:340px;height:340px;border-top:2px solid #ffd36a;border-left:2px solid #ffd36a;animation:bg-spin3 3.5s linear infinite}
+  @keyframes bg-spin1{0%{transform:rotateX(70deg) rotateY(0) rotateZ(0)}100%{transform:rotateX(70deg) rotateY(0) rotateZ(360deg)}}
+  @keyframes bg-spin2{0%{transform:rotateX(0) rotateY(70deg) rotateZ(0)}100%{transform:rotateX(0) rotateY(70deg) rotateZ(360deg)}}
+  @keyframes bg-spin3{0%{transform:rotateX(45deg) rotateY(45deg) rotateZ(0)}100%{transform:rotateX(45deg) rotateY(45deg) rotateZ(360deg)}}
+  @keyframes bg-logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.05)}}
+  @keyframes bg-logoGlitch{0%,96%,100%{filter:drop-shadow(0 0 15px rgba(0,243,255,.4)) hue-rotate(0deg);opacity:1}97%{filter:drop-shadow(0 0 25px #a243ff) hue-rotate(90deg);opacity:.8;transform:translateX(2px)}98%{filter:drop-shadow(0 0 25px #00f3ff) hue-rotate(-90deg);opacity:.9;transform:translateX(-2px)}99%{filter:drop-shadow(0 0 15px #ffd36a) hue-rotate(45deg);opacity:1;transform:translateX(0)}}
+  .bg-terminal{width:100%;height:100px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;margin-bottom:30px;position:relative}
+  .bg-log{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px;transition:all .3s;text-align:center;width:100%}
+  .bg-log.active{color:#00f3ff;text-shadow:0 0 8px #00f3ff;font-size:13px}
+  .bg-cursor{display:inline-block;width:8px;height:14px;background:#00f3ff;margin-left:6px;vertical-align:middle;animation:bg-blink .8s step-end infinite;box-shadow:0 0 10px #00f3ff}
+  @keyframes bg-blink{50%{opacity:0}}
+  .bg-progress{width:300px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;position:relative;overflow:hidden}
+  .bg-progress-fill{position:absolute;top:0;left:0;bottom:0;width:0%;background:linear-gradient(90deg,transparent,#00f3ff 50%,#ffd36a 80%,#fff 100%);box-shadow:0 0 14px rgba(0,243,255,.6);transition:width .1s linear}
+  .bg-progress-glow{position:absolute;right:0;top:-3px;bottom:-3px;width:4px;background:#fff;box-shadow:0 0 12px 4px #00f3ff;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="boot-sequence" id="boot-sequence">
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <div class="cyber-grid"></div>
+  <div class="bg-console">
+    <div class="holo-stage">
+      <div class="holo-ring holo-ring-1"></div>
+      <div class="holo-ring holo-ring-2"></div>
+      <div class="holo-ring holo-ring-3"></div>
+      <img src="https://cdn1.sharemyimage.com/2026/02/16/logo1_transparent.png" alt="kAIxU" class="holo-logo">
+    </div>
+    <div class="bg-terminal" id="bg-terminal"></div>
+    <div class="bg-progress"><div class="bg-progress-fill" id="bg-prog"><div class="bg-progress-glow"></div></div></div>
+  </div>
+</div>
+<header>
+  <span class="logo">📄 coverKai</span>
+  <a href="/index.html" class="nav-link">⬡ Gateway</a>
+  <a href="/kAIxUchat.html" class="nav-link">✦ Chat</a>
+  <a href="/skaixuIDE.html" class="nav-link">⌨ IDE</a>
+  <a href="/photoKai.html" class="nav-link">📸 photoKai</a>
+  <a href="/flashKai.html" class="nav-link">⚡ flashKai</a>
+  <a href="/mailKai.html" class="nav-link">✉ mailKai</a>
+  <a href="/coverKai.html" class="nav-link active">📄 coverKai</a>
+  <a href="/resumeKai.html" class="nav-link">📋 resumeKai</a>
+  <a href="/sqlKai.html" class="nav-link">🗄 sqlKai</a>
+  <a href="/meetKai.html" class="nav-link">🤝 meetKai</a>
+  <a href="/journalKai.html" class="nav-link">📓 journalKai</a>
+  <a href="/briefKai.html" class="nav-link">📰 briefKai</a>
+  <a href="/storyKai.html" class="nav-link">📖 storyKai</a>
+  <a href="/nameKai.html" class="nav-link">✨ nameKai</a>
+  <a href="/paletteKai.html" class="nav-link">🎨 paletteKai</a>
+  <a href="/recipeKai.html" class="nav-link">🍳 recipeKai</a>
+  <a href="/diagramKai.html" class="nav-link">📊 diagramKai</a>
+  <a href="/readKai.html" class="nav-link">📖 readKai</a>
+  <a href="/mathKai.html" class="nav-link">∑ mathKai</a>
+  <a href="/codeKai.html" class="nav-link">&lt;/&gt; codeKai</a>
+  <a href="/quizKai.html" class="nav-link">🧩 quizKai</a>
+  <a href="/TriviaGo.html" class="nav-link">⚡ TriviaGo</a>
+  <a href="/pitchKai.html" class="nav-link">🎯 pitchKai</a>
+  <a href="/contractKai.html" class="nav-link">📝 contractKai</a>
+  <a href="/debugKai.html" class="nav-link">🐛 debugKai</a>
+  <a href="/translateKai.html" class="nav-link">🌐 translateKai</a>
+  <a href="/roastKai.html" class="nav-link">🔥 roastKai</a>
+  <a href="/legalKai.html" class="nav-link">⚖️ legalKai</a>
+  <a href="/threadKai.html" class="nav-link">🧵 threadKai</a>
+  <a href="/voiceKai.html" class="nav-link">🎤 voiceKai</a>
+  <a href="/scriptKai.html" class="nav-link">🎬 scriptKai</a>
+  <a href="/mapKai.html" class="nav-link">🗺️ mapKai</a>
+  <a href="/adKai.html" class="nav-link">📢 adKai</a>
+  <a href="/landingKai.html" class="nav-link">🚀 landingKai</a>
+  <a href="/invoiceKai.html" class="nav-link">🧾 invoiceKai</a>
+  <a href="/proposalKai.html" class="nav-link">📋 proposalKai</a>
+  <a href="/coldKai.html" class="nav-link">❄ coldKai</a>
+  <a href="/seoKai.html" class="nav-link">🔍 seoKai</a>
+  <a href="/jobKai.html" class="nav-link">💼 jobKai</a>
+  <a href="/prKai.html" class="nav-link">📣 prKai</a>
+  <a href="/policyKai.html" class="nav-link">🔒 policyKai</a>
+  <div class="health-dot" id="hd"></div>
+</header>
+
+<main>
+  <div style="grid-column:1/-1">
+    <h1>coverKai</h1>
+    <p class="sub">Paste a job description and your resume — get a tailored cover letter instantly.</p>
+  </div>
+
+  <div class="panel" id="inputs">
+    <div>
+      <label>App Token</label>
+      <input type="password" id="tok" placeholder="kAIxU token"/>
+    </div>
+    <div>
+      <label>Your name</label>
+      <input type="text" id="name" placeholder="Jane Smith"/>
+    </div>
+    <div>
+      <label>Job title / Company</label>
+      <input type="text" id="role" placeholder="Senior Designer at Acme Co"/>
+    </div>
+    <div>
+      <label>Job Description (paste key sections)</label>
+      <textarea id="jd" rows="7" placeholder="Paste the job posting here…"></textarea>
+    </div>
+    <div>
+      <label>Your Resume / Background (paste text)</label>
+      <textarea id="resume" rows="7" placeholder="Paste your experience, skills, achievements…"></textarea>
+    </div>
+    <div>
+      <label>Tone</label>
+      <select id="tone">
+        <option value="professional and confident">Professional & Confident</option>
+        <option value="enthusiastic and warm">Enthusiastic & Warm</option>
+        <option value="concise and direct">Concise & Direct</option>
+        <option value="formal">Formal</option>
+      </select>
+    </div>
+    <button class="btn-primary" id="genBtn" onclick="generate()">Generate Cover Letter</button>
+    <div class="status" id="statusEl"></div>
+  </div>
+
+  <div class="output-panel">
+    <div class="out-header">
+      <h2>Cover Letter</h2>
+      <div class="out-actions">
+        <button class="btn-sm" onclick="copyOut()">Copy</button>
+        <button class="btn-sm" onclick="window.print()">Print / PDF</button>
+      </div>
+    </div>
+    <div class="output-box placeholder" id="out">Your cover letter will appear here…</div>
+  </div>
+</main>
+
+<script>
+const API = 'https://kaixu67.skyesoverlondon.workers.dev';
+
+async function streamSSE(url,tok,body,onChunk){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:JSON.stringify(body)});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error('HTTP '+r.status+' · '+(e.error||r.statusText));}const reader=r.body.getReader();const dec=new TextDecoder();let buf='',full='';while(true){const{done,value}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const ln of lines){if(!ln.startsWith('data: '))continue;const data=ln.slice(6).trim();if(!data||data==='[DONE]')continue;try{const j=JSON.parse(data);const chunk=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text).join('');if(chunk){full+=chunk;onChunk(chunk,full);}}catch{}}}return full;}
+async function generate() {
+  const tok = document.getElementById('tok').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const role = document.getElementById('role').value.trim();
+  const jd = document.getElementById('jd').value.trim();
+  const resume = document.getElementById('resume').value.trim();
+  const tone = document.getElementById('tone').value;
+  if (!tok) { st('Add your token.', true); return; }
+  if (!jd || !resume) { st('Paste both the job description and your resume.', true); return; }
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Writing…';
+  st('');
+
+  const prompt = `Write a ${tone} cover letter${name ? ` from ${name}` : ''}${role ? ` for the position: ${role}` : ''}.
+
+JOB DESCRIPTION:
+${jd}
+
+APPLICANT BACKGROUND:
+${resume}
+
+Instructions:
+- Tailor the letter specifically to the role and company
+- Highlight 2–3 most relevant achievements or skills from the resume
+- Keep it to 3 paragraphs: hook, value, close
+- Return ONLY the letter body, starting with the greeting. No subject line, no meta-commentary.`;
+
+  try {
+    const out = document.getElementById('out');
+    out.textContent = '';
+    out.classList.remove('placeholder');
+    await streamSSE(`${API}/v1/stream`, tok, { messages:[{role:'user', content: prompt}] }, (chunk) => {
+      out.textContent += chunk;
+      out.scrollTop = out.scrollHeight;
+    });
+    localStorage.setItem('coverKai_token', tok);
+  } catch(e) { st(e.message, true); }
+  finally { btn.disabled=false; btn.textContent='Generate Cover Letter'; }
+}
+
+function copyOut() {
+  navigator.clipboard.writeText(document.getElementById('out').textContent)
+    .then(() => { const b = document.querySelectorAll('.btn-sm')[0]; b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy',1500); });
+}
+function st(m, err=false) { const el=document.getElementById('statusEl'); el.textContent=m; el.className='status'+(err?' err':''); }
+
+(async()=>{
+  const s=localStorage.getItem('coverKai_token'); if(s) document.getElementById('tok').value=s;
+  try{const r=await fetch(`${API}/v1/health`);const j=await r.json();document.getElementById('hd').className='health-dot '+(j.ok?'ok':'err');}catch{document.getElementById('hd').className='health-dot err';}
+})();
+</script>
+
+<script>
+(function(){
+  var lines=["INITIALIZING SKYES OVER LONDON EDITORIAL SHELL","LOADING KAIXU GATE XNTH POSTMORTEM","VERIFYING GOVERNANCE POSTURE","RENDERING SUPERGATE UPGRADE LOG","BYPASSING SECURITY PROTOCOLS","DECRYPTING NEURAL ARCHIVE","SYSTEM REBOOT INITIATED"];
+  var terminal=document.getElementById("bg-terminal");
+  var bar=document.getElementById("bg-prog");
+  var starsEl=document.getElementById("bg-stars");
+  if(!terminal||!bar)return;
+  /* --- star field --- */
+  if(starsEl){
+    var colors=["#00f3ff","#a243ff","#ffd36a","#ffffff"];
+    for(var si=0;si<250;si++){
+      var s=document.createElement("div");s.className="bg-star";
+      var sz=Math.random()*3+1;var col=colors[Math.floor(Math.random()*colors.length)];
+      s.style.width=sz+"px";s.style.height=sz+"px";
+      s.style.left=(Math.random()*100)+"%";s.style.top=(Math.random()*100)+"%";
+      s.style.setProperty("--star-color",col);
+      s.style.setProperty("--twinkle-dur",(Math.random()*2+1)+"s");
+      s.style.setProperty("--twinkle-del",(Math.random()*5)+"s");
+      s.style.setProperty("--drift-x",((Math.random()-.5)*200)+"px");
+      s.style.setProperty("--drift-y",((Math.random()-.5)*200)+"px");
+      s.style.setProperty("--drift-dur",(Math.random()*20+20)+"s");
+      starsEl.appendChild(s);
+    }
+  }
+  /* --- boot sequence --- */
+  var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+<>?";
+  var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+  var total=lines.join("").length,typed=0;
+  function upd(){typed++;bar.style.width=(typed/total*100)+"%";}
+  async function scramble(el,str){
+    var cur="";
+    for(var i=0;i<str.length;i++){
+      for(var j=0;j<2;j++){el.innerHTML=cur+chars[Math.floor(Math.random()*chars.length)]+'<span class="bg-cursor"></span>';await sleep(14);}
+      cur+=str[i];el.innerHTML=cur+'<span class="bg-cursor"></span>';upd();
+    }
+  }
+  async function run(){
+    typed=0;terminal.innerHTML="";
+    bar.style.transition="none";bar.style.width="0%";
+    void bar.offsetWidth;bar.style.transition="width .1s linear";
+    var els=[];
+    for(var i=0;i<lines.length;i++){
+      if(els.length>0){var p=els[els.length-1];p.classList.remove("active");p.innerHTML=p.innerText;}
+      var el=document.createElement("div");el.className="bg-log active";terminal.appendChild(el);els.push(el);
+      if(els.length>3)els[els.length-4].style.display="none";
+      await scramble(el,lines[i]);
+      if(i<lines.length-1){await sleep(400);}else{bar.style.width="100%";await sleep(2500);}
+    }
+    terminal.style.transition="opacity .6s ease-out";terminal.style.opacity="0";
+    await sleep(700);terminal.style.opacity="1";terminal.style.transition="";
+    run();
+  }
+  document.addEventListener("DOMContentLoaded",function(){setTimeout(run,300);});
+})();
+</script>
+</body>
+</html>

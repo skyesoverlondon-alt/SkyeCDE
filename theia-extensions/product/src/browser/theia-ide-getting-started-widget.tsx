@@ -13,7 +13,18 @@ import { Message } from '@theia/core/lib/browser';
 import { PreferenceService } from '@theia/core/lib/common';
 import { inject, injectable } from '@theia/core/shared/inversify';
 import {
-    renderDocumentation, renderDownloads, renderExtendingCustomizing, renderProductName, renderSourceCode, renderSupport, renderTickets, renderWhatIs, renderCollaboration
+    renderCollaboration,
+    renderDocumentation,
+    renderDownloads,
+    renderExtendingCustomizing,
+    renderSourceCode,
+    renderStudioApps,
+    renderStudioBrandStrip,
+    renderStudioHero,
+    renderStudioWorkflow,
+    renderSupport,
+    renderTickets,
+    renderWhatIs
 } from './branding-util';
 
 import { GettingStartedWidget } from '@theia/getting-started/lib/browser/getting-started-widget';
@@ -52,13 +63,22 @@ export class TheiaIDEGettingStartedWidget extends GettingStartedWidget {
     protected render(): React.ReactNode {
         return <div className='gs-container'>
             <div className='gs-content-container'>
-                <div className='gs-float'>
-                    <div className='gs-logo'>
+                <div className='skye-dashboard-layout'>
+                    <div className='skye-dashboard-main'>
+                        {renderStudioHero()}
                     </div>
-                    {this.renderActions()}
+                    <div className='skye-dashboard-rail'>
+                        {this.renderActions()}
+                    </div>
                 </div>
+                {renderStudioBrandStrip()}
                 {this.renderHeader()}
                 <hr className='gs-hr' />
+                <div className='flex-grid'>
+                    <div className='col'>
+                        {renderStudioApps(this.windowService)}
+                    </div>
+                </div>
                 <div className='flex-grid'>
                     <div className='col'>
                         {this.renderNews()}
@@ -67,6 +87,11 @@ export class TheiaIDEGettingStartedWidget extends GettingStartedWidget {
                 <div className='flex-grid'>
                     <div className='col'>
                         {renderWhatIs(this.windowService)}
+                    </div>
+                </div>
+                <div className='flex-grid'>
+                    <div className='col'>
+                        {renderStudioWorkflow(this.windowService)}
                     </div>
                 </div>
                 <div className='flex-grid'>
@@ -143,7 +168,6 @@ export class TheiaIDEGettingStartedWidget extends GettingStartedWidget {
 
     protected renderHeader(): React.ReactNode {
         return <div className='gs-header'>
-            {renderProductName()}
             {this.renderVersion()}
         </div>;
     }
