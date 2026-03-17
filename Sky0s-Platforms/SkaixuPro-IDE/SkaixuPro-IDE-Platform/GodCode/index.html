@@ -336,7 +336,7 @@
             location.port === '8000'
         );
         const KAIXU_GATEWAY_PRIMARY = '/api';
-        const KAIXU_GATEWAY_FALLBACK = 'https://kaixugateway13.netlify.app';
+        const KAIXU_GATEWAY_FALLBACK = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
         let kaixuKey = localStorage.getItem('KAIXU_VIRTUAL_KEY') || "";
 
         function mapGatewayError(status, body) {

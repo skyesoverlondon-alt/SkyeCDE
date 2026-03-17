@@ -313,7 +313,7 @@
 </main>
 
 <script>
-const API_BASE = "https://kaixu67.skyesoverlondon.workers.dev";
+const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
 
 const STORAGE_KEY = 'kaixu_conversations';
 let conversations = [];

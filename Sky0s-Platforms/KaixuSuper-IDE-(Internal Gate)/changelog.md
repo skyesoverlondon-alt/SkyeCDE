@@ -12,7 +12,7 @@ Generated: 2026-03-03T03:15:23.373Z
 - 2026-03-02 · fix: remove hardcoded worker URL from all source files (secret scanner) (38ef893, Skyes Over London)
 - 2026-03-02 · feat: enterprise upgrades — rate limits, background fns, Sentry, PDF bundle, embeddings fix, CI (c8c2698, Skyes Over London)
 - 2026-03-01 · chore: final founders smokeout and preflight hardening (0b50a85, Skyes Over London)
-- 2026-03-01 · feat: swap gateway to XnthGateway (kAIxuGateway13) — add 3 proxy fns, rewire ai-edit + embeddings + health, KAIXU_VIRTUAL_KEY (2f1dacd, Skyes Over London)
+- 2026-03-01 · feat: swap gateway to XnthGateway (kAIxu0megaSkyeGate) — add 3 proxy fns, rewire ai-edit + embeddings + health, KAIXU_VIRTUAL_KEY (2f1dacd, Skyes Over London)
 - 2026-03-01 · feat: add org require_mfa — schema column, soc2 wired, org-settings CRUD endpoint (277fc7a, Skyes Over London)
 - 2026-03-01 · fix: replace remaining console calls with structured logger in embeddings, notifications, soc2 (8c9ddd8, Skyes Over London)
 - 2026-03-01 · fix: critical — add all missing frontend script tags to ide.html (2cca696, Skyes Over London)

@@ -19,10 +19,10 @@ Core properties
 - Vault Passphrase: recipients decrypt locally in the browser using a passphrase that never leaves the device.
 - Key rotation + keyring: each user has versioned keys (old messages remain decryptable with older versions).
 
-AI / kAIxuGateway13 compliance (optional feature)
+AI / kAIxu0megaSkyeGate compliance (optional feature)
 This app includes an optional AI panel for summarizing/drafting replies.
 All LLM traffic routes only through your Kaixu Gateway:
-- Base: https://kaixugateway13.netlify.app
+- Base: https://0megaskyegate.skyesoverlondon.workers.dev
 - Non-stream: POST /.netlify/functions/gateway-chat
 - Stream (SSE): POST /.netlify/functions/gateway-stream
 No OpenAI/Anthropic/Gemini SDKs. No direct provider endpoints exist in this repo.

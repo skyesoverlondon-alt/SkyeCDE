@@ -358,19 +358,19 @@
   </div><!-- /tests -->
 
   <div class="footer">
-    <p>kAIxU Gate Xnth · Skyes Over London LC · <a href="/">Home</a> · <a href="/kAIxUchat.html">Chat</a> · <a href="/smokeCoverageKai.html">Coverage Report</a> · <a id="smokehouse-link-kaixu0s-footer" href="#" target="_blank" rel="noopener noreferrer">kAIxU0s SmokeHouse</a> · <a id="smokehouse-link-footer" href="#" target="_blank" rel="noopener noreferrer">SmokeHouse</a></p>
+    <p>kAIxU 0megaSkyeGate · Skyes Over London LC · <a href="/">Home</a> · <a href="/kAIxUchat.html">Chat</a> · <a href="/smokeCoverageKai.html">Coverage Report</a> · <a id="smokehouse-link-kaixu0s-footer" href="#" target="_blank" rel="noopener noreferrer">kAIxU0s SmokeHouse</a> · <a id="smokehouse-link-footer" href="#" target="_blank" rel="noopener noreferrer">SmokeHouse</a></p>
   </div>
 
 </div><!-- /wrap -->
 
 <script>
-const API_BASE = "https://kaixu67.skyesoverlondon.workers.dev";
+const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
 const $ = id => document.getElementById(id);
 const DEFAULT_SMOKEHOUSE_BASE = "https://kaixusi.skyesoverlondon.workers.dev";
 const KAIXU0S_SMOKEHOUSE_URL = "https://kaixusi.skyesoverlondon.workers.dev/smokehouse";
 const KNOWN_BRAIN_BASES = [
   "https://kaixusi.skyesoverlondon.workers.dev",
-  "https://kaixu67.skyesoverlondon.workers.dev"
+  "https://0megaskyegate.skyesoverlondon.workers.dev"
 ];
 
 function normalizeSmokehouseUrl(raw) {

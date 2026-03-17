@@ -339,7 +339,7 @@ function buildBrainRegistry(env, request) {
   const kaixu67Base = String(
     env.KAIXU_BRAIN_BASE_KAIXU67 ||
     env.KAIXU_BRAIN_BASE_CORE67 ||
-    "https://kaixu67.skyesoverlondon.workers.dev"
+    "https://0megaskyegate.skyesoverlondon.workers.dev"
   ).trim();
 
   const kaixu0sBase = String(

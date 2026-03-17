@@ -414,7 +414,7 @@
 <!-- ESLint in the browser -->
 <script src="https://unpkg.com/eslint4b@8.57.0/dist/eslint4b.min.js"></script>
 <script>
-const API_BASE = 'https://kaixu67.skyesoverlondon.workers.dev';
+const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
 const IDB_NAME = 'kaixu-ide';
 const IDB_STORE = 'files';
 const IDB_VERSION = 1;

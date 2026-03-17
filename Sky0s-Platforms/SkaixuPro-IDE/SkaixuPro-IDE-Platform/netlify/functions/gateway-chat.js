@@ -1,8 +1,8 @@
-// gateway-chat.js — Server-side proxy to kaixugateway13
+// gateway-chat.js — Server-side proxy to omegaskyegate
 // Bypasses CORS for all client origins (codespace, dev, production).
 // Reachable at /.netlify/functions/gateway-chat in both netlify dev and deployed.
 
-const UPSTREAM = 'https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat';
+const UPSTREAM = (process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev') + '/.netlify/functions/gateway-chat';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',

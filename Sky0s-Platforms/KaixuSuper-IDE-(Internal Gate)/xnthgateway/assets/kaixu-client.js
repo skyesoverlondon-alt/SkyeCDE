@@ -1,5 +1,5 @@
 /* Kaixu Client Utility (AUTO MODE + Client Error Reporter)
- * Drop-in browser helper for apps that talk to KaixuGateway13.
+ * Drop-in browser helper for apps that talk to Kaixu0megaSkyeGate.
  *
  * Provides:
  *  - KaixuClient.autoChat(): auto-selects SSE stream vs background job + polling

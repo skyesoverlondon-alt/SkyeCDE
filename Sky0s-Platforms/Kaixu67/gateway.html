@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kaixu Gate Xnth — kAIxu Core Gateway</title>
+  <title>0megaSkyeGate — kAIxu Core Gateway</title>
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#07060d" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="kAIxUchat" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <meta name="description" content="Kaixu Gate Xnth: Netlify-hosted gateway that centralizes kAIxu calls and keeps the API key server-side." />
+  <meta name="description" content="0megaSkyeGate: Netlify-hosted gateway that centralizes kAIxu calls and keeps the API key server-side." />
   <script>
     (function(){
       const introSeenKey='kaixuIntroSeenV2';
@@ -223,7 +223,7 @@
 
       <div class="row" style="justify-content:space-between">
         <div>
-          <h1>Kaixu Gate Xnth <span class="k">—</span> kAIxu Core Gateway</h1>
+          <h1>0megaSkyeGate <span class="k">—</span> kAIxu Core Gateway</h1>
           <p class="sub">Your AI home on Netlify. Apps call this gate; the API key stays server-side.</p>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -379,8 +379,8 @@ POST /v1/stream   (SSE)</code></pre>
 
 <script>
   const ENVS = {
-    prod: "https://kaixu67.skyesoverlondon.workers.dev",
-    stage: "https://kaixu67.skyesoverlondon.workers.dev" // set staging endpoint here if available
+    prod: "https://0megaskyegate.skyesoverlondon.workers.dev",
+    stage: "https://0megaskyegate.skyesoverlondon.workers.dev" // set staging endpoint here if available
   };
   let API_BASE = ENVS[localStorage.getItem('kaixuEnv') || 'prod'] || ENVS.prod;
   const envSelect = document.getElementById('envSelect');

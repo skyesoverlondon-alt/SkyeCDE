@@ -267,7 +267,7 @@
             }
             // Gateway reachable?
             try {
-                const g = await fetch('https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat', { method: 'HEAD', signal: AbortSignal.timeout(5000) }).catch(() => null);
+                const g = await fetch('https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat', { method: 'HEAD', signal: AbortSignal.timeout(5000) }).catch(() => null);
                 checks.push(g ? `gateway=${g.status}` : 'gateway=UNREACHABLE');
             } catch { checks.push('gateway=TIMEOUT'); }
             // Local state
@@ -533,7 +533,7 @@
         const KAIXU_GATEWAY_PRIMARY  = '/api';
         // Direct Netlify function path — works in netlify dev and production, bypasses CORS
         const KAIXU_GATEWAY_DIRECT   = '';
-        const KAIXU_GATEWAY_FALLBACK  = 'https://kaixugateway13.netlify.app';
+        const KAIXU_GATEWAY_FALLBACK = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
         let kaixuKey = localStorage.getItem('KAIXU_VIRTUAL_KEY') || "";
         const kaixuDiag = { lastBase: null, lastError: null, lastPayload: null };
         window.kaixuDiag = kaixuDiag;

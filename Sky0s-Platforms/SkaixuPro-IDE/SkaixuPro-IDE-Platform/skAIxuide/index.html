@@ -407,7 +407,7 @@
             try {
                 const gwUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname.includes('codespaces') || location.hostname.endsWith('.app.github.dev'))
                     ? '/api/.netlify/functions/gateway-chat'
-                    : 'https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat';
+                    : 'https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat';
                 const g = await fetch(gwUrl, { method: 'HEAD', signal: AbortSignal.timeout(5000) }).catch(() => null);
                 checks.push(g ? `gateway=${g.status}` : 'gateway=UNREACHABLE');
             } catch { checks.push('gateway=TIMEOUT'); }
@@ -437,7 +437,7 @@
             window.location.hostname === '127.0.0.1' || 
             window.location.hostname.includes('github.dev') || 
             window.location.hostname.includes('codespaces')
-        ) ? "/api" : "https://kaixugateway13.netlify.app";
+        ) ? "/api" : "https://0megaskyegate.skyesoverlondon.workers.dev";
 
         // THE FULL UN-MINIFIED SKAIXU SPECS HTML
         const DEFAULT_CODE = `<!DOCTYPE html>
@@ -1333,8 +1333,8 @@
 
         // --- KAIXU GATEWAY CLIENT (MATCHING NEURAL-SPACE-PRO) ---
         const KAIXU_IS_LOCAL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname.includes('codespaces') || location.hostname.endsWith('.app.github.dev') || location.port === '8000');
-        const KAIXU_GATEWAY_PRIMARY = KAIXU_IS_LOCAL ? '/api' : 'https://kaixugateway13.netlify.app';
-        const KAIXU_GATEWAY_FALLBACK = 'https://kaixugateway13.netlify.app';
+        const KAIXU_GATEWAY_PRIMARY = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+        const KAIXU_GATEWAY_FALLBACK = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
 
         // Non-streaming JSON endpoint (ported from Neural-Space-Pro)
         async function kaixuChat(key, payload) {

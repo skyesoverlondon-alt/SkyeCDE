@@ -1,3 +1,4 @@
+; OMEGA_GATE_TRUTH: legacy Kaixu67 surface retained, upstream truth normalized externally
 
 [build]
   publish = "public"

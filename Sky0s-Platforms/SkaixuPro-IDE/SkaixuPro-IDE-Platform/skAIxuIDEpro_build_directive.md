@@ -23,7 +23,7 @@ This is **not one unified runtime** yet. It is a functioning ecosystem bundle wi
 ### Current AI gate in use
 The repo is routed against:
 
-`https://kaixugateway13.netlify.app`
+`https://0megaskyegate.skyesoverlondon.workers.dev`
 
 Observed in:
 - `server.js`
@@ -38,7 +38,7 @@ Observed in:
 - `KaiPrompt/index.html`
 - `PlanItPro/PlanItPro.html`
 - `skyeportal/index.html`
-- `AI-Directives/kAIxuGateway13_integrationDirective.txt`
+- `AI-Directives/kAIxu0megaSkyeGate_integrationDirective.txt`
 
 ### Current auth model
 There are **two different auth layers** in play:
@@ -46,7 +46,7 @@ There are **two different auth layers** in play:
 1. **AI gateway auth**
    - credential: `KAIXU_VIRTUAL_KEY`
    - transport: `Authorization: Bearer <KAIXU_VIRTUAL_KEY>`
-   - gate target: `kaixugateway13.netlify.app`
+   - gate target: `omegaskyegate.netlify.app`
 
 2. **Local admin auth**
    - file: `skAIxuide/server.py`
@@ -57,7 +57,7 @@ There are **two different auth layers** in play:
 ### Is the AI gate self-contained in this repo?
 **No.**
 
-This repo contains **proxies and callers**, but not the actual Gateway13 implementation itself. The current build is therefore **gateway-dependent**, not self-contained.
+This repo contains **proxies and callers**, but not the actual 0megaSkyeGate implementation itself. The current build is therefore **gateway-dependent**, not self-contained.
 
 ### Is the local login gate self-contained?
 **Partly.**
@@ -101,12 +101,12 @@ Recommended values:
 - `KAIXU_GATEWAY_STREAM_URL=/api/.netlify/functions/gateway-stream`
 - `KAIXU_AUTH_MODE=kaixu-key`
 
-If you keep Netlify proxying, then all browser-side code should hit **only local relative URLs**. Do not let browser code hardcode `https://kaixugateway13.netlify.app`.
+If you keep Netlify proxying, then all browser-side code should hit **only local relative URLs**. Do not let browser code hardcode `https://0megaskyegate.skyesoverlondon.workers.dev`.
 
 ### Directive B — eliminate hard-coded external gateway strings from UI files
 Search and replace every browser-facing hard-coded occurrence of:
 
-`https://kaixugateway13.netlify.app`
+`https://0megaskyegate.skyesoverlondon.workers.dev`
 
 with a runtime-configured local-relative base.
 
@@ -202,7 +202,7 @@ Apply patches in this order so you do not create a haunted spaghetti cave.
 
 ### Phase 1 — inventory and freeze
 1. Search repo for:
-   - `kaixugateway13.netlify.app`
+   - `omegaskyegate.netlify.app`
    - `KAIXU_VIRTUAL_KEY`
    - `/api/kaixu-key`
    - `ADMIN_PASSWORD`
@@ -243,7 +243,7 @@ Replace per-app gateway constants with shared config/helper calls.
 Choose one:
 
 #### External-gate mode
-Keep Gateway13 external, but make the repo explicit about it.
+Keep 0megaSkyeGate external, but make the repo explicit about it.
 - document it clearly
 - use env-configured base URLs only
 - stop pretending the repo is self-contained
@@ -252,7 +252,7 @@ Keep Gateway13 external, but make the repo explicit about it.
 Import the actual gateway stack into this codebase or this deployment boundary.
 - add full gateway handlers
 - make `/api/*` resolve locally
-- remove external dependency on `kaixugateway13.netlify.app`
+- remove external dependency on `omegaskyegate.netlify.app`
 
 ---
 
@@ -324,7 +324,7 @@ That little gremlin matters.
 ## 8) Final verdict for codebase adjustment
 
 ### Current state
-- **AI gate used:** `kAIxuGateway13`
+- **AI gate used:** `kAIxu0megaSkyeGate`
 - **AI gate self-contained in repo:** **No**
 - **Local admin auth self-contained:** **Partly**
 - **Build style:** multi-app static/operator bundle with mixed proxy strategies

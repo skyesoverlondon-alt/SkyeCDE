@@ -13,6 +13,6 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://kaixugateway13.netlify.app/:splat"
+  to = "https://0megaskyegate.skyesoverlondon.workers.dev/:splat"
   status = 200
   force = true

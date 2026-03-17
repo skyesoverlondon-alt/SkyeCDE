@@ -1,6 +1,6 @@
 /*
-  REQUIRED kAIxuGateway13 Client Module
-  Base URL: https://kaixugateway13.netlify.app
+  REQUIRED kAIxu0megaSkyeGate Client Module
+  Base URL: https://0megaskyegate.skyesoverlondon.workers.dev
   Non-stream POST: /.netlify/functions/gateway-chat
   Stream SSE POST: /.netlify/functions/gateway-stream
   Auth: Authorization: Bearer <KAIXU_VIRTUAL_KEY>
@@ -8,7 +8,7 @@
     { provider, model, messages:[{role,content}], max_tokens, temperature }
   Streaming: fetch + ReadableStream parsing. No EventSource.
 */
-const KAIXU_BASE_URL = "https://kaixugateway13.netlify.app";
+const KAIXU_BASE_URL = "https://0megaskyegate.skyesoverlondon.workers.dev";
 
 let __kaixuKeyMem = "";
 function kaixuKeyGet(){ return __kaixuKeyMem || ""; }

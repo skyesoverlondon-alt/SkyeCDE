@@ -1,0 +1,138 @@
+# 0mega Gate Truth Cutover Report
+
+- Root: `/workspaces/SkyeCDE/Skye0s-s0l26`
+- Target gate: `https://0megaskyegate.skyesoverlondon.workers.dev`
+- Text files scanned: `6468`
+- Files changed: `130`
+
+## Changed files
+- `Sky0s-Platforms/Kaixu67/seokai.html`
+- `Sky0s-Platforms/Kaixu67/prkai.html`
+- `Sky0s-Platforms/Kaixu67/swotkai.html`
+- `Sky0s-Platforms/Kaixu67/scriptkai.html`
+- `Sky0s-Platforms/Kaixu67/voicekai.html`
+- `Sky0s-Platforms/Kaixu67/gateway.html`
+- `Sky0s-Platforms/Kaixu67/watchdogkai.html`
+- `Sky0s-Platforms/Kaixu67/jobkai.html`
+- `Sky0s-Platforms/Kaixu67/debugkai.html`
+- `Sky0s-Platforms/Kaixu67/deckkai.html`
+- `Sky0s-Platforms/Kaixu67/palettekai.html`
+- `Sky0s-Platforms/Kaixu67/innersanctum.html`
+- `Sky0s-Platforms/Kaixu67/recipekai.html`
+- `Sky0s-Platforms/Kaixu67/resumekai.html`
+- `Sky0s-Platforms/Kaixu67/diagramkai.html`
+- `Sky0s-Platforms/Kaixu67/namekai.html`
+- `Sky0s-Platforms/Kaixu67/changelogkai.html`
+- `Sky0s-Platforms/Kaixu67/proposalkai.html`
+- `Sky0s-Platforms/Kaixu67/biokai.html`
+- `Sky0s-Platforms/Kaixu67/promptkai.html`
+- `Sky0s-Platforms/Kaixu67/background.html`
+- `Sky0s-Platforms/Kaixu67/briefkai.html`
+- `Sky0s-Platforms/Kaixu67/pitchkai.html`
+- `Sky0s-Platforms/Kaixu67/photokai.html`
+- `Sky0s-Platforms/Kaixu67/kaixuchat.html`
+- `Sky0s-Platforms/Kaixu67/coldkai.html`
+- `Sky0s-Platforms/Kaixu67/skaixuide.html`
+- `Sky0s-Platforms/Kaixu67/livemodekai.html`
+- `Sky0s-Platforms/Kaixu67/codekai.html`
+- `Sky0s-Platforms/Kaixu67/quizkai.html`
+- `Sky0s-Platforms/Kaixu67/coverkai.html`
+- `Sky0s-Platforms/Kaixu67/threadkai.html`
+- `Sky0s-Platforms/Kaixu67/newsletterkai.html`
+- `Sky0s-Platforms/Kaixu67/goalkai.html`
+- `Sky0s-Platforms/Kaixu67/landingkai.html`
+- `Sky0s-Platforms/Kaixu67/readmekai.html`
+- `Sky0s-Platforms/Kaixu67/reviewkai.html`
+- `Sky0s-Platforms/Kaixu67/storykai.html`
+- `Sky0s-Platforms/Kaixu67/personakai.html`
+- `Sky0s-Platforms/Kaixu67/mailkai.html`
+- `Sky0s-Platforms/Kaixu67/mapkai.html`
+- `Sky0s-Platforms/Kaixu67/index.html`
+- `Sky0s-Platforms/Kaixu67/readkai.html`
+- `Sky0s-Platforms/Kaixu67/habitkai.html`
+- `Sky0s-Platforms/Kaixu67/sqlkai.html`
+- `Sky0s-Platforms/Kaixu67/legalkai.html`
+- `Sky0s-Platforms/Kaixu67/meetkai.html`
+- `Sky0s-Platforms/Kaixu67/mathkai.html`
+- `Sky0s-Platforms/Kaixu67/adkai.html`
+- `Sky0s-Platforms/Kaixu67/journalkai.html`
+- `Sky0s-Platforms/Kaixu67/manifest.json`
+- `Sky0s-Platforms/Kaixu67/netlify.toml`
+- `Sky0s-Platforms/Kaixu67/triviago.html`
+- `Sky0s-Platforms/Kaixu67/flashkai.html`
+- `Sky0s-Platforms/Kaixu67/contractkai.html`
+- `Sky0s-Platforms/Kaixu67/smokekai.html`
+- `Sky0s-Platforms/Kaixu67/roastkai.html`
+- `Sky0s-Platforms/Kaixu67/testkai.html`
+- `Sky0s-Platforms/Kaixu67/invoicekai.html`
+- `Sky0s-Platforms/Kaixu67/cheatkai.html`
+- `Sky0s-Platforms/Kaixu67/captionkai.html`
+- `Sky0s-Platforms/Kaixu67/quickpalettekai.html`
+- `Sky0s-Platforms/Kaixu67/repkai.html`
+- `Sky0s-Platforms/Kaixu67/policykai.html`
+- `Sky0s-Platforms/Kaixu67/translatekai.html`
+- `Sky0s-Platforms/Kaixu67/casekai.html`
+- `Sky0s-Platforms/SkyeMail2.0/founder.html`
+- `Sky0s-Platforms/SkyeMail2.0/signup.html`
+- `Sky0s-Platforms/SkyeMail2.0/message.html`
+- `Sky0s-Platforms/SkyeMail2.0/login.html`
+- `Sky0s-Platforms/SkyeMail2.0/ai.html`
+- `Sky0s-Platforms/SkyeMail2.0/send.html`
+- `Sky0s-Platforms/SkyeMail2.0/index.html`
+- `Sky0s-Platforms/SkyeMail2.0/dashboard.html`
+- `Sky0s-Platforms/SkyeMail2.0/README.md`
+- `Sky0s-Platforms/SuperIDE/README.md`
+- `Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/readme.md`
+- `Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/changelog.md`
+- `Sky0s-Platforms/SkyErrors/kAIxU-Brain/wrangler.toml`
+- `Sky0s-Platforms/SkyErrors/kAIxU-Brain/README.md`
+- `Sky0s-Platforms/SkyErrors/kAIxU-Brain/src/index.js`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyehawk.js`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/server.js`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/netlify.toml`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuIDEpro_build_directive.md`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide/diagnostics.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide/SmartIDE.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide/server.py`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skriptx/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeuipro/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/RegexGen/RegexGen.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/AI-Directives/kAIxuGateway13_integrationDirective.txt`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DevProof Lab/app.js`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DevProof Lab/README.txt`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DevProof Lab/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DevProof Lab/netlify.toml`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodCode/GodCode.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodCode/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodCode/Analysis.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/KaiPrompt/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/PlanItPro/PlanItPro.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeportal/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodKode/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodKode/Analysis.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Webby/Webby.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skriptxdataalchemist/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/PWA Factory/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/kaixumagic/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeView-Red/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Nexus-Pro/NexusPro.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Neural-Space-Pro/analysis.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Neural-Space-Pro/index.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/netlify/functions/gateway-stream.js`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/netlify/functions/gateway-chat.js`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/THE SOLE NETWORK/ONEPAGEWEBSITESS/solenterprises-full-site.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/THE SOLE NETWORK/Editorials/Elite/FounderOpx1.html`
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Nexus Forge Studio/src/lib/gateway.js`
+- `Sky0s-Platforms/SkyeMail2.0/assets/kaixuGateway.js`
+- `Sky0s-Platforms/SuperIDE/netlify/functions/kaixu-generate-stream.ts`
+- `Sky0s-Platforms/SuperIDE/netlify/functions/_shared/kaixu_brain.ts`
+- `Sky0s-Platforms/SuperIDE/public/S0L26-0s/s0l26-0s-HOME-editorial.html`
+- `Sky0s-Platforms/SuperIDE/public/SkyeVault-Pro-v4.46/Founder/index.html`
+- `Sky0s-Platforms/SuperIDE/artifacts/legacy-archive/Prototype-SkyDex4.6/index.html`
+- `Sky0s-Platforms/SuperIDE/artifacts/legacy-archive/IDE-Autonomy-Upgrade-Package/project.json`
+- `Sky0s-Platforms/SuperIDE/worker/src/index.ts`
+- `Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/xnthgateway/kaixusi_integrationdirective (5).txt`
+- `Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/xnthgateway/assets/kaixu-client.js`
+- `Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/xnthgateway/docs/runbook_client_apps.md`
+- `Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/xnthgateway/scripts/e2e-local.mjs`

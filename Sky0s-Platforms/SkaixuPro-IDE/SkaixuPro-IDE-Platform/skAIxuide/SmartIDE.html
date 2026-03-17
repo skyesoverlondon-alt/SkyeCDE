@@ -327,7 +327,7 @@
                 else c.push(`server=ERR(${r.status})`);
             } catch { c.push('server=DOWN'); }
             try {
-                const g = await fetch('https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat', { method: 'HEAD', signal: AbortSignal.timeout(5000) }).catch(() => null);
+                const g = await fetch('https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat', { method: 'HEAD', signal: AbortSignal.timeout(5000) }).catch(() => null);
                 c.push(g ? `gateway=${g.status}` : 'gateway=UNREACHABLE');
             } catch { c.push('gateway=TIMEOUT'); }
             c.push(`key=${state.kaixuKey ? 'SET' : 'NONE'}`);
@@ -338,7 +338,7 @@
         // ─── CONFIG ──────────────────────────────────────
         const PRIMARY_LOGO = 'https://cdn1.sharemyimage.com/2026/02/15/ChatGPT-Image-Feb-15-2026-05_15_46-AM-1.png';
         const GATEWAY_LOCAL = '/api';
-        const GATEWAY_DIRECT = 'https://kaixugateway13.netlify.app';
+        const GATEWAY_DIRECT = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
         const GATEWAY_BASE = _isLocal ? GATEWAY_LOCAL : GATEWAY_DIRECT;
 
         const DEFAULT_CODE = `<!DOCTYPE html>

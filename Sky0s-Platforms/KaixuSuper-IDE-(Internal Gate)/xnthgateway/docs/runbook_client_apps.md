@@ -1,6 +1,6 @@
-# RUNBOOK: Client Apps → KaixuGateway13
+# RUNBOOK: Client Apps → Kaixu0megaSkyeGate
 
-This runbook documents how client apps should call KaixuGateway13, what headers to send, and how to handle streaming vs long responses.
+This runbook documents how client apps should call Kaixu0megaSkyeGate, what headers to send, and how to handle streaming vs long responses.
 
 ## Base URL
 

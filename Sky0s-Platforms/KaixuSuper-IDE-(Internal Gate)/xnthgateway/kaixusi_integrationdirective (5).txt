@@ -1,6 +1,6 @@
-CORE BUILD DIRECTIVE — kAIxuGateway13-ONLY AI ROUTING (MANDATORY)
+CORE BUILD DIRECTIVE — kAIxu0megaSkyeGate-ONLY AI ROUTING (MANDATORY)
 
-You are modifying or building a web application. This is a hard requirement: the application must route 100% of all AI/LLM requests through kAIxuGateway13. Any direct provider usage is forbidden. Any build that violates any item below is considered FAILED and must be corrected before delivery.
+You are modifying or building a web application. This is a hard requirement: the application must route 100% of all AI/LLM requests through kAIxu0megaSkyeGate. Any direct provider usage is forbidden. Any build that violates any item below is considered FAILED and must be corrected before delivery.
 
 ABSOLUTE PROHIBITIONS (ZERO TOLERANCE)
 
@@ -25,7 +25,7 @@ REQUIRED GATEWAY (USE EXACTLY)
 
 GATEWAY DASHBOARD URL (browser / admin):
   https://skyesol.netlify.app/gateway
-  (canonical redirect → /Platforms-Apps-Infrastructure/kAIxUGateway13/index.html)
+  (canonical redirect → /Platforms-Apps-Infrastructure/kAIxU0megaSkyeGate/index.html)
 
 UPSTREAM GATEWAY (server-side only — never called directly from the browser):
   https://skyesol.netlify.app/.netlify/functions/gateway-chat
@@ -187,7 +187,7 @@ DELIVERY REQUIREMENTS (NON-NEGOTIABLE)
 
 Output FULL updated files (no partial snippets, no TODOs).
 
-All AI calls must be routed through kAIxuGateway13 endpoints exactly as specified.
+All AI calls must be routed through kAIxu0megaSkyeGate endpoints exactly as specified.
 
 Any direct provider call or SDK usage anywhere in the repo is an automatic failure.
 
@@ -414,7 +414,7 @@ REQUIRED ENVIRONMENT VARIABLES (Netlify Dashboard → Site → Environment Varia
 LOCAL DEVELOPMENT
   Start cmd   : npx netlify dev (from workspace root)
   Functions   : Served at http://localhost:8888/.netlify/functions/*
-  .env file   : Platforms-Apps-Infrastructure/kAIxUGateway13/.env (master reference)
+  .env file   : Platforms-Apps-Infrastructure/kAIxU0megaSkyeGate/.env (master reference)
                 Not committed to git. Contains all env vars for local dev.
 
 .gitignore (MUST NOT BE COMMITTED)
@@ -438,7 +438,7 @@ OBSERVABILITY — Cross-App Diagnostics
                      navigator.sendBeacon fires on beforeunload for guaranteed delivery.
                      Local/dev mode does NOT write to Neon (_neonIsLocal flag).
 
-GATEWAY DASHBOARD PAGES (served from Platforms-Apps-Infrastructure/kAIxUGateway13/):
+GATEWAY DASHBOARD PAGES (served from Platforms-Apps-Infrastructure/kAIxU0megaSkyeGate/):
   index.html       — Gateway admin dashboard (login + 12-tab panel)
   dashboard.html   — User-facing dashboard (caps, usage, logs, devices, exports)
   intro.html       — Gateway introduction / onboarding
@@ -480,7 +480,7 @@ MODEL DEFAULTS (CURRENT)
   Do NOT use deprecated model names (e.g., gemini-1.5-pro-latest).
   Do NOT set max_tokens above 8192 for gemini-2.5-flash.
 
-SKYE SUITE APPS (all route through kAIxuGateway13):
+SKYE SUITE APPS (all route through kAIxu0megaSkyeGate):
   SkyeOps/       — Mission Control (stream from SkyeDocx templates)
   SkyeFlow/      — Automation Hub (drafts → governed workflows)
   SkyeLedger/    — Executive Intelligence Cockpit

@@ -295,7 +295,7 @@
     s.style.setProperty('--drift-dur',(Math.random()*20+20)+'s');
     sc.appendChild(s);
   }
-  var bootLines=["INITIALIZING SKYES OVER LONDON EDITORIAL SHELL","LOADING KAIXU GATE XNTH POSTMORTEM","VERIFYING GOVERNANCE POSTURE","RENDERING SUPERGATE UPGRADE LOG","BYPASSING SECURITY PROTOCOLS","DECRYPTING NEURAL ARCHIVE","SYSTEM REBOOT INITIATED"];
+  var bootLines=["INITIALIZING SKYES OVER LONDON EDITORIAL SHELL","LOADING KAIXU GATE 0MEGASKYEGATE NORMALIZATION","VERIFYING GOVERNANCE POSTURE","RENDERING SUPERGATE UPGRADE LOG","BYPASSING SECURITY PROTOCOLS","DECRYPTING NEURAL ARCHIVE","SYSTEM REBOOT INITIATED"];
   var term=document.getElementById('bg-terminal'),bar=document.getElementById('bg-progress');
   var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+<>?";
   var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
@@ -308,7 +308,7 @@
 })();
 
 /* GAME */
-const GATE='https://kaixu67.skyesoverlondon.workers.dev';
+const GATE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
 const LS_TOKEN='triviago_token';
 const DIFF={easy:{time:20,mult:1},medium:{time:15,mult:1.5},hard:{time:10,mult:2},nightmare:{time:7,mult:3}};
 let questions=[],qIdx=0,score=0,streak=0,bestStreak=0,correctCount=0,timerInterval=null;

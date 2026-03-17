@@ -200,7 +200,7 @@
 
 <script>
 
-const GATE='https://kaixu67.skyesoverlondon.workers.dev';
+const GATE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
 const LS='kaixu_gate_token';
 const $=id=>document.getElementById(id);
 const tok=$('tok');if(!tok){}else{tok.value=localStorage.getItem(LS)||'';}
@@ -255,7 +255,7 @@ $('run-btn').onclick=async()=>{
 <script>
 (function(){
 
-    var lines=["INITIALIZING SKYES OVER LONDON EDITORIAL SHELL","LOADING KAIXU GATE XNTH POSTMORTEM","VERIFYING GOVERNANCE POSTURE","RENDERING SUPERGATE UPGRADE LOG","BYPASSING SECURITY PROTOCOLS","DECRYPTING NEURAL ARCHIVE","SYSTEM REBOOT INITIATED"];
+    var lines=["INITIALIZING SKYES OVER LONDON EDITORIAL SHELL","LOADING KAIXU GATE 0MEGASKYEGATE NORMALIZATION","VERIFYING GOVERNANCE POSTURE","RENDERING SUPERGATE UPGRADE LOG","BYPASSING SECURITY PROTOCOLS","DECRYPTING NEURAL ARCHIVE","SYSTEM REBOOT INITIATED"];
     var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
     var colors=['#00f3ff','#a243ff','#ffd36a','#ffffff'];
     var sc=document.getElementById('bg-stars');

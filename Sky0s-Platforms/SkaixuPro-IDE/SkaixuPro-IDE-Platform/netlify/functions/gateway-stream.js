@@ -1,8 +1,8 @@
-// gateway-stream.js — Server-side streaming proxy to kaixugateway13
+// gateway-stream.js — Server-side streaming proxy to omegaskyegate
 // Collects the upstream SSE stream and returns it through, bypassing CORS.
 // Works in both netlify dev and Netlify deployment.
 
-const UPSTREAM = 'https://kaixugateway13.netlify.app/.netlify/functions/gateway-stream';
+const UPSTREAM = (process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev') + '/.netlify/functions/gateway-stream';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',

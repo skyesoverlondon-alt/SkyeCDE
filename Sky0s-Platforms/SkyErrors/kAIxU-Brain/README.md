@@ -111,11 +111,11 @@ Notes:
 
 ## Brain Selector Registry
 
-- Primary live brain: `kAIxU6.7` (`kaixu67`, Delta Gate)
+- Primary live brain: `kAIxU6.7` (`omega`, 0megaSkyeGate)
 - Secondary brain: `kAIxU0s` (`kaixu0s`, this Skyes Over London branded brain)
 - Third brain: `skAIxU Flow 3.2` (`flow32`)
 - Registry endpoint: `GET /v1/admin/brains`
-- Resolver endpoint: `POST /v1/admin/brains/resolve` with body `{ "target": "kaixu67|kaixu0s|flow32" }`
+- Resolver endpoint: `POST /v1/admin/brains/resolve` with body `{ "target": "omega|flow32" }`
 - Backward compatibility: legacy target IDs `core67` and `coresi4` are still accepted and mapped to `kaixu67` and `kaixu0s`.
 - Deprecation notice: use `kaixu67` and `kaixu0s` for all new integrations; legacy IDs remain supported for existing clients.
 - Selector is env-driven and does not reroute existing apps automatically.

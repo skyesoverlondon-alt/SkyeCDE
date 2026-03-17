@@ -109,7 +109,7 @@ Netlify → Site settings → Environment variables:
 
 | Variable               | Default / Notes                                          |
 |------------------------|----------------------------------------------------------|
-| `KAIXU_GATE_BASE`      | `https://kaixu67.skyesoverlondon.workers.dev`            |
+| `KAIXU_GATE_BASE`      | `https://0megaskyegate.skyesoverlondon.workers.dev`            |
 | `KAIXU_DEFAULT_MODEL`  | `kAIxU-flash` (or `kAIxU-pro`)                          |
 | `DATABASE_REPLICA_URL` | Neon read replica — falls back to primary if unset       |
 | `RESEND_FROM_EMAIL`    | Optional Resend-specific sender override (else `SMTP_FROM_EMAIL`) |

@@ -1,6 +1,6 @@
-CORE BUILD DIRECTIVE — kAIxuGateway13-ONLY AI ROUTING (MANDATORY)
+CORE BUILD DIRECTIVE — kAIxu0megaSkyeGate-ONLY AI ROUTING (MANDATORY)
 
-You are modifying or building a web application. This is a hard requirement: the application must route 100% of all AI/LLM requests through kAIxuGateway13. Any direct provider usage is forbidden. Any build that violates any item below is considered FAILED and must be corrected before delivery.
+You are modifying or building a web application. This is a hard requirement: the application must route 100% of all AI/LLM requests through kAIxu0megaSkyeGate. Any direct provider usage is forbidden. Any build that violates any item below is considered FAILED and must be corrected before delivery.
 
 ABSOLUTE PROHIBITIONS (ZERO TOLERANCE)
 
@@ -22,13 +22,13 @@ https://generativelanguage.googleapis.com/
 Ensure there are no remaining call sites, helpers, or legacy paths that touch provider APIs.
 
 REQUIRED GATEWAY (USE EXACTLY)
-KAIXU_GATEWAY_BASE = https://kaixugateway13.netlify.app
+KAIXU_GATEWAY_BASE = https://0megaskyegate.skyesoverlondon.workers.dev
 
 Non-stream endpoint:
-POST https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat
+POST https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat
 
 Streaming SSE endpoint:
-POST https://kaixugateway13.netlify.app/.netlify/functions/gateway-stream
+POST https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-stream
 
 Authorization header (BOTH endpoints):
 Authorization: Bearer <KAIXU_VIRTUAL_KEY>
@@ -126,7 +126,7 @@ DELIVERY REQUIREMENTS (NON-NEGOTIABLE)
 
 Output FULL updated files (no partial snippets, no TODOs).
 
-All AI calls must be routed through kAIxuGateway13 endpoints exactly as specified.
+All AI calls must be routed through kAIxu0megaSkyeGate endpoints exactly as specified.
 
 Any direct provider call or SDK usage anywhere in the repo is an automatic failure.
 
@@ -150,11 +150,11 @@ NETLIFY CONFIGURATION — netlify.toml
 
   [[redirects]]
     from   = "/api/*"
-    to     = "https://kaixugateway13.netlify.app/:splat"
+    to     = "https://0megaskyegate.skyesoverlondon.workers.dev/:splat"
     status = 200
     force  = true
 
-  The /api/* redirect proxies every client-side /api/ call to the kAIxuGateway13
+  The /api/* redirect proxies every client-side /api/ call to the kAIxu0megaSkyeGate
   origin so that client code never references the gateway URL directly in production.
 
 PACKAGE MANIFEST — package.json
@@ -207,7 +207,7 @@ LOCAL DEVELOPMENT — server.py
   Key inject  : server.py auto-reads .env and injects the Bearer token into proxied
                 requests when the client omits an Authorization header.
   Endpoints   : GET /api/kaixu-key → returns the key JSON (local dev only)
-                All other /api/* → proxied to kaixugateway13.netlify.app via
+                All other /api/* → proxied to omegaskyegate.netlify.app via
                 http.client.HTTPSConnection + read1() for true SSE streaming.
 
 .gitignore (MUST NOT BE COMMITTED)

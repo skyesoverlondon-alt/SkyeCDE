@@ -1,5 +1,5 @@
 /**
- * Safe local end-to-end smoke test for Kaixu Gateway13.
+ * Safe local end-to-end smoke test for Kaixu 0megaSkyeGate.
  *
  * Requires `netlify dev` running on http://localhost:8888 and env vars loaded (see env.template).
  *
