@@ -14,6 +14,8 @@ import { injectable, inject, postConstruct } from '@theia/core/shared/inversify'
 import * as React from '@theia/core/shared/react';
 import { GettingStartedWidget } from '@theia/getting-started/lib/browser/getting-started-widget';
 import { FILE_NAVIGATOR_TOGGLE_COMMAND_ID } from '@theia/navigator/lib/browser/navigator-contribution';
+import { SkyeAppRegistryService, SkyePlatformApp, SkyePlatformRegistry } from './skye-app-registry';
+import { SkyesOverLondonCommands } from './skyes-over-london-contribution';
 
 interface StudioAction {
     label: string;
@@ -36,12 +38,24 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     static readonly ID = 'skye-studio-launcher';
     static readonly LABEL = 'Studio';
 
-    protected readonly productActions: StudioAction[] = [
+    protected readonly shellActions: StudioAction[] = [
+        {
+            label: '0s App Catalog',
+            description: 'Open Extensions on the built-in 0s registry surface.',
+            icon: codicon('extensions'),
+            run: () => this.executeCommand(SkyesOverLondonCommands.OPEN_APP_CATALOG.id)
+        },
         {
             label: 'Home',
-            description: 'Return to the creative dashboard.',
+            description: 'Return to the 0s welcome and overview surfaces.',
             icon: codicon('home'),
             run: () => this.executeCommand(GettingStartedWidget.ID)
+        },
+        {
+            label: 'New File',
+            description: 'Start a fresh document, script or prompt.',
+            icon: codicon('new-file'),
+            run: () => this.executeCommand(CommonCommands.NEW_UNTITLED_TEXT_FILE.id)
         },
         {
             label: 'Explorer',
@@ -50,31 +64,16 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
             run: () => this.executeCommand(FILE_NAVIGATOR_TOGGLE_COMMAND_ID)
         },
         {
-            label: 'Extensions',
-            description: 'Manage OpenVSX integrations and add-ons.',
-            icon: codicon('extensions'),
-            run: () => this.executeCommand('vsxExtensions.toggle')
+            label: 'Command Palette',
+            description: 'Trigger any command from one search surface.',
+            icon: codicon('terminal-cmd'),
+            run: () => this.executeCommand('workbench.action.showCommands')
         },
         {
             label: 'AI Chat',
             description: 'Launch the built-in AI workspace panel.',
             icon: codicon('sparkle'),
             run: () => this.executeCommand('aiChat:toggle')
-        }
-    ];
-
-    protected readonly workflowActions: StudioAction[] = [
-        {
-            label: 'New File',
-            description: 'Start a fresh document, script or prompt.',
-            icon: codicon('new-file'),
-            run: () => this.executeCommand(CommonCommands.NEW_UNTITLED_TEXT_FILE.id)
-        },
-        {
-            label: 'Command Palette',
-            description: 'Trigger any command from one search surface.',
-            icon: codicon('terminal-cmd'),
-            run: () => this.executeCommand('workbench.action.showCommands')
         },
         {
             label: 'Settings',
@@ -96,20 +95,26 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
             href: PRODUCT_DOCS_URL
         },
         {
-            label: 'OpenVSX Marketplace',
-            href: 'https://open-vsx.org/'
-        },
-        {
             label: 'Platform Source',
             href: PRODUCT_SOURCE_URL
+        },
+        {
+            label: 'Launcher Directive',
+            href: `${PRODUCT_SOURCE_URL}/blob/main/SkyeDevNotes/PAtches%20and%20upgrades/implementation-directives/0slauncherimprovements`
         }
     ];
+
+    protected registry: SkyePlatformRegistry | undefined;
+    protected loadError: string | undefined;
 
     @inject(CommandRegistry)
     protected readonly commands: CommandRegistry;
 
     @inject(WindowService)
     protected readonly windowService: WindowService;
+
+    @inject(SkyeAppRegistryService)
+    protected readonly registryService: SkyeAppRegistryService;
 
     @postConstruct()
     protected init(): void {
@@ -119,6 +124,17 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
         this.title.closable = false;
         this.title.iconClass = codicon('rocket');
         this.addClass('skye-studio-launcher-widget');
+        void this.loadRegistry();
+        this.update();
+    }
+
+    protected async loadRegistry(): Promise<void> {
+        try {
+            this.registry = await this.registryService.getRegistry();
+            this.loadError = undefined;
+        } catch (error) {
+            this.loadError = error instanceof Error ? error.message : 'Unable to load the 0s app registry.';
+        }
         this.update();
     }
 
@@ -128,6 +144,11 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
 
     protected async openExternal(href: string): Promise<void> {
         await this.windowService.openNewWindow(href, { external: true });
+    }
+
+    protected async launchApp(app: SkyePlatformApp): Promise<void> {
+        const href = app.external ? app.href : new URL(app.href, window.location.origin).toString();
+        await this.windowService.openNewWindow(href, { external: app.external });
     }
 
     protected renderActionGroup(title: string, intro: string, actions: StudioAction[]): React.ReactNode {
@@ -156,7 +177,7 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
         return <section className='skye-launcher-section'>
             <div className='skye-launcher-section-header'>
                 <h3>References</h3>
-                <p>Keep upstream docs and extension sources close while you customize the shell.</p>
+                <p>Keep the launcher source of truth, runtime docs and product repo close while you reshape the shell around the 0s.</p>
             </div>
             <div className='skye-launcher-link-list'>
                 {this.referenceLinks.map(link => <button
@@ -171,16 +192,84 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
         </section>;
     }
 
+    protected renderFeaturedApps(): React.ReactNode {
+        const featuredApps = (this.registry?.apps ?? []).filter(app => app.featured).slice(0, 6);
+        if (!featuredApps.length) {
+            return <section className='skye-launcher-section'>
+                <div className='skye-launcher-section-header'>
+                    <h3>Featured 0s apps</h3>
+                    <p>{this.loadError ?? 'Loading the platform catalog from the built-in registry.'}</p>
+                </div>
+            </section>;
+        }
+
+        return <section className='skye-launcher-section'>
+            <div className='skye-launcher-section-header'>
+                <h3>Featured 0s apps</h3>
+                <p>These launch paths come from the platform registry, not from marketplace add-ons.</p>
+            </div>
+            <div className='skye-launcher-card-grid'>
+                {featuredApps.map(app => <button
+                    key={app.id}
+                    className='skye-launcher-card'
+                    onClick={() => void this.launchApp(app)}
+                >
+                    <span className='skye-launcher-card-badge'>{badgeText(app.label)}</span>
+                    <span className='skye-launcher-card-copy'>
+                        <strong>{app.label}</strong>
+                        <small>{app.summary}</small>
+                    </span>
+                    <span className='skye-launcher-card-cta'>Launch</span>
+                </button>)}
+            </div>
+        </section>;
+    }
+
+    protected renderRegistrySummary(): React.ReactNode {
+        const groups = this.registry?.groups ?? [];
+        const apps = this.registry?.apps ?? [];
+        return <section className='skye-launcher-section'>
+            <div className='skye-launcher-section-header'>
+                <h3>Registry status</h3>
+                <p>The launcher and the Extensions catalog now read from the same first-party registry surface.</p>
+            </div>
+            <div className='skye-launcher-metric-strip'>
+                <div className='skye-launcher-metric'>
+                    <strong>{apps.length}</strong>
+                    <span>launchable apps</span>
+                </div>
+                <div className='skye-launcher-metric'>
+                    <strong>{groups.length}</strong>
+                    <span>registry groups</span>
+                </div>
+                <div className='skye-launcher-metric'>
+                    <strong>{(this.registry?.source ?? 'pending').replace('-', ' ')}</strong>
+                    <span>active source</span>
+                </div>
+            </div>
+        </section>;
+    }
+
     override render(): React.ReactNode {
         return <div className='skye-launcher-shell'>
             <header className='skye-launcher-hero'>
-                <span className='skye-badge'>Royal neon access</span>
-                <h2>Launch the command deck fast.</h2>
-                <p>Pin the core views you use most and keep creative workflow controls one click away in the left rail.</p>
+                <span className='skye-badge'>0s command deck</span>
+                <h2>Launch the platform first. Treat Theia as the shell layer.</h2>
+                <p>The launcher now prioritizes first-party app surfaces and routes users into the built-in catalog instead of framing marketplace extensions as the product.</p>
             </header>
-            {this.renderActionGroup('Core Surfaces', 'Jump between the main studio spaces.', this.productActions)}
-            {this.renderActionGroup('Workflow Tools', 'Create, configure and operate from the same place.', this.workflowActions)}
+            {this.renderFeaturedApps()}
+            {this.renderRegistrySummary()}
+            {this.renderActionGroup('Shell Utilities', 'Keep file navigation, commands and settings available without taking over the launcher story.', this.shellActions)}
             {this.renderReferenceLinks()}
         </div>;
     }
+}
+
+function badgeText(label: string): string {
+    return label
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join('');
 }

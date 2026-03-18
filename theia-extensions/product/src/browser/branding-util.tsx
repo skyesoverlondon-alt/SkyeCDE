@@ -10,6 +10,7 @@
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
 import * as React from 'react';
 import { getBrandingVariant } from './skyes-over-london-config';
+import { SkyePlatformApp, SkyePlatformRegistry } from './skye-app-registry';
 
 const PRODUCT_SOURCE_URL = 'https://github.com/SkyeCDE/SkyeCDE';
 const PRODUCT_DOCS_URL = `${PRODUCT_SOURCE_URL}#readme`;
@@ -27,6 +28,18 @@ interface StudioCard {
     eyebrow: string;
     href: string;
 }
+
+const CORE_PLATFORM_LABELS = [
+    'SuperIDE',
+    'Neural Space Pro',
+    'kAIxU Platform',
+    'GBP Rescue Suite',
+    'Contractor Workflow Suite',
+    'SkyeCloud',
+    'SkyeDocxPro',
+    'SkyeVault Pro',
+    'SkyeAdmin'
+];
 
 const studioCards: StudioCard[] = [
     {
@@ -84,7 +97,7 @@ export function renderProductName(): React.ReactNode {
 
 export function renderProductTagline(): React.ReactNode {
     return <p className='skye-hero-tagline'>
-        A royal neon command deck for design, media, automation and AI-assisted production.
+        A 0s-first command deck where the platform catalog is primary and the Theia shell stays in the support layer.
     </p>;
 }
 
@@ -94,9 +107,9 @@ export function renderStudioBrandStrip(): React.ReactNode {
     return <section className='skye-brand-strip'>
         <div className='theia-icon skye-brand-strip-mark' aria-hidden='true'></div>
         <div className='skye-brand-strip-copy'>
-            <span className='skye-card-eyebrow'>Royal neon identity</span>
+            <span className='skye-card-eyebrow'>0s shell truth</span>
             <strong>Skyes Over London{suffix}</strong>
-            <p>Floating gold-and-purple branding for creative systems, launch surfaces and AI-assisted production flows.</p>
+            <p>The 0s platform is the product surface. Theia is the shell upgrade that hosts the launcher, editors, and extension plumbing.</p>
         </div>
     </section>;
 }
@@ -118,13 +131,13 @@ export function renderWhatIs(windowService: WindowService): React.ReactNode {
             What is this workspace?
         </h3>
         <div>
-            Skyes Over London is a custom production shell for creative operations. It combines project structure, automation, assets and tooling inside a single
-            studio environment powered by an open <BrowserLink text="platform foundation"
+            Skyes Over London is a 0s command environment that surfaces your platform apps, launch lanes, and control menus inside a customizable shell. The underlying
+            editor and extension plumbing are powered by an open <BrowserLink text="platform foundation"
                 url={PRODUCT_SOURCE_URL} windowService={windowService} ></BrowserLink>.
         </div>
         <div>
-            Use it as your home base for creative coding, asset management, publishing flows, content ops and AI-assisted production. The shell is open-ended, so you can keep
-            evolving it into a studio system that matches your pipeline.
+            Use it as the front door into SuperIDE, kAIxU, contractor systems, admin surfaces, doc production, vault-backed flows, and the rest of the catalog. The shell should tell
+            that 0s-first story consistently across the launcher, Getting Started, About, and Extensions.
         </div>
     </div>;
 }
@@ -132,14 +145,14 @@ export function renderWhatIs(windowService: WindowService): React.ReactNode {
 export function renderExtendingCustomizing(windowService: WindowService): React.ReactNode {
     return <div className='gs-section'>
         <h3 className='gs-section-header'>
-            Extend the studio
+            Extend the shell
         </h3>
         <div >
-            Add runtime features with VS Code extensions from the <BrowserLink text="OpenVSX registry" url="https://open-vsx.org/"
-                windowService={windowService} ></BrowserLink>, or wire in your own launcher panels, media tools, prompts and workflow extensions directly in this repo.
+            Keep first-party 0s apps in the platform registry and expose them through the launcher and Extensions surfaces. Marketplace add-ons from the <BrowserLink text="OpenVSX registry" url="https://open-vsx.org/"
+                windowService={windowService} ></BrowserLink> stay secondary to the built-in catalog.
         </div>
         <div>
-            Because the shell sits on a composable platform core, it can serve as a <span className='gs-text-bold'>product foundation</span> for your own design cloud, media console or internal creative OS.
+            Because the shell sits on a composable platform core, it can serve as the host layer for your own app registry, control menus, and platform families.
             Browse <BrowserLink text="the platform docs" url={PRODUCT_DOCS_URL}
                 windowService={windowService} ></BrowserLink> when you want to push the product deeper.
         </div>
@@ -245,6 +258,115 @@ function renderCardGrid(cards: StudioCard[], windowService: WindowService): Reac
     </div>;
 }
 
+function renderRegistryTileGrid(apps: SkyePlatformApp[]): React.ReactNode {
+    return <div className='skye-launcher-card-grid'>
+        {apps.map(app => <a
+            key={`${app.id}:${app.href}`}
+            className='skye-launcher-card'
+            href={app.href}
+            target={app.external ? '_blank' : undefined}
+            rel={app.external ? 'noreferrer' : undefined}
+        >
+            <span className='skye-launcher-card-badge'>{badgeText(app.label)}</span>
+            <span className='skye-launcher-card-copy'>
+                <strong>{app.label}</strong>
+                <small>{app.summary}</small>
+            </span>
+            <span className='skye-launcher-card-cta'>{app.external ? 'External' : 'Launch'}</span>
+        </a>)}
+    </div>;
+}
+
+function findCorePlatforms(registry?: SkyePlatformRegistry): SkyePlatformApp[] {
+    if (!registry) {
+        return [];
+    }
+    const selected = CORE_PLATFORM_LABELS
+        .map(label => registry.apps.find(app => app.label === label))
+        .filter((app): app is SkyePlatformApp => !!app);
+
+    return Array.from(new Map(selected.map(app => [`${app.id}:${app.href}`, app])).values());
+}
+
+export function renderRegistryHighlights(_windowService: WindowService, registry?: SkyePlatformRegistry): React.ReactNode {
+    if (!registry) {
+        return <div className='gs-section'>
+            <h3 className='gs-section-header'>0s launch deck</h3>
+            <div className='skye-section-intro'>Loading the built-in registry so Getting Started and About can speak from the same app catalog.</div>
+        </div>;
+    }
+
+    const coreApps = findCorePlatforms(registry);
+    return <div className='gs-section'>
+        <h3 className='gs-section-header'>0s launch deck</h3>
+        <div className='skye-section-intro'>Core platforms and major launch surfaces that should define the shell story before marketplace extensions do.</div>
+        {renderRegistryTileGrid(coreApps)}
+    </div>;
+}
+
+export function renderRegistryStatus(registry?: SkyePlatformRegistry): React.ReactNode {
+    return <div className='gs-section'>
+        <h3 className='gs-section-header'>Built-in 0s registry</h3>
+        <div className='skye-launcher-metric-strip'>
+            <div className='skye-launcher-metric'>
+                <strong>{registry?.apps.length ?? 0}</strong>
+                <span>catalog entries</span>
+            </div>
+            <div className='skye-launcher-metric'>
+                <strong>{registry?.groups.length ?? 0}</strong>
+                <span>registry groups</span>
+            </div>
+            <div className='skye-launcher-metric'>
+                <strong>{registry?.source ?? 'pending'}</strong>
+                <span>active source</span>
+            </div>
+        </div>
+    </div>;
+}
+
+export function renderRegistryCatalog(_windowService: WindowService, registry?: SkyePlatformRegistry): React.ReactNode {
+    if (!registry) {
+        return <div className='gs-section'>
+            <h3 className='gs-section-header'>Full app catalog</h3>
+            <div className='skye-section-intro'>Waiting for the aggregated registry payload.</div>
+        </div>;
+    }
+
+    return <div className='gs-section'>
+        <h3 className='gs-section-header'>Full app catalog</h3>
+        <div className='skye-section-intro'>The shell now reads from the aggregated registry instead of only showing generic studio placeholders.</div>
+        <div className='skye-registry-group-list'>
+            {registry.groups.map(group => {
+                const apps = registry.apps.filter(app => app.groupId === group.id);
+                if (!apps.length) {
+                    return undefined;
+                }
+                return <section key={group.id} className='skye-registry-group'>
+                    <div className='skye-registry-group-header'>
+                        <div>
+                            <h4>{group.label}</h4>
+                            {group.description && <p>{group.description}</p>}
+                        </div>
+                        <span className='skye-catalog-group-count'>{apps.length} entries</span>
+                    </div>
+                    <div className='skye-registry-chip-list'>
+                        {apps.map(app => <a
+                            key={`${app.id}:${app.href}`}
+                            className='skye-registry-chip'
+                            href={app.href}
+                            target={app.external ? '_blank' : undefined}
+                            rel={app.external ? 'noreferrer' : undefined}
+                        >
+                            <strong>{app.label}</strong>
+                            <small>{app.external ? 'External property' : 'Built-in launch surface'}</small>
+                        </a>)}
+                    </div>
+                </section>;
+            })}
+        </div>
+    </div>;
+}
+
 export function renderStudioHero(): React.ReactNode {
     return <section className='skye-hero-panel'>
         <div className='skye-hero-copy'>
@@ -288,4 +410,13 @@ export function renderStudioWorkflow(windowService: WindowService): React.ReactN
         <div className='skye-section-intro'>Map your repo into clear intake, creation and delivery stages so the shell feels like a real production environment.</div>
         {renderCardGrid(workflowCards, windowService)}
     </div>;
+}
+
+function badgeText(label: string): string {
+    return label
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join('');
 }

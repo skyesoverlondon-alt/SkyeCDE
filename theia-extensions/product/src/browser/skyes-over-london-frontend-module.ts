@@ -16,6 +16,10 @@ import { CommandContribution } from '@theia/core/lib/common/command';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { GettingStartedWidget } from '@theia/getting-started/lib/browser/getting-started-widget';
 import { MenuContribution } from '@theia/core/lib/common/menu';
+import { SkyeAppCatalogContribution } from './skye-app-catalog-contribution';
+import { SkyeAppCatalogWidget } from './skye-app-catalog-widget';
+import { SkyeBackgroundSceneContribution } from './skye-background-scene-contribution';
+import { SkyeAppRegistryService } from './skye-app-registry';
 import { SkyeStudioLauncherContribution } from './skye-studio-launcher-contribution';
 import { SkyeStudioLauncherWidget } from './skye-studio-launcher-widget';
 import { SkyesOverLondonAboutDialog } from './skyes-over-london-about-dialog';
@@ -35,6 +39,12 @@ export default new ContainerModule((bind, _unbind, isBound, rebind) => {
         id: SkyeStudioLauncherWidget.ID,
         createWidget: () => context.container.get<SkyeStudioLauncherWidget>(SkyeStudioLauncherWidget),
     })).inSingletonScope();
+    bind(SkyeAppRegistryService).toSelf().inSingletonScope();
+    bind(SkyeAppCatalogWidget).toSelf();
+    bind(WidgetFactory).toDynamicValue(context => ({
+        id: SkyeAppCatalogWidget.ID,
+        createWidget: () => context.container.get<SkyeAppCatalogWidget>(SkyeAppCatalogWidget),
+    })).inSingletonScope();
     if (isBound(AboutDialog)) {
         rebind(AboutDialog).to(SkyesOverLondonAboutDialog).inSingletonScope();
     } else {
@@ -43,6 +53,12 @@ export default new ContainerModule((bind, _unbind, isBound, rebind) => {
 
     bindViewContribution(bind, SkyeStudioLauncherContribution);
     bind(FrontendApplicationContribution).toService(SkyeStudioLauncherContribution);
+
+    bind(SkyeAppCatalogContribution).toSelf().inSingletonScope();
+    bind(FrontendApplicationContribution).toService(SkyeAppCatalogContribution);
+
+    bind(SkyeBackgroundSceneContribution).toSelf().inSingletonScope();
+    bind(FrontendApplicationContribution).toService(SkyeBackgroundSceneContribution);
 
     bind(SkyesOverLondonContribution).toSelf().inSingletonScope();
     [CommandContribution, MenuContribution].forEach(serviceIdentifier =>

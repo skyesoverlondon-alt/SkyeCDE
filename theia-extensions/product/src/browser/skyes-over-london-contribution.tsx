@@ -32,6 +32,11 @@ export namespace SkyesOverLondonCommands {
         category: CATEGORY,
         label: 'Platform Docs'
     };
+    export const OPEN_APP_CATALOG: Command = {
+        id: 'skyes-over-london:open-app-catalog',
+        category: CATEGORY,
+        label: 'Open 0s App Catalog'
+    };
 }
 
 @injectable()
@@ -50,6 +55,12 @@ export class SkyesOverLondonContribution implements CommandContribution, MenuCon
         commandRegistry.registerCommand(SkyesOverLondonCommands.DOCUMENTATION, {
             execute: () => this.windowService.openNewWindow(SkyesOverLondonContribution.DOCUMENTATION_URL, { external: true })
         });
+        commandRegistry.registerCommand(SkyesOverLondonCommands.OPEN_APP_CATALOG, {
+            execute: async () => {
+                await commandRegistry.executeCommand('vsxExtensions.toggle');
+                await commandRegistry.executeCommand('vsxExtension.showBuiltins');
+            }
+        });
     }
 
     registerMenus(menus: MenuModelRegistry): void {
@@ -62,6 +73,11 @@ export class SkyesOverLondonContribution implements CommandContribution, MenuCon
             commandId: SkyesOverLondonCommands.DOCUMENTATION.id,
             label: SkyesOverLondonCommands.DOCUMENTATION.label,
             order: '2'
+        });
+        menus.registerMenuAction(SkyesOverLondonMenus.HELP, {
+            commandId: SkyesOverLondonCommands.OPEN_APP_CATALOG.id,
+            label: SkyesOverLondonCommands.OPEN_APP_CATALOG.label,
+            order: '3'
         });
     }
 }

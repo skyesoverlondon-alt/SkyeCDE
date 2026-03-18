@@ -1,29 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap");
 
 :root {
-  --skye-bg-0: #07030f;
-  --skye-bg-1: #180827;
-  --skye-bg-2: #31114a;
-  --skye-panel: rgba(20, 8, 31, 0.82);
-  --skye-panel-2: rgba(33, 11, 48, 0.9);
-  --skye-border: rgba(255, 216, 107, 0.24);
+  --skye-bg-0: #04090a;
+  --skye-bg-1: #081815;
+  --skye-bg-2: #123126;
+  --skye-panel: rgba(10, 20, 18, 0.76);
+  --skye-panel-2: rgba(7, 14, 13, 0.92);
+  --skye-border: rgba(126, 217, 167, 0.26);
   --skye-gold: #ffd86b;
-  --skye-purple: #8d3dff;
-  --skye-cyan: #f5c04a;
-  --skye-text: #fbf5ff;
-  --skye-muted: #dbcdea;
-  --skye-shadow: 0 24px 72px rgba(0,0,0,.45), 0 0 40px rgba(141,61,255,.08);
+  --skye-purple: #7ed9a7;
+  --skye-cyan: #b7ffd0;
+  --skye-text: #edf9f1;
+  --skye-muted: #a8c8b3;
+  --skye-shadow: 0 24px 72px rgba(0,0,0,.45), 0 0 40px rgba(126,217,167,.08);
   --skye-font-display: "Orbitron", sans-serif;
   --skye-font-body: "Space Grotesk", sans-serif;
   --skye-font-mono: "IBM Plex Mono", monospace;
 }
 
 html, body {
-  background:
-    radial-gradient(circle at 12% 14%, rgba(141,61,255,.24), transparent 30%),
-    radial-gradient(circle at 84% 12%, rgba(255,216,107,.16), transparent 26%),
-    radial-gradient(circle at 50% 92%, rgba(255,216,107,.08), transparent 24%),
-    linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 55%, #05040b);
+  background: linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 55%, #020706);
   color: var(--skye-text);
   font-family: var(--skye-font-body);
 }
@@ -34,13 +30,46 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(141,61,255,.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,216,107,.06) 1px, transparent 1px);
+    linear-gradient(rgba(126,217,167,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,216,107,.05) 1px, transparent 1px);
   background-size: 40px 40px;
   transform: perspective(1000px) rotateX(73deg) scale(1.25);
   transform-origin: center top;
   opacity: .18;
   z-index: 0;
+}
+
+.skye-shell-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.skye-shell-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(126,217,167,.16), transparent 28%),
+    radial-gradient(circle at 82% 14%, rgba(255,216,107,.14), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgba(126,217,167,.1), transparent 34%);
+}
+
+.skye-shell-background-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: .95;
+}
+
+.theia-ApplicationShell,
+.theia-app-shell,
+.theia-app-main,
+.monaco-workbench {
+  position: relative;
+  z-index: 1;
 }
 
 .theia-ApplicationShell,
@@ -517,7 +546,7 @@ button:hover,
   overflow: hidden;
   border: 1px solid var(--skye-border);
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(19, 14, 32, 0.94), rgba(10, 8, 18, 0.9));
+  background: linear-gradient(180deg, rgba(7, 30, 24, 0.94), rgba(6, 17, 14, 0.9));
   box-shadow: var(--skye-shadow);
 }
 
@@ -526,7 +555,7 @@ button:hover,
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.05), transparent 34%, transparent 70%, rgba(255,216,107,.07));
+  background: linear-gradient(135deg, rgba(167,255,205,.06), transparent 34%, transparent 70%, rgba(255,216,107,.08));
   pointer-events: none;
 }
 
@@ -622,4 +651,208 @@ button:hover,
 
 .skye-launcher-link {
   justify-content: space-between;
+}
+
+.skye-launcher-card-grid,
+.skye-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.skye-launcher-card,
+.skye-catalog-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 219, 164, 0.22) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)) !important;
+  color: var(--skye-text) !important;
+  text-align: left;
+}
+
+.skye-launcher-card:hover,
+.skye-catalog-card:hover {
+  border-color: rgba(255, 216, 107, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.skye-launcher-card-badge,
+.skye-catalog-card-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(120, 219, 164, 0.26), rgba(255, 216, 107, 0.14));
+  color: #dcffe9;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.skye-launcher-card-copy,
+.skye-catalog-card-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.skye-launcher-card-copy strong,
+.skye-catalog-card-copy strong {
+  font-size: 0.98rem;
+}
+
+.skye-launcher-card-copy small,
+.skye-catalog-card-copy small,
+.skye-catalog-group-header p {
+  color: var(--skye-muted);
+  line-height: 1.5;
+}
+
+.skye-launcher-card-cta,
+.skye-catalog-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #bff8d2;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.skye-registry-group-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.skye-registry-group {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(126, 217, 167, 0.18);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+}
+
+.skye-registry-group-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skye-registry-group-header h4 {
+  margin: 0;
+  font-family: var(--skye-font-display);
+  font-size: .9rem;
+}
+
+.skye-registry-group-header p {
+  margin: 6px 0 0;
+  color: var(--skye-muted);
+  line-height: 1.45;
+}
+
+.skye-registry-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skye-registry-chip {
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(126, 217, 167, 0.18);
+  background: rgba(0, 0, 0, 0.14);
+  color: var(--skye-text);
+  text-decoration: none;
+}
+
+.skye-registry-chip small {
+  color: var(--skye-muted);
+}
+
+.skye-launcher-metric-strip,
+.skye-catalog-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.skye-launcher-metric,
+.skye-catalog-hero-stats > div,
+.skye-catalog-group-count {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(120, 219, 164, 0.18);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.skye-launcher-metric strong,
+.skye-catalog-hero-stats strong {
+  font-size: 1rem;
+  color: #dcffe9;
+  text-transform: capitalize;
+}
+
+.skye-launcher-metric span,
+.skye-catalog-hero-stats span,
+.skye-catalog-group-count {
+  color: var(--skye-muted);
+  font-size: 0.82rem;
+}
+
+.skye-app-catalog-widget {
+  min-width: 320px;
+}
+
+.skye-catalog-shell {
+  display: grid;
+  gap: 16px;
+  padding: 12px;
+  color: var(--skye-text);
+}
+
+.skye-catalog-hero,
+.skye-catalog-group {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(120, 219, 164, 0.2);
+  background: linear-gradient(180deg, rgba(6, 24, 19, 0.95), rgba(5, 13, 11, 0.92));
+  padding: 18px;
+}
+
+.skye-catalog-group-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skye-catalog-group-header h3 {
+  margin: 0;
+  font-family: var(--skye-font-display);
+  font-size: 0.98rem;
+}
+
+.skye-catalog-hero h2 {
+  margin: 10px 0 8px;
+  font-family: var(--skye-font-display);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.skye-catalog-hero p,
+.skye-catalog-group-header p {
+  margin: 0;
 }

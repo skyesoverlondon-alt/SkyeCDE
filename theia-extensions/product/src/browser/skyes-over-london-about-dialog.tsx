@@ -15,14 +15,16 @@ import {
     renderDownloads,
     renderProductName,
     renderProductTagline,
+    renderRegistryCatalog,
+    renderRegistryHighlights,
+    renderRegistryStatus,
     renderSourceCode,
-    renderStudioApps,
     renderStudioBrandStrip,
-    renderStudioWorkflow,
     renderSupport,
     renderTickets,
     renderWhatIs
 } from './branding-util';
+import { SkyeAppRegistryService, SkyePlatformRegistry } from './skye-app-registry';
 import { VSXEnvironment } from '@theia/vsx-registry/lib/common/vsx-environment';
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
 @injectable()
@@ -34,7 +36,11 @@ export class SkyesOverLondonAboutDialog extends AboutDialog {
     @inject(WindowService)
     protected readonly windowService: WindowService;
 
+    @inject(SkyeAppRegistryService)
+    protected readonly registryService: SkyeAppRegistryService;
+
     protected vscodeApiVersion: string;
+    protected registry: SkyePlatformRegistry | undefined;
 
     constructor(
         @inject(AboutDialogProps) protected readonly props: AboutDialogProps
@@ -44,6 +50,7 @@ export class SkyesOverLondonAboutDialog extends AboutDialog {
 
     protected async doInit(): Promise<void> {
         this.vscodeApiVersion = await this.environment.getVscodeApiVersion();
+        this.registry = await this.registryService.getRegistry().catch(() => undefined);
         super.doInit();
     }
 
@@ -72,6 +79,7 @@ export class SkyesOverLondonAboutDialog extends AboutDialog {
                     </section>
                 </div>
                 <div className='skye-dashboard-rail'>
+                    {renderRegistryStatus(this.registry)}
                     <div className='gs-section'>
                         <h3 className='gs-section-header'>Installed extensions</h3>
                         {this.renderExtensions()}
@@ -82,17 +90,17 @@ export class SkyesOverLondonAboutDialog extends AboutDialog {
             <hr className='gs-hr' />
             <div className='flex-grid'>
                 <div className='col'>
-                    {renderStudioApps(this.windowService)}
+                    {renderRegistryHighlights(this.windowService, this.registry)}
+                </div>
+            </div>
+            <div className='flex-grid'>
+                <div className='col'>
+                    {renderRegistryCatalog(this.windowService, this.registry)}
                 </div>
             </div>
             <div className='flex-grid'>
                 <div className='col'>
                     {renderWhatIs(this.windowService)}
-                </div>
-            </div>
-            <div className='flex-grid'>
-                <div className='col'>
-                    {renderStudioWorkflow(this.windowService)}
                 </div>
             </div>
             <div className='flex-grid'>

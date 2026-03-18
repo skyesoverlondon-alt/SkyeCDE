@@ -17,15 +17,17 @@ import {
     renderDocumentation,
     renderDownloads,
     renderExtendingCustomizing,
+    renderRegistryCatalog,
+    renderRegistryHighlights,
     renderSourceCode,
-    renderStudioApps,
+    renderRegistryStatus,
     renderStudioBrandStrip,
     renderStudioHero,
-    renderStudioWorkflow,
     renderSupport,
     renderTickets,
     renderWhatIs
 } from './branding-util';
+import { SkyeAppRegistryService, SkyePlatformRegistry } from './skye-app-registry';
 
 import { GettingStartedWidget } from '@theia/getting-started/lib/browser/getting-started-widget';
 import { VSXEnvironment } from '@theia/vsx-registry/lib/common/vsx-environment';
@@ -43,12 +45,17 @@ export class SkyesOverLondonGettingStartedWidget extends GettingStartedWidget {
     @inject(PreferenceService)
     protected readonly preferenceService: PreferenceService;
 
+    @inject(SkyeAppRegistryService)
+    protected readonly registryService: SkyeAppRegistryService;
+
     protected vscodeApiVersion: string;
+    protected registry: SkyePlatformRegistry | undefined;
 
     protected async doInit(): Promise<void> {
         super.doInit();
         this.vscodeApiVersion = await this.environment.getVscodeApiVersion();
         await this.preferenceService.ready;
+        this.registry = await this.registryService.getRegistry().catch(() => undefined);
         this.update();
     }
 
@@ -76,12 +83,12 @@ export class SkyesOverLondonGettingStartedWidget extends GettingStartedWidget {
                 <hr className='gs-hr' />
                 <div className='flex-grid'>
                     <div className='col'>
-                        {renderStudioApps(this.windowService)}
+                        {renderRegistryHighlights(this.windowService, this.registry)}
                     </div>
                 </div>
                 <div className='flex-grid'>
                     <div className='col'>
-                        {this.renderNews()}
+                        {renderRegistryCatalog(this.windowService, this.registry)}
                     </div>
                 </div>
                 <div className='flex-grid'>
@@ -91,7 +98,7 @@ export class SkyesOverLondonGettingStartedWidget extends GettingStartedWidget {
                 </div>
                 <div className='flex-grid'>
                     <div className='col'>
-                        {renderStudioWorkflow(this.windowService)}
+                        {renderRegistryStatus(this.registry)}
                     </div>
                 </div>
                 <div className='flex-grid'>
@@ -150,12 +157,12 @@ export class SkyesOverLondonGettingStartedWidget extends GettingStartedWidget {
             </div>
             <div className='flex-grid'>
                 <div className='col'>
-                    {this.renderRecentWorkspaces()}
+                    {this.renderSettings()}
                 </div>
             </div>
             <div className='flex-grid'>
                 <div className='col'>
-                    {this.renderSettings()}
+                    {this.renderRecentWorkspaces()}
                 </div>
             </div>
             <div className='flex-grid'>
