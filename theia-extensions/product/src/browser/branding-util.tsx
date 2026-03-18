@@ -9,7 +9,7 @@
 
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
 import * as React from 'react';
-import { getBrandingVariant } from './theia-ide-config';
+import { getBrandingVariant } from './skyes-over-london-config';
 
 const PRODUCT_SOURCE_URL = 'https://github.com/SkyeCDE/SkyeCDE';
 const PRODUCT_DOCS_URL = `${PRODUCT_SOURCE_URL}#readme`;

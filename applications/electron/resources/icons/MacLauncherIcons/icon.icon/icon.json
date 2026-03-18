@@ -32,8 +32,8 @@
       "hidden" : false,
       "layers" : [
         {
-          "image-name" : "Theia Light BG.jpg",
-          "name" : "Theia Light BG"
+          "image-name" : "Skyes Over London Light BG.jpg",
+          "name" : "Skyes Over London Light BG"
         }
       ],
       "lighting" : "combined",
@@ -57,8 +57,8 @@
       "hidden" : false,
       "layers" : [
         {
-          "image-name" : "Theia Dark BG.jpg",
-          "name" : "Theia Dark BG"
+          "image-name" : "Skyes Over London Dark BG.jpg",
+          "name" : "Skyes Over London Dark BG"
         }
       ],
       "lighting" : "combined",

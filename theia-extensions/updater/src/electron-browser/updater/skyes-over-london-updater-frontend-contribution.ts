@@ -19,37 +19,37 @@ import {
     Progress
 } from '@theia/core/lib/common';
 import { PreferenceScope, PreferenceService } from '@theia/core/lib/common';
-import { TheiaUpdater, TheiaUpdaterClient, UpdaterError, UpdateInfo, UpdateAvailabilityInfo, UpdaterSettings } from '../../common/updater/theia-updater';
+import { SkyesOverLondonUpdater, SkyesOverLondonUpdaterClient, UpdaterError, UpdateInfo, UpdateAvailabilityInfo, UpdaterSettings } from '../../common/updater/skyes-over-london-updater';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import { CommonMenus, OpenerService } from '@theia/core/lib/browser';
 import { ElectronMainMenuFactory } from '@theia/core/lib/electron-browser/menu/electron-main-menu-factory';
 import URI from '@theia/core/lib/common/uri';
 import { URI as VSCodeURI } from 'vscode-uri';
 
-export namespace TheiaUpdaterCommands {
+export namespace SkyesOverLondonUpdaterCommands {
 
     const category = 'Skyes Over London Updater';
 
     export const CHECK_FOR_UPDATES: Command = {
-        id: 'electron-theia:check-for-updates',
+        id: 'electron-skyes-over-london:check-for-updates',
         label: 'Check for Updates...',
         category
     };
 
     export const RESTART_TO_UPDATE: Command = {
-        id: 'electron-theia:restart-to-update',
+        id: 'electron-skyes-over-london:restart-to-update',
         label: 'Restart to Update',
         category
     };
 
 }
 
-export namespace TheiaUpdaterMenu {
+export namespace SkyesOverLondonUpdaterMenu {
     export const MENU_PATH: MenuPath = [...CommonMenus.FILE_SETTINGS_SUBMENU, '3_settings_submenu_update'];
 }
 
 @injectable()
-export class TheiaUpdaterClientImpl implements TheiaUpdaterClient {
+export class SkyesOverLondonUpdaterClientImpl implements SkyesOverLondonUpdaterClient {
 
     protected readonly onReadyToInstallEmitter = new Emitter<void>();
     readonly onReadyToInstall = this.onReadyToInstallEmitter.event;
@@ -99,7 +99,7 @@ export class ElectronMenuUpdater {
 }
 
 @injectable()
-export class TheiaUpdaterFrontendContribution implements CommandContribution, MenuContribution {
+export class SkyesOverLondonUpdaterFrontendContribution implements CommandContribution, MenuContribution {
 
     @inject(MessageService)
     protected readonly messageService: MessageService;
@@ -107,11 +107,11 @@ export class TheiaUpdaterFrontendContribution implements CommandContribution, Me
     @inject(ElectronMenuUpdater)
     protected readonly menuUpdater: ElectronMenuUpdater;
 
-    @inject(TheiaUpdater)
-    protected readonly updater: TheiaUpdater;
+    @inject(SkyesOverLondonUpdater)
+    protected readonly updater: SkyesOverLondonUpdater;
 
-    @inject(TheiaUpdaterClientImpl)
-    protected readonly updaterClient: TheiaUpdaterClientImpl;
+    @inject(SkyesOverLondonUpdaterClientImpl)
+    protected readonly updaterClient: SkyesOverLondonUpdaterClientImpl;
 
     @inject(PreferenceService)
     private readonly preferenceService: PreferenceService;
@@ -167,14 +167,14 @@ export class TheiaUpdaterFrontendContribution implements CommandContribution, Me
     }
 
     registerCommands(registry: CommandRegistry): void {
-        registry.registerCommand(TheiaUpdaterCommands.CHECK_FOR_UPDATES, {
+        registry.registerCommand(SkyesOverLondonUpdaterCommands.CHECK_FOR_UPDATES, {
             execute: async () => {
                 this.updater.checkForUpdates();
             },
             isEnabled: () => !this.readyToUpdate,
             isVisible: () => !this.readyToUpdate
         });
-        registry.registerCommand(TheiaUpdaterCommands.RESTART_TO_UPDATE, {
+        registry.registerCommand(SkyesOverLondonUpdaterCommands.RESTART_TO_UPDATE, {
             execute: () => this.updater.onRestartToUpdateRequested(),
             isEnabled: () => this.readyToUpdate,
             isVisible: () => this.readyToUpdate
@@ -182,11 +182,11 @@ export class TheiaUpdaterFrontendContribution implements CommandContribution, Me
     }
 
     registerMenus(registry: MenuModelRegistry): void {
-        registry.registerMenuAction(TheiaUpdaterMenu.MENU_PATH, {
-            commandId: TheiaUpdaterCommands.CHECK_FOR_UPDATES.id
+        registry.registerMenuAction(SkyesOverLondonUpdaterMenu.MENU_PATH, {
+            commandId: SkyesOverLondonUpdaterCommands.CHECK_FOR_UPDATES.id
         });
-        registry.registerMenuAction(TheiaUpdaterMenu.MENU_PATH, {
-            commandId: TheiaUpdaterCommands.RESTART_TO_UPDATE.id
+        registry.registerMenuAction(SkyesOverLondonUpdaterMenu.MENU_PATH, {
+            commandId: SkyesOverLondonUpdaterCommands.RESTART_TO_UPDATE.id
         });
     }
 

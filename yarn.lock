@@ -8170,6 +8170,13 @@ find-cache-dir@^3.3.1:
     make-dir "^3.0.2"
     pkg-dir "^4.1.0"
 
+find-git-repositories@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/find-git-repositories/-/find-git-repositories-0.2.2.tgz#baecab46d5a48b6dbaad0779fa3056940a870237"
+  integrity sha512-Za6U8AHjCFAuetB0f1y0JE/OMd+sNOHCakSjEKpVDRfYN+q4xjQ0ooNJCTINo1o+nDfh3vJQx63Llf5aZPiwVg==
+  dependencies:
+    node-addon-api "*"
+
 find-up@5.0.0, find-up@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/find-up/-/find-up-5.0.0.tgz#4c92819ecb7083561e4f4a240a86be5198f536fc"
@@ -11338,6 +11345,11 @@ node-abort-controller@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz#a94377e964a9a37ac3976d848cb5c765833b8548"
   integrity sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==
+
+node-addon-api@*:
+  version "8.6.0"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-8.6.0.tgz#b22497201b465cd0a92ef2c01074ee5068c79a6d"
+  integrity sha512-gBVjCaqDlRUk0EwoPNKzIr9KkS9041G/q31IBShPs1Xz6UTA+EXdZADbzqAJQrpDRq71CIMnOP5VMut3SL0z5Q==
 
 node-addon-api@^1.6.3:
   version "1.7.2"

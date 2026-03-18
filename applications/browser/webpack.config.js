@@ -45,10 +45,11 @@ configs.forEach(config => {
     } else if (config.entry?.['secondary-window']) {
         config.name = 'browser-secondary-window';
     }
+    config.performance = false;
     config.resolve = config.resolve || {};
     config.resolve.alias = {
         ...(config.resolve.alias || {}),
-        'theia-ide-product-ext': productExtensionPath
+        'skyes-over-london-product-ext': productExtensionPath
     };
     if (config.mode === 'production') {
         config.devtool = false;

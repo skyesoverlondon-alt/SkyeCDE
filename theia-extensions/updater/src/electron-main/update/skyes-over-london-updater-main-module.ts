@@ -7,20 +7,20 @@
  * SPDX-License-Identifier: MIT
  ********************************************************************************/
 
-import { TheiaUpdater, TheiaUpdaterClient, TheiaUpdaterPath } from '../../common/updater/theia-updater';
+import { SkyesOverLondonUpdater, SkyesOverLondonUpdaterClient, SkyesOverLondonUpdaterPath } from '../../common/updater/skyes-over-london-updater';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { ElectronConnectionHandler } from '@theia/core/lib/electron-main/messaging/electron-connection-handler';
 import { ElectronMainApplicationContribution } from '@theia/core/lib/electron-main/electron-main-application';
 import { JsonRpcConnectionHandler } from '@theia/core/lib/common/messaging/proxy-factory';
-import { TheiaUpdaterImpl } from './theia-updater-impl';
+import { SkyesOverLondonUpdaterImpl } from './skyes-over-london-updater-impl';
 
 export default new ContainerModule(bind => {
-    bind(TheiaUpdaterImpl).toSelf().inSingletonScope();
-    bind(TheiaUpdater).toService(TheiaUpdaterImpl);
-    bind(ElectronMainApplicationContribution).toService(TheiaUpdater);
+    bind(SkyesOverLondonUpdaterImpl).toSelf().inSingletonScope();
+    bind(SkyesOverLondonUpdater).toService(SkyesOverLondonUpdaterImpl);
+    bind(ElectronMainApplicationContribution).toService(SkyesOverLondonUpdater);
     bind(ElectronConnectionHandler).toDynamicValue(context =>
-        new JsonRpcConnectionHandler<TheiaUpdaterClient>(TheiaUpdaterPath, client => {
-            const server = context.container.get<TheiaUpdater>(TheiaUpdater);
+        new JsonRpcConnectionHandler<SkyesOverLondonUpdaterClient>(SkyesOverLondonUpdaterPath, client => {
+            const server = context.container.get<SkyesOverLondonUpdater>(SkyesOverLondonUpdater);
             server.setClient(client);
             client.onDidCloseConnection(() => server.disconnectClient(client));
             return server;

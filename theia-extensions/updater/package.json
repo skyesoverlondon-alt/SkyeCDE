@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "theia-ide-updater-ext",
+  "name": "skyes-over-london-updater-ext",
   "version": "1.69.0",
   "description": "Skyes Over London updater",
   "dependencies": {
@@ -20,8 +20,8 @@
   },
   "theiaExtensions": [
     {
-      "electronMain": "lib/electron-main/update/theia-updater-main-module",
-      "frontendElectron": "lib/electron-browser/theia-updater-frontend-module"
+      "electronMain": "lib/electron-main/update/skyes-over-london-updater-main-module",
+      "frontendElectron": "lib/electron-browser/skyes-over-london-updater-frontend-module"
     }
   ],
   "keywords": [

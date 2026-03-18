@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "theia-ide-browser-app",
+  "name": "skyes-over-london-browser-app",
   "description": "Skyes Over London browser product",
   "productName": "Skyes Over London",
   "version": "1.69.0",
@@ -118,7 +118,7 @@
     "@theia/vsx-registry": "1.70.0-next.11",
     "@theia/workspace": "1.70.0-next.11",
     "fs-extra": "^9.0.1",
-    "theia-ide-product-ext": "1.69.0"
+    "skyes-over-london-product-ext": "1.69.0"
   },
   "devDependencies": {
     "@theia/cli": "1.70.0-next.11",
@@ -129,8 +129,9 @@
     "build:product": "yarn --cwd ../../theia-extensions/product build",
     "prepare:runtime": "node ../../scripts/prepare-browser-runtime.js",
     "ensure:start": "node ../../scripts/ensure-browser-start.js",
-    "build": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && node ../../scripts/browser-build.js development",
-    "build:prod": "yarn build:product && yarn prepare:runtime && yarn -s rebuild && node ../../scripts/browser-build.js production",
+    "build:product": "node ../../scripts/run-npm-in.js theia-extensions/product build",
+    "build": "npm run build:product && npm run prepare:runtime && npm run rebuild --silent && node ../../scripts/browser-build.js development",
+    "build:prod": "npm run build:product && npm run prepare:runtime && npm run rebuild --silent && node ../../scripts/browser-build.js production",
     "rebuild": "theia rebuild:browser --cacheRoot ../..",
     "start": "yarn ensure:start && NODE_OPTIONS='--max-old-space-size=4096 --no-deprecation' theia start --plugins=local-dir:../../plugins --log-level=error",
     "watch": "concurrently --kill-others -n tsc,build -c red,yellow \"tsc -b -w --preserveWatchOutput\" \"yarn -s watch:bundle\"",

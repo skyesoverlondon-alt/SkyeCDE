@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "theia-ide-product-ext",
+  "name": "skyes-over-london-product-ext",
   "version": "1.69.0",
   "description": "Skyes Over London product branding",
   "dependencies": {
@@ -18,8 +18,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/theia-ide-frontend-module",
-      "electronMain": "lib/electron-main/theia-ide-main-module"
+      "frontend": "lib/browser/skyes-over-london-frontend-module",
+      "electronMain": "lib/electron-main/skyes-over-london-main-module"
     }
   ],
   "keywords": [

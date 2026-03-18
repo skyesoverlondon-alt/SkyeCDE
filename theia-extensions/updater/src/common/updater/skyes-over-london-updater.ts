@@ -9,24 +9,24 @@
 
 import { RpcServer } from '@theia/core/lib/common/messaging/proxy-factory';
 
-export const TheiaUpdaterPath = '/services/theia-updater';
-export const TheiaUpdater = Symbol('TheiaUpdater');
+export const SkyesOverLondonUpdaterPath = '/services/skyes-over-london-updater';
+export const SkyesOverLondonUpdater = Symbol('SkyesOverLondonUpdater');
 export interface UpdaterSettings {
     checkForUpdates: boolean;
     checkInterval: number;
     channel: 'stable' | 'preview' | 'next';
 }
 
-export interface TheiaUpdater extends RpcServer<TheiaUpdaterClient> {
+export interface SkyesOverLondonUpdater extends RpcServer<SkyesOverLondonUpdaterClient> {
     checkForUpdates(): void;
     downloadUpdate(): void;
     onRestartToUpdateRequested(): void;
-    disconnectClient(client: TheiaUpdaterClient): void;
+    disconnectClient(client: SkyesOverLondonUpdaterClient): void;
     cancel(): void;
     setUpdaterSettings(settings: UpdaterSettings): void;
 }
 
-export const TheiaUpdaterClient = Symbol('TheiaUpdaterClient');
+export const SkyesOverLondonUpdaterClient = Symbol('SkyesOverLondonUpdaterClient');
 
 export interface UpdaterError {
     message: string;
@@ -42,7 +42,7 @@ export interface UpdateAvailabilityInfo {
     updateInfo?: UpdateInfo;
 }
 
-export interface TheiaUpdaterClient {
+export interface SkyesOverLondonUpdaterClient {
     updateAvailable(available: boolean, updateInfo?: UpdateInfo): void;
     notifyReadyToInstall(): void;
     reportError(error: UpdaterError): void;

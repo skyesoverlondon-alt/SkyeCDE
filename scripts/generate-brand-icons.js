@@ -71,6 +71,9 @@ function generateIco(svgPath, outputPath) {
 }
 
 function generateIcns(svgPath, outputPath) {
+    if (process.platform !== 'darwin') {
+        return;
+    }
     if (!hasCommand('iconutil', ['-h'])) {
         console.warn(`Skipping ICNS generation for ${path.basename(outputPath)} because iconutil is not available.`);
         return;

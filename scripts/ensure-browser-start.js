@@ -10,7 +10,7 @@ const browserRoot = path.join(workspaceRoot, 'applications', 'browser');
 const productRoot = path.join(workspaceRoot, 'theia-extensions', 'product');
 
 const requiredArtifacts = {
-    productFrontend: path.join(productRoot, 'lib', 'browser', 'theia-ide-frontend-module.js'),
+    productFrontend: path.join(productRoot, 'lib', 'browser', 'skyes-over-london-frontend-module.js'),
     backendMain: path.join(browserRoot, 'src-gen', 'backend', 'main.js'),
     backendServer: path.join(browserRoot, 'src-gen', 'backend', 'server.js'),
     frontendIndex: path.join(browserRoot, 'src-gen', 'frontend', 'index.js')

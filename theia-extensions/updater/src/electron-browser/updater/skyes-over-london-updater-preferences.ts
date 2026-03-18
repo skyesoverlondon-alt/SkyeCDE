@@ -21,7 +21,7 @@ function getAvailableUpdateChannels(): string[] {
     }
 }
 
-export const theiaUpdaterPreferenceSchema: PreferenceSchema = {
+export const skyesOverLondonUpdaterPreferenceSchema: PreferenceSchema = {
     'properties': {
         'updates.checkForUpdates': {
             type: 'boolean',

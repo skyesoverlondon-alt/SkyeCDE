@@ -8,7 +8,7 @@
  ********************************************************************************/
 
 import { ElectronMainApplication, ElectronMainApplicationContribution } from '@theia/core/lib/electron-main/electron-main-application';
-import { TheiaUpdater, TheiaUpdaterClient, UpdaterSettings } from '../../common/updater/theia-updater';
+import { SkyesOverLondonUpdater, SkyesOverLondonUpdaterClient, UpdaterSettings } from '../../common/updater/skyes-over-london-updater';
 import { injectable } from '@theia/core/shared/inversify';
 import { isOSX, isWindows } from '@theia/core';
 import { CancellationToken } from 'builder-util-runtime';
@@ -27,15 +27,36 @@ const PREVIEW_CHANNEL_LINUX = 'https://github.com/SkyeCDE/SkyeCDE/releases/downl
 // The feed is served from GitHub Release assets (rolling "next" tag).
 const NEXT_CHANNEL_LINUX = 'https://github.com/SkyeCDE/SkyeCDE/releases/download/next';
 
-const { autoUpdater } = require('electron-updater');
+function loadAutoUpdater() {
+    const originalConsoleInfo = console.info;
+    if (process.platform === 'linux') {
+        console.info = (...args: Parameters<typeof console.info>) => {
+            const [firstArg] = args;
+            if (typeof firstArg === 'string' && (
+                firstArg.includes('Checking for beta autoupdate feature for deb/rpm distributions') ||
+                firstArg.includes('Found package-type:')
+            )) {
+                return;
+            }
+            originalConsoleInfo(...args);
+        };
+    }
+    try {
+        return require('electron-updater').autoUpdater;
+    } finally {
+        console.info = originalConsoleInfo;
+    }
+}
+
+const autoUpdater = loadAutoUpdater();
 
 autoUpdater.logger = require('electron-log');
 autoUpdater.logger.transports.file.level = 'info';
 
 @injectable()
-export class TheiaUpdaterImpl implements TheiaUpdater, ElectronMainApplicationContribution {
+export class SkyesOverLondonUpdaterImpl implements SkyesOverLondonUpdater, ElectronMainApplicationContribution {
 
-    protected clients: Array<TheiaUpdaterClient> = [];
+    protected clients: Array<SkyesOverLondonUpdaterClient> = [];
     protected settings: UpdaterSettings = {
         checkForUpdates: true,
         checkInterval: 60,
@@ -144,7 +165,7 @@ export class TheiaUpdaterImpl implements TheiaUpdater, ElectronMainApplicationCo
         }
     }
 
-    setClient(client: TheiaUpdaterClient | undefined): void {
+    setClient(client: SkyesOverLondonUpdaterClient | undefined): void {
         if (client) {
             this.clients.push(client);
             if (this.reportOnFirstRegistration) {
@@ -172,7 +193,7 @@ export class TheiaUpdaterImpl implements TheiaUpdater, ElectronMainApplicationCo
         }
     }
 
-    disconnectClient(client: TheiaUpdaterClient): void {
+    disconnectClient(client: SkyesOverLondonUpdaterClient): void {
         const index = this.clients.indexOf(client);
         if (index !== -1) {
             this.clients.splice(index, 1);

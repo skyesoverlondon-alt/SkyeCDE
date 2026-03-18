@@ -9,6 +9,11 @@ const fs = require('fs');
 const path = require('path');
 const CompressionPlugin = require('compression-webpack-plugin');
 
+const benignWarnings = [
+    warning => /simpleWorker\.js/.test(warning.module?.resource || '') && /the request of a dependency is an expression/.test(warning.message || ''),
+    warning => /editorSimpleWorker\.js/.test(warning.module?.resource || '') && /the request of a dependency is an expression/.test(warning.message || '')
+];
+
 /**
  * Webpack plugin to patch the bundled ripgrep path for asar compatibility.
  * When packaged with asar, __dirname resolves inside app.asar but the native binaries
@@ -70,16 +75,22 @@ if (nodeConfig.config.optimization) {
         minimizer: []
     };
 }
+nodeConfig.config.performance = false;
 nodeConfig.config.devtool = false;
 nodeConfig.config.cache = false;
 nodeConfig.config.parallelism = 1;
 nodeConfig.config.stats = 'errors-warnings';
 
 for (const config of configs) {
+    config.performance = false;
     config.devtool = false;
     config.cache = false;
     config.parallelism = 1;
     config.stats = 'errors-warnings';
+    config.ignoreWarnings = [
+        ...(config.ignoreWarnings || []),
+        ...benignWarnings
+    ];
     config.optimization = {
         ...(config.optimization || {}),
         minimize: false,

@@ -17,25 +17,25 @@ const PRODUCT_SOURCE_URL = 'https://github.com/SkyeCDE/SkyeCDE';
 const PRODUCT_ISSUES_URL = `${PRODUCT_SOURCE_URL}/issues`;
 const PRODUCT_DOCS_URL = `${PRODUCT_SOURCE_URL}#readme`;
 
-export namespace TheiaIDEMenus {
-    export const THEIA_IDE_HELP: MenuPath = [...CommonMenus.HELP, 'theia-ide'];
+export namespace SkyesOverLondonMenus {
+    export const HELP: MenuPath = [...CommonMenus.HELP, 'skyes-over-london'];
 }
-export namespace TheiaIDECommands {
+export namespace SkyesOverLondonCommands {
     export const CATEGORY = 'Skyes Over London';
     export const REPORT_ISSUE: Command = {
-        id: 'theia-ide:report-issue',
+        id: 'skyes-over-london:report-issue',
         category: CATEGORY,
         label: 'Platform Issues'
     };
     export const DOCUMENTATION: Command = {
-        id: 'theia-ide:documentation',
+        id: 'skyes-over-london:documentation',
         category: CATEGORY,
         label: 'Platform Docs'
     };
 }
 
 @injectable()
-export class TheiaIDEContribution implements CommandContribution, MenuContribution {
+export class SkyesOverLondonContribution implements CommandContribution, MenuContribution {
 
     @inject(WindowService)
     protected readonly windowService: WindowService;
@@ -44,23 +44,23 @@ export class TheiaIDEContribution implements CommandContribution, MenuContributi
     static DOCUMENTATION_URL = PRODUCT_DOCS_URL;
 
     registerCommands(commandRegistry: CommandRegistry): void {
-        commandRegistry.registerCommand(TheiaIDECommands.REPORT_ISSUE, {
-            execute: () => this.windowService.openNewWindow(TheiaIDEContribution.REPORT_ISSUE_URL, { external: true })
+        commandRegistry.registerCommand(SkyesOverLondonCommands.REPORT_ISSUE, {
+            execute: () => this.windowService.openNewWindow(SkyesOverLondonContribution.REPORT_ISSUE_URL, { external: true })
         });
-        commandRegistry.registerCommand(TheiaIDECommands.DOCUMENTATION, {
-            execute: () => this.windowService.openNewWindow(TheiaIDEContribution.DOCUMENTATION_URL, { external: true })
+        commandRegistry.registerCommand(SkyesOverLondonCommands.DOCUMENTATION, {
+            execute: () => this.windowService.openNewWindow(SkyesOverLondonContribution.DOCUMENTATION_URL, { external: true })
         });
     }
 
     registerMenus(menus: MenuModelRegistry): void {
-        menus.registerMenuAction(TheiaIDEMenus.THEIA_IDE_HELP, {
-            commandId: TheiaIDECommands.REPORT_ISSUE.id,
-            label: TheiaIDECommands.REPORT_ISSUE.label,
+        menus.registerMenuAction(SkyesOverLondonMenus.HELP, {
+            commandId: SkyesOverLondonCommands.REPORT_ISSUE.id,
+            label: SkyesOverLondonCommands.REPORT_ISSUE.label,
             order: '1'
         });
-        menus.registerMenuAction(TheiaIDEMenus.THEIA_IDE_HELP, {
-            commandId: TheiaIDECommands.DOCUMENTATION.id,
-            label: TheiaIDECommands.DOCUMENTATION.label,
+        menus.registerMenuAction(SkyesOverLondonMenus.HELP, {
+            commandId: SkyesOverLondonCommands.DOCUMENTATION.id,
+            label: SkyesOverLondonCommands.DOCUMENTATION.label,
             order: '2'
         });
     }

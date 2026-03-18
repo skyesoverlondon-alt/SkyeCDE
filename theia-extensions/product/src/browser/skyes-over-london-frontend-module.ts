@@ -11,24 +11,24 @@ import '../../src/browser/style/index.css';
 
 import { WidgetFactory, FrontendApplicationContribution, bindViewContribution } from '@theia/core/lib/browser';
 import { AboutDialog } from '@theia/core/lib/browser/about-dialog';
-import { applyBranding } from './theia-ide-config';
+import { applyBranding } from './skyes-over-london-config';
 import { CommandContribution } from '@theia/core/lib/common/command';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { GettingStartedWidget } from '@theia/getting-started/lib/browser/getting-started-widget';
 import { MenuContribution } from '@theia/core/lib/common/menu';
 import { SkyeStudioLauncherContribution } from './skye-studio-launcher-contribution';
 import { SkyeStudioLauncherWidget } from './skye-studio-launcher-widget';
-import { TheiaIDEAboutDialog } from './theia-ide-about-dialog';
-import { TheiaIDEContribution } from './theia-ide-contribution';
-import { TheiaIDEGettingStartedWidget } from './theia-ide-getting-started-widget';
+import { SkyesOverLondonAboutDialog } from './skyes-over-london-about-dialog';
+import { SkyesOverLondonContribution } from './skyes-over-london-contribution';
+import { SkyesOverLondonGettingStartedWidget } from './skyes-over-london-getting-started-widget';
 
 export default new ContainerModule((bind, _unbind, isBound, rebind) => {
     applyBranding();
 
-    bind(TheiaIDEGettingStartedWidget).toSelf();
+    bind(SkyesOverLondonGettingStartedWidget).toSelf();
     bind(WidgetFactory).toDynamicValue(context => ({
         id: GettingStartedWidget.ID,
-        createWidget: () => context.container.get<TheiaIDEGettingStartedWidget>(TheiaIDEGettingStartedWidget),
+        createWidget: () => context.container.get<SkyesOverLondonGettingStartedWidget>(SkyesOverLondonGettingStartedWidget),
     })).inSingletonScope();
     bind(SkyeStudioLauncherWidget).toSelf();
     bind(WidgetFactory).toDynamicValue(context => ({
@@ -36,16 +36,16 @@ export default new ContainerModule((bind, _unbind, isBound, rebind) => {
         createWidget: () => context.container.get<SkyeStudioLauncherWidget>(SkyeStudioLauncherWidget),
     })).inSingletonScope();
     if (isBound(AboutDialog)) {
-        rebind(AboutDialog).to(TheiaIDEAboutDialog).inSingletonScope();
+        rebind(AboutDialog).to(SkyesOverLondonAboutDialog).inSingletonScope();
     } else {
-        bind(AboutDialog).to(TheiaIDEAboutDialog).inSingletonScope();
+        bind(AboutDialog).to(SkyesOverLondonAboutDialog).inSingletonScope();
     }
 
     bindViewContribution(bind, SkyeStudioLauncherContribution);
     bind(FrontendApplicationContribution).toService(SkyeStudioLauncherContribution);
 
-    bind(TheiaIDEContribution).toSelf().inSingletonScope();
+    bind(SkyesOverLondonContribution).toSelf().inSingletonScope();
     [CommandContribution, MenuContribution].forEach(serviceIdentifier =>
-        bind(serviceIdentifier).toService(TheiaIDEContribution)
+        bind(serviceIdentifier).toService(SkyesOverLondonContribution)
     );
 });
