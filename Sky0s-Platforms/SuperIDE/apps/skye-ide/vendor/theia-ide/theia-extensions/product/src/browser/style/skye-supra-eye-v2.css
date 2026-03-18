@@ -1,0 +1,82 @@
+:root {
+  --skye-bg-0: #07030f;
+  --skye-bg-1: #180827;
+  --skye-bg-2: #31114a;
+  --skye-panel: rgba(20, 8, 31, 0.82);
+  --skye-panel-2: rgba(33, 11, 48, 0.9);
+  --skye-border: rgba(255, 216, 107, 0.24);
+  --skye-gold: #ffd86b;
+  --skye-purple: #8d3dff;
+  --skye-text: #fbf5ff;
+  --skye-muted: #dbcdea;
+}
+
+html, body {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(141, 61, 255, .24), transparent 30%),
+    radial-gradient(circle at 84% 12%, rgba(255, 216, 107, .16), transparent 26%),
+    linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 55%, #05040b);
+  color: var(--skye-text);
+}
+
+.theia-ApplicationShell,
+.theia-app-shell,
+.theia-app-main,
+.monaco-workbench,
+.monaco-editor,
+.monaco-editor-background {
+  background: transparent !important;
+  color: var(--skye-text) !important;
+}
+
+.p-MenuBar,
+.p-CommandPalette,
+.p-TabBar,
+.p-Widget,
+.theia-side-panel,
+.theia-sidebar,
+.theia-panel,
+.theia-statusBar,
+.theia-quick-input-widget,
+.theia-editor,
+.theia-terminal,
+.terminal.xterm {
+  background: linear-gradient(180deg, var(--skye-panel-2), var(--skye-panel)) !important;
+  border-color: var(--skye-border) !important;
+  color: var(--skye-text) !important;
+}
+
+.p-TabBar-tab.p-mod-current,
+.p-TabBar-tab.theia-mod-active,
+.theia-tab.active {
+  color: var(--skye-gold) !important;
+  background: linear-gradient(180deg, rgba(255,216,107,.12), rgba(141,61,255,.14)) !important;
+}
+
+.theia-statusBar {
+  background: linear-gradient(90deg, rgba(74,25,135,.98), rgba(38,10,67,.96), rgba(126,74,18,.94)) !important;
+}
+
+.gs-container,
+.gs-content-container,
+.gs-section,
+.gs-preference-container,
+.ad-container {
+  color: var(--skye-text);
+}
+
+.gs-logo,
+.ad-logo,
+.theia-icon {
+  animation: sol-logo-float 4.8s ease-in-out infinite, sol-logo-pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes sol-logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes sol-logo-pulse {
+  0%, 100% { opacity: .96; }
+  50% { opacity: 1; }
+}

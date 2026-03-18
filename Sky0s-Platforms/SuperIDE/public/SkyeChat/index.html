@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyeChat Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/SkyeChat/assets/platform.css" />
+  <script>
+    window.SKYECHAT_SECURE_DEFAULTS = {
+      appId: "SkyeChat",
+      requiredHeaders: {
+        "X-Correlation-Id": "Issued per request from window.SkyeStandaloneSession.authHeaders('SkyeChat') for audit correlation.",
+        "X-Token-Email": "Forwarded from the unlocked session token email so founder and operator actions keep an auditable identity trail.",
+      },
+    };
+  </script>
+  <script src="/_shared/standalone-session.js"></script>
+  <script defer src="/SkyeChat/assets/platform.js"></script>
+</head>
+<body data-app-id="SkyeChat" data-page="hub">
+  <div class="platform-shell">
+    <header class="platform-topbar">
+      <div>
+        <div class="platform-kicker">Skyes Over London Community Network</div>
+        <div class="platform-brand">SkyeChat Platform</div>
+      </div>
+      <div class="platform-topbar-actions">
+        <a class="platform-button ghost" href="/index.html">Back To IDE</a>
+        <a class="platform-button" data-nav="command" href="/SkyeChat/apps/command/index.html">Open Command Workspace</a>
+      </div>
+    </header>
+
+    <main class="platform-main">
+      <section class="hero-panel">
+        <div>
+          <span class="eyebrow">Overpowered Reddit x Instagram x Messenger</span>
+          <h1>SkyeChat is the network layer of the suite: community discovery, creator publishing, private messaging, and moderation all operating as one product.</h1>
+          <p class="hero-copy">The command workspace is only the execution core. The platform itself behaves like a premium social system where SkyeDocxPro and SkyeBlog can push straight into creator pipelines, communities, announcement drops, and messenger follow-up without collapsing into one room composer.</p>
+          <div class="hero-actions">
+            <a class="platform-button" data-nav="community" href="/SkyeChat/apps/community/index.html">Open Community Arena</a>
+            <a class="platform-button ghost" data-nav="creator" href="/SkyeChat/apps/creator/index.html">Open Creator Studio</a>
+            <a class="platform-button ghost" data-nav="messenger" href="/SkyeChat/apps/messenger/index.html">Open Messenger Lanes</a>
+          </div>
+        </div>
+        <aside class="hero-sidecard">
+          <img class="platform-emblem" src="/SkyeVault-Pro-v4.46/SKYESOVERLONDONDIETYLOGO.png" alt="SkyeVault emblem" />
+          <div class="metric-grid">
+            <div class="metric-card"><strong>Live Surfaces</strong><span>5 active apps</span></div>
+            <div class="metric-card"><strong>Recent Handoffs</strong><span data-bind="handoffCount">0</span></div>
+            <div class="metric-card"><strong>Creator Drafts</strong><span data-bind="draftCount">0</span></div>
+            <div class="metric-card"><strong>Moderation State</strong><span data-bind="policyStatus">clear</span></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="panel-stack two-up">
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Platform Surfaces</span>
+            <h2>Actual product lanes</h2>
+          </div>
+          <div class="surface-grid">
+            <a class="surface-card" data-nav="community" href="/SkyeChat/apps/community/index.html">
+              <strong>Community Arena</strong>
+              <span>Topic rooms, hot threads, interest clusters, and public discovery across the network.</span>
+            </a>
+            <a class="surface-card" data-nav="messenger" href="/SkyeChat/apps/messenger/index.html">
+              <strong>Messenger Lanes</strong>
+              <span>Direct-message flows, sensitive follow-up, founder threads, and private escalation lanes.</span>
+            </a>
+            <a class="surface-card" data-nav="creator" href="/SkyeChat/apps/creator/index.html">
+              <strong>Creator Studio</strong>
+              <span>Push from SkyeDocxPro and SkyeBlog into social-ready posts, launch drops, carousel scripts, and thread starters.</span>
+            </a>
+            <a class="surface-card" data-nav="moderation" href="/SkyeChat/apps/moderation/index.html">
+              <strong>Moderation Center</strong>
+              <span>Policy posture, room controls, incident logging, and governance signals that shape the network in public.</span>
+            </a>
+            <a class="surface-card" data-nav="command" href="/SkyeChat/apps/command/index.html">
+              <strong>Command Workspace</strong>
+              <span>The deeper operator surface for live posting, thread loading, voting, and API-backed actions.</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Network Model</span>
+            <h2>How the platform is supposed to behave</h2>
+          </div>
+          <div class="mini-grid">
+            <div class="mini-card"><strong>Discovery</strong><span>Communities and topic boards surface what matters publicly.</span></div>
+            <div class="mini-card"><strong>Publishing</strong><span>Creator tools turn suite content into social-native drops and update threads.</span></div>
+            <div class="mini-card"><strong>Messaging</strong><span>Messenger converts public traction into private follow-up and execution.</span></div>
+            <div class="mini-card"><strong>Governance</strong><span>Moderation is visible, stateful, and part of the product loop.</span></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel-stack three-up">
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Creator Launchpad</span>
+            <h2>Push DocxPro and SkyeBlog work straight into network drafts</h2>
+          </div>
+          <form class="composer-form">
+            <div class="field-grid">
+              <label>Source workspace
+                <input id="creatorSource" placeholder="SkyeDocxPro or SkyeBlog" />
+              </label>
+              <label>Community channel
+                <input id="creatorChannel" placeholder="launch-floor" />
+              </label>
+            </div>
+            <div class="field-grid">
+              <label>Topic
+                <input id="creatorTopic" placeholder="feature-drop / public brief" />
+              </label>
+              <label>Drop title
+                <input id="creatorTitle" placeholder="Announce the next release move" />
+              </label>
+            </div>
+            <label>Post summary
+              <textarea id="creatorExcerpt" placeholder="Stage the thread opener, carousel summary, or post copy here."></textarea>
+            </label>
+            <div class="button-row">
+              <button type="button" data-action="save-creator-draft">Save Drop</button>
+              <button class="ghost" type="button" data-action="route-creator-to-command">Open In Command</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Messenger Dispatch</span>
+            <h2>Convert public traction into private follow-up</h2>
+          </div>
+          <form class="composer-form">
+            <div class="field-grid">
+              <label>Audience lane
+                <input id="dmAudience" placeholder="founders / moderators / prospects" />
+              </label>
+              <label>Thread title
+                <input id="dmTitle" placeholder="Take this thread into private follow-up" />
+              </label>
+            </div>
+            <label>Private message brief
+              <textarea id="dmMessage" placeholder="Write the private follow-up, escalation note, or messenger prompt here."></textarea>
+            </label>
+            <div class="button-row">
+              <button type="button" data-action="save-direct-message">Save DM Lane</button>
+              <button class="ghost" type="button" data-action="route-dm-to-command">Open In Command</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Moderation Pulse</span>
+            <h2>Keep governance visible from the root surface</h2>
+          </div>
+          <form class="composer-form">
+            <div class="field-grid">
+              <label>Policy preset
+                <input id="policyName" placeholder="High-signal launch room" />
+              </label>
+              <label>Status
+                <input id="policyStatusInput" placeholder="clear / watch / locked" />
+              </label>
+            </div>
+            <label>Moderation note
+              <textarea id="policyNote" placeholder="Capture the posture, room control note, or moderation directive here."></textarea>
+            </label>
+            <div class="button-row">
+              <button type="button" data-action="save-policy">Save Policy Note</button>
+              <button class="ghost" type="button" data-action="route-policy-to-command">Open In Command</button>
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <section class="panel-stack three-up">
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Suite Intake</span>
+            <h2>What DocxPro, SkyeBlog, and ops are pushing in</h2>
+          </div>
+          <div class="list-shell" data-bind="recentHandoffs"></div>
+        </article>
+
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Creator Pipeline</span>
+            <h2>Drafts waiting to become drops</h2>
+          </div>
+          <div class="list-shell" data-bind="creatorDrafts"></div>
+        </article>
+
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Messenger Queue</span>
+            <h2>Private follow-up and escalation lanes</h2>
+          </div>
+          <div class="list-shell" data-bind="directMessages"></div>
+        </article>
+      </section>
+
+      <section class="panel-stack two-up">
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Governance</span>
+            <h2>Active policy posture</h2>
+          </div>
+          <div class="list-shell" data-bind="policyNotes"></div>
+        </article>
+
+        <article class="platform-panel">
+          <div class="panel-heading">
+            <span class="eyebrow">Moderation Timeline</span>
+            <h2>Latest network controls and incidents</h2>
+          </div>
+          <div class="list-shell" data-bind="moderationTimeline"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

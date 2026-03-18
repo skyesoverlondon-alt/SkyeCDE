@@ -1,0 +1,45 @@
+appId: com.skyes.overlondon.vendor.next
+productName: Skyes Over London Next
+copyright: Copyright © 2020-2026 Skyes Over London Authors
+electronDist: ../../node_modules/electron/dist
+electronVersion: 39.7.0
+asar: true
+asarUnpack:
+  - "**/lib/backend/native/**"
+  - "**/lib/build/Release/**"
+nodeGypRebuild: false
+npmRebuild: false
+
+directories:
+  buildResources: resources
+
+# node_modules and package.json are copied automatically
+# Exclude node_modules manually because electron is copied by electron-builder and we are using a bundled backend
+files:
+  - src-gen
+  - lib
+  - resources/icons/WindowIcon/512-512.png
+  - resources/SkyesOverLondonNextSplash.svg
+  - scripts
+  - "!**node_modules/**"
+extraResources:
+  - from: ../../plugins
+    to: app/plugins
+
+linux:
+  icon: resources/icons/LinuxLauncherIcons
+  category: Development
+  maintainer: Skyes Over London <noreply@skyesoverlondon.dev>
+  mimeTypes:
+    - inode/directory
+  vendor: Skyes Over London
+  target:
+    - deb
+    - AppImage
+
+deb:
+  artifactName: ${productName}.${ext}
+appImage:
+  artifactName: ${productName}.${ext}
+
+afterPack: ./scripts/after-pack.js

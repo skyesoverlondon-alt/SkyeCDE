@@ -1,0 +1,17 @@
+{
+  "targets": [
+    {
+      "path": "public/SkyeDocxPro/index.html",
+      "sha256": "d72ead1daf963a5ceb5e20c3c6866338b1d69490614396819f645ef2edd2b2e2",
+      "allow_missing": false
+    },
+    {
+      "path": "public/Skye-ID/index.html",
+      "allow_missing": true
+    },
+    {
+      "path": "public/SKYEMAIL-GEN/index.html",
+      "allow_missing": true
+    }
+  ]
+}

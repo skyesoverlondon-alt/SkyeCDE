@@ -1,0 +1,85 @@
+appId: com.skyes.overlondon.vendor
+productName: Skyes Over London
+copyright: Copyright © 2020-2026 Skyes Over London Authors
+electronDist: ../../node_modules/electron/dist
+electronVersion: 39.7.0
+asar: true
+asarUnpack:
+  - "**/lib/backend/native/**"
+  - "**/lib/build/Release/**"
+nodeGypRebuild: false
+npmRebuild: false
+
+directories:
+  buildResources: resources
+
+# node_modules and package.json are copied automatically
+# Exclude node_modules manually because electron is copied by electron-builder and we are using a bundled backend
+files:
+  - src-gen
+  - lib
+  - resources/icons/WindowIcon/512-512.png
+  - resources/SkyesOverLondonSplash.svg
+  - scripts
+  - "!**node_modules/**"
+extraResources:
+  - from: ../../plugins
+    to: app/plugins
+
+win:
+  icon: resources/icon.ico
+  target:
+    - nsis
+  publish:
+    provider: generic
+    url: "https://github.com/SkyeCDE/SkyeCDE/releases/download/stable"
+    useMultipleRangeRequest: false
+mac:
+  icon: resources/icons/MacLauncherIcons/icon.icns
+  category: public.app-category.developer-tools
+  protocols:
+    - name: skyes-over-london
+      schemes:
+        - skyes-over-london
+  darkModeSupport: true
+  target:
+    - dmg
+    - zip
+  publish:
+    provider: generic
+    url: "https://github.com/SkyeCDE/SkyeCDE/releases/download/stable"
+linux:
+  icon: resources/icons/LinuxLauncherIcons
+  category: Development
+  maintainer: Skyes Over London <noreply@skyesoverlondon.dev>
+  mimeTypes:
+    - inode/directory
+  vendor: Skyes Over London
+  target:
+    - deb
+    - AppImage
+  publish:
+    provider: generic
+    url: "https://github.com/SkyeCDE/SkyeCDE/releases/download/stable"
+
+nsis:
+  menuCategory: true
+  oneClick: false
+  perMachine: false
+  installerHeaderIcon: resources/icon.ico
+  installerIcon: resources/icon.ico
+  uninstallerIcon: resources/icon.ico
+  installerSidebar: resources/icons/InstallerSidebarImage/164-314Windows.bmp
+  uninstallerSidebar: resources/icons/InstallerSidebarImage/164-314Windows.bmp
+  allowToChangeInstallationDirectory: true
+  runAfterFinish: false
+  artifactName: ${productName}Setup.${ext}
+  license: LICENSE
+dmg:
+  artifactName: ${productName}.${ext}
+deb:
+  artifactName: ${productName}.${ext}
+appImage:
+  artifactName: ${productName}.${ext}
+
+afterPack: ./scripts/after-pack.js

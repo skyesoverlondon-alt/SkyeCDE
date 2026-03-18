@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Business Rescue Platform</title>
+  <meta name="description" content="Google Business Profile rescue command platform with intake, evidence, appeals, outreach, and monitoring operator apps." />
+  <meta name="theme-color" content="#0b0614" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/SkyeVault-Pro-v4.46/assets/img/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/SkyeVault-Pro-v4.46/assets/img/icon-512.png" />
+  <link rel="apple-touch-icon" href="/SkyeVault-Pro-v4.46/assets/img/icon-192.png" />
+  <script src="/_shared/standalone-session.js"></script>
+  <link rel="stylesheet" href="./assets/platform.css" />
+</head>
+<body data-app="hub">
+  <div class="shell">
+    <section class="hero hero-hub">
+      <div class="eyebrow">Platform Hub</div>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Google Business Rescue Platform</h1>
+          <p>This is the rescue operating system. Intake, evidence, appeals, outreach, and monitoring are separate rescue apps tied to one live case, one escalation path, and one suite dispatch layer.</p>
+          <div class="action-row">
+            <a class="button-link" data-carry-query href="./apps/intake/index.html">Launch Intake</a>
+            <a class="button-link" data-carry-query href="./apps/evidence/index.html">Open Evidence Vault</a>
+            <a class="button-link" data-carry-query href="./apps/appeals/index.html">Open Appeal Builder</a>
+            <a class="button-link" data-carry-query href="./apps/outreach/index.html">Open Outreach Studio</a>
+            <a class="button-link" data-carry-query href="./apps/monitoring/index.html">Open Monitoring Deck</a>
+            <a class="button-link secondary" data-carry-query href="/GBPRescueSuite/index.html">Open GBP Mini Suite</a>
+          </div>
+        </div>
+        <div class="hero-panel stack">
+          <div class="metric-row">
+            <div class="metric"><div>Workspace</div><strong data-bind="workspaceLabel">primary-workspace</strong></div>
+            <div class="metric"><div>Launch Mode</div><strong data-bind="modeLabel">Standalone</strong></div>
+            <div class="metric"><div>kAIxU Access</div><strong data-bind="keyState">Checking</strong></div>
+          </div>
+          <div class="diagnostic-grid compact">
+            <div class="status"><div>Policy Risk</div><strong data-bind="policyRisk">Unknown</strong></div>
+            <div class="status"><div>Ownership Risk</div><strong data-bind="ownershipRisk">Unknown</strong></div>
+            <div class="status"><div>Readiness</div><strong data-bind="readiness">Unknown</strong></div>
+          </div>
+          <div class="install-banner">
+            <div>
+              <div class="hero-note">Install Surface</div>
+              <p class="muted">This platform installs as its own PWA using the shared SkyeVault icon estate.</p>
+            </div>
+            <div class="action-row slim">
+              <button type="button" data-action="install-app" data-install-button hidden>Install Platform</button>
+              <div class="pill" data-bind="installState">Waiting for browser installability</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Rescue Mini Suite</h2>
+          <p>The rescue platform now has a dedicated launcher hub that groups the five rescue apps with the suite support lanes around them.</p>
+        </div>
+        <div class="action-row slim">
+          <a class="button-link secondary" data-carry-query href="/GBPRescueSuite/index.html">Open Suite Hub</a>
+          <a class="button-link secondary" href="/AE-Flow/index.html">Open AE Flow</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Rescue Operating System</h2>
+          <p>The root is the command surface for the rescue program. Each lane below is a dedicated product surface with one job in the reinstatement workflow.</p>
+        </div>
+        <div class="pill" data-bind="caseStatePill">Case not saved yet</div>
+      </div>
+      <div class="app-grid">
+        <a class="app-card" data-carry-query href="./apps/intake/index.html">
+          <span class="app-kicker">App 01</span>
+          <h3>Intake Desk</h3>
+          <p>Capture the business identity, failure mode, market, timeline, support history, and operator owner before anything else moves.</p>
+          <span class="app-link">Open Intake</span>
+        </a>
+        <a class="app-card" data-carry-query href="./apps/evidence/index.html">
+          <span class="app-kicker">App 02</span>
+          <h3>Evidence Vault</h3>
+          <p>Track licenses, leases, signage, photos, access history, and every artifact required to build a rescue packet that survives review.</p>
+          <span class="app-link">Open Evidence</span>
+        </a>
+        <a class="app-card" data-carry-query href="./apps/appeals/index.html">
+          <span class="app-kicker">App 03</span>
+          <h3>Appeal Forge</h3>
+          <p>Build the reinstatement narrative, policy framing, and final escalation brief from the shared case state.</p>
+          <span class="app-link">Open Appeals</span>
+        </a>
+        <a class="app-card" data-carry-query href="./apps/outreach/index.html">
+          <span class="app-kicker">App 04</span>
+          <h3>Outreach Desk</h3>
+          <p>Prepare support escalation copy, client updates, and suite-ready drafts so communication is part of the product, not an afterthought.</p>
+          <span class="app-link">Open Outreach</span>
+        </a>
+        <a class="app-card" data-carry-query href="./apps/monitoring/index.html">
+          <span class="app-kicker">App 05</span>
+          <h3>Recovery Watchtower</h3>
+          <p>Track follow-up windows, ranking watch notes, next review timing, and escalation triggers after the packet is in motion.</p>
+          <span class="app-link">Open Monitoring</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Live Rescue Cockpit</h2>
+          <p>Use the hub itself to capture the case, judge packet strength, and shape the output deck before you branch into specialist lanes.</p>
+        </div>
+        <div class="action-row slim">
+          <button type="button" data-action="save">Save Case State</button>
+          <a class="button-link secondary" data-carry-query href="./apps/intake/index.html">Open Full Intake</a>
+        </div>
+      </div>
+      <div class="field-grid">
+        <label>Business name
+          <input data-field="businessName" placeholder="Business legal or GBP display name" />
+        </label>
+        <label>Market
+          <input data-field="market" placeholder="City, metro, or service region" />
+        </label>
+        <label>Status
+          <select data-field="status">
+            <option value="suspended">suspended</option>
+            <option value="verification-failure">verification-failure</option>
+            <option value="ownership-conflict">ownership-conflict</option>
+            <option value="ranking-collapse">ranking-collapse</option>
+            <option value="disabled">disabled</option>
+          </select>
+        </label>
+        <label>Issue type
+          <select data-field="issueType">
+            <option value="policy-suspension">policy-suspension</option>
+            <option value="duplicate-listing">duplicate-listing</option>
+            <option value="verification-block">verification-block</option>
+            <option value="ownership-recovery">ownership-recovery</option>
+            <option value="ranking-loss">ranking-loss</option>
+          </select>
+        </label>
+        <label>Evidence strength
+          <select data-field="evidenceStrength">
+            <option value="low">low</option>
+            <option value="medium">medium</option>
+            <option value="high">high</option>
+          </select>
+        </label>
+        <label>Operator owner
+          <input data-field="owner" placeholder="Assigned rescue operator" />
+        </label>
+        <label>Support thread / case ids
+          <input data-field="supportThread" placeholder="GBP / Google support history" />
+        </label>
+        <label>Next review time
+          <input data-field="nextReviewAt" placeholder="Tomorrow 10:00 AM" />
+        </label>
+      </div>
+      <div class="field-grid">
+        <label>Operator notes
+          <textarea data-field="notes" placeholder="What broke, what was tried, and what still blocks reinstatement?"></textarea>
+        </label>
+        <label>Timeline
+          <textarea data-field="timeline" placeholder="Capture the timeline from failure to current escalation state."></textarea>
+        </label>
+      </div>
+      <div class="field-grid">
+        <label>Reinstatement narrative
+          <textarea data-field="reinstatementNarrative" placeholder="Write the appeal framing and operator thesis here."></textarea>
+        </label>
+        <label>Customer update / monitoring notes
+          <textarea data-field="customerUpdate" placeholder="Draft the client-facing update or operator follow-up note."></textarea>
+        </label>
+      </div>
+      <div class="operator-grid">
+        <label class="check-item"><input type="checkbox" data-check="businessLicense" /> Business license ready</label>
+        <label class="check-item"><input type="checkbox" data-check="utilityBill" /> Utility bill or lease ready</label>
+        <label class="check-item"><input type="checkbox" data-check="photos" /> Signage or storefront photos ready</label>
+        <label class="check-item"><input type="checkbox" data-check="appealHistory" /> Support thread documented</label>
+      </div>
+    </section>
+
+    <section class="platform-grid">
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>Incident Pressure Board</h2>
+            <p>This is the live rescue readout for the current case. The hub should tell an operator what is broken, what is missing, and what has to move next.</p>
+          </div>
+          <div class="action-row slim">
+            <button type="button" data-action="copy-appeal">Copy Appeal Brief</button>
+            <button type="button" data-action="copy-evidence">Copy Evidence Summary</button>
+          </div>
+        </div>
+        <div class="report-box" data-bind="diagnosisSummary">Start in Intake Desk to establish the rescue record and generate the first diagnosis.</div>
+        <div class="info-list">
+          <div><span>Business</span><strong data-bind="businessName">Not set</strong></div>
+          <div><span>Status</span><strong data-bind="status">suspended</strong></div>
+          <div><span>Market</span><strong data-bind="market">Not set</strong></div>
+          <div><span>Evidence Strength</span><strong data-bind="evidenceStrength">medium</strong></div>
+          <div><span>Readiness</span><strong data-bind="readiness">Unknown</strong></div>
+          <div><span>Last Updated</span><strong data-bind="updatedAt">Not saved yet</strong></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>Dispatch Layer</h2>
+            <p>The rescue platform does the casework here, then dispatches into the wider suite to communicate, refine, store, and escalate.</p>
+          </div>
+          <div class="action-row slim">
+            <button type="button" data-action="send-mail">Route Outreach To SkyeMail</button>
+            <button type="button" data-action="send-chat">Route Brief To SkyeChat</button>
+          </div>
+        </div>
+        <div class="report-box" data-bind="monitoringSummary">Build the monitoring lane to generate the review schedule and recovery watch summary.</div>
+        <div class="operator-grid suite-grid">
+          <div class="tool-card">
+            <h3>SkyeMail</h3>
+            <p>Turn the current case into client-facing or support-facing outreach without retyping the brief.</p>
+            <div class="action-row slim"><button type="button" data-open-app="SkyeMail">Open Outreach In SkyeMail</button></div>
+          </div>
+          <div class="tool-card">
+            <h3>SkyeChat</h3>
+            <p>Push the rescue brief into live operator threads and war-room follow-up.</p>
+            <div class="action-row slim"><button type="button" data-open-app="SkyeChat">Open Rescue Ops</button></div>
+          </div>
+          <div class="tool-card">
+            <h3>Neural Space Pro</h3>
+            <p>Refine the reinstatement argument before the final escalation leaves the platform.</p>
+            <div class="action-row slim"><button type="button" data-action="send-neural">Open Neural Review</button></div>
+          </div>
+          <div class="tool-card">
+            <h3>SkyeDrive</h3>
+            <p>Store the evidence packet and supporting material in the document lane.</p>
+            <div class="action-row slim"><button type="button" data-action="send-drive">Open Evidence Storage</button></div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Rescue Output Deck</h2>
+          <p>The platform produces the case packet here. Each output can be copied, refined, or routed into execution surfaces immediately.</p>
+        </div>
+        <div class="action-row slim">
+          <button type="button" data-action="copy-outreach">Copy Outreach Draft</button>
+          <button type="button" data-action="copy-monitoring">Copy Monitoring Deck</button>
+          <button type="button" data-open-app="SkyeAdmin">Escalate To Admin</button>
+        </div>
+      </div>
+      <div class="output-grid">
+        <div>
+          <h3>Appeal Brief</h3>
+          <div class="report-box" data-bind="appealBrief">Build the appeal lane to generate the reinstatement brief.</div>
+        </div>
+        <div>
+          <h3>Outreach Draft</h3>
+          <div class="report-box" data-bind="outreachDraft">Build the outreach lane to generate operator mail and client comms.</div>
+        </div>
+        <div>
+          <h3>Evidence Summary</h3>
+          <div class="report-box" data-bind="evidenceSummary">Build the evidence lane to generate the documentation packet summary.</div>
+        </div>
+        <div>
+          <h3>Monitoring Deck</h3>
+          <div class="report-box" data-bind="monitoringSummary">Build the monitoring lane to generate the recovery watch plan.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="pill" data-toast hidden><span data-toast-text>Saved.</span></div>
+  </div>
+
+  <script src="./assets/platform.js"></script>
+</body>
+</html>

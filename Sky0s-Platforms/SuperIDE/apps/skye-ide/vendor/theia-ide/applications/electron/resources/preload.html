@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        :root {
+            --sol-bg-0: #07030f;
+            --sol-bg-1: #180827;
+            --sol-gold: #ffd86b;
+            --sol-purple: #8d3dff;
+            --sol-text: #fbf5ff;
+        }
+
+        html,
+        body {
+            margin: 0;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 12% 14%, rgba(141, 61, 255, .24), transparent 30%),
+                radial-gradient(circle at 84% 12%, rgba(255, 216, 107, .16), transparent 26%),
+                linear-gradient(160deg, var(--sol-bg-0), var(--sol-bg-1) 55%, #05040b);
+            color: var(--sol-text);
+            font-family: Inter, system-ui, sans-serif;
+        }
+
+        .theia-preload {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* Above styles copied from https://github.com/eclipse-theia/theia/blob/5aeef6c0c683b4e91713ab736957e6655b486adc/packages/core/src/browser/style/index.css#L147-L151 */
+            /* Otherwise, there is a flickering when Theia's CSS loads. */
+
+            background-image: none;
+        }
+
+        .theia-preload::after {
+            /* remove default loading animation */
+            content: none;
+        }
+
+        .spinner-container {
+            display: grid;
+            place-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .custom-spinner {
+            display: grid;
+            gap: 18px;
+            text-align: center;
+        }
+
+        .custom-spinner img {
+            width: min(360px, 74vw);
+            height: auto;
+            animation: sol-logo-float 4.8s ease-in-out infinite, sol-logo-pulse 3.2s ease-in-out infinite;
+            filter: drop-shadow(0 0 28px rgba(141, 61, 255, .34)) drop-shadow(0 0 38px rgba(255, 216, 107, .22));
+        }
+
+        .caption {
+            color: rgba(251, 245, 255, .88);
+            font-size: 1rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        @keyframes sol-logo-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes sol-logo-pulse {
+            0%, 100% { opacity: .94; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class='spinner-container'>
+        <div class='custom-spinner'>
+            <img src="./SKYESOVERLONDONDIETYLOGO.png" alt="Skyes Over London logo" />
+            <div class="caption">Skyes Over London</div>
+        </div>
+    </div>
+</body>
+
+</html>

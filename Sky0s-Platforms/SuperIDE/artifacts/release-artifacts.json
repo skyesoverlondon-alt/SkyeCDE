@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-03-09T17:13:45.250Z",
+  "branch": "main",
+  "commit": "39df2be52b6fc0e182dc041c0aef22628231797d",
+  "checklist_ok": true,
+  "checklist_checks": [
+    {
+      "id": "gateway_only",
+      "ok": true
+    },
+    {
+      "id": "external_endpoints",
+      "ok": true
+    },
+    {
+      "id": "provider_strings",
+      "ok": true
+    },
+    {
+      "id": "secure_defaults",
+      "ok": true
+    },
+    {
+      "id": "protected_apps",
+      "ok": true
+    },
+    {
+      "id": "skye_schema",
+      "ok": true
+    },
+    {
+      "id": "gateway_shape",
+      "ok": true
+    },
+    {
+      "id": "auth_regression",
+      "ok": true
+    },
+    {
+      "id": "export_import_schema",
+      "ok": true
+    },
+    {
+      "id": "smoke_snapshot",
+      "ok": true
+    },
+    {
+      "id": "build",
+      "ok": true
+    }
+  ]
+}
