@@ -260,6 +260,8 @@ POST /v1/stream   (SSE)</code></pre>
           </div>
         </div>
 
+        <div id="configNotice" style="margin-top:10px;padding:10px 12px;border:1px solid rgba(255,213,90,.28);border-radius:14px;background:rgba(255,213,90,.08);font-size:12px;line-height:1.45;color:var(--gold)"></div>
+
         <div style="height:10px"></div>
 
         <label class="small">Prompt</label>
@@ -350,7 +352,7 @@ POST /v1/stream   (SSE)</code></pre>
             transition: box-shadow .2s ease, transform .1s ease;
             white-space:nowrap;
           " onmouseover="this.style.boxShadow='0 0 28px rgba(59,255,178,.5)'; this.style.transform='scale(1.03)'" onmouseout="this.style.boxShadow='0 0 14px rgba(59,255,178,.2)'; this.style.transform='scale(1)'">🔬 Smoke Test</a>
-          <a href="https://kaixusi.skyesoverlondon.workers.dev/smokehouse" target="_blank" rel="noopener noreferrer" style="
+          <a href="https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse" target="_blank" rel="noopener noreferrer" style="
             display:inline-block; margin-top:12px;
             background:transparent;
             border: 1.5px solid rgba(184,107,255,.6);
@@ -377,14 +379,26 @@ POST /v1/stream   (SSE)</code></pre>
     </div>
   </div>
 
+<script src="./_shared/config.js"></script>
 <script>
+  const sharedConfig = window.Kaixu67SharedConfig;
   const ENVS = {
-    prod: "https://0megaskyegate.skyesoverlondon.workers.dev",
-    stage: "https://0megaskyegate.skyesoverlondon.workers.dev" // set staging endpoint here if available
+    prod: sharedConfig.resolveApiBase(),
+    stage: sharedConfig.resolveApiBase()
   };
   let API_BASE = ENVS[localStorage.getItem('kaixuEnv') || 'prod'] || ENVS.prod;
+  const TOKEN_STORAGE_KEY = 'kaixu_gateway_token';
   const envSelect = document.getElementById('envSelect');
   const $ = (id) => document.getElementById(id);
+
+  function refreshConfigNotice(){
+    sharedConfig.renderConfigNotice($("configNotice"), {
+      apiBase: API_BASE,
+      tokenValue: $("token").value,
+      tokenLabel: 'app token',
+      modeLabel: envSelect ? envSelect.value : 'prod'
+    });
+  }
 
   function setHealth(ok, msg){
     const pill = $("healthPill");
@@ -432,6 +446,17 @@ POST /v1/stream   (SSE)</code></pre>
     $("out").textContent = "";
     try{
       const token = $("token").value.trim();
+      if (!token) {
+        $("status").textContent = "Missing token";
+        $("out").textContent = sharedConfig.buildNoticeMessage({
+          apiBase: API_BASE,
+          tokenValue: '',
+          tokenLabel: 'app token',
+          modeLabel: envSelect ? envSelect.value : 'prod'
+        }).text;
+        refreshConfigNotice();
+        return;
+      }
       const model = $("model").value;
       const prompt = $("prompt").value;
 
@@ -465,6 +490,12 @@ POST /v1/stream   (SSE)</code></pre>
 
   loadModels();
   health();
+  $("token").value = sharedConfig.getStoredValue(TOKEN_STORAGE_KEY);
+  $("token").addEventListener('input', () => {
+    sharedConfig.setStoredValue(TOKEN_STORAGE_KEY, $("token").value.trim());
+    refreshConfigNotice();
+  });
+  refreshConfigNotice();
 
   if(envSelect){
     envSelect.value = (Object.keys(ENVS).find(k => ENVS[k] === API_BASE) || 'prod');
@@ -472,6 +503,7 @@ POST /v1/stream   (SSE)</code></pre>
       const chosen = envSelect.value;
       API_BASE = ENVS[chosen] || ENVS.prod;
       localStorage.setItem('kaixuEnv', chosen);
+      refreshConfigNotice();
       health();
       loadModels();
     });

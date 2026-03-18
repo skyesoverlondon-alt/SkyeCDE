@@ -13,7 +13,7 @@ PORT = 8000
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'DemonLordAtreyuxh')
 # Simple session management (In a real app, use secure signed cookies)
 SESSION_TOKEN = hashlib.sha256(ADMIN_PASSWORD.encode()).hexdigest()
-GATEWAY_HOST = "https://0megaskyegate.skyesoverlondon.workers.dev"
+GATEWAY_HOST = "https://kaixugateway13.netlify.app"
 
 # --- Load .env file (key never hardcoded in app code) ---
 def load_dotenv(path=None):

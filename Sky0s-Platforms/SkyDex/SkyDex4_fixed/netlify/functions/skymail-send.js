@@ -1,3 +1,7 @@
+// Required env vars (set in Netlify → SkyDex site → Environment Variables):
+//   RESEND_API_KEY       — API key from resend.com (must have send access)
+//   SKYDEX_MAIL_FROM     — From address, e.g. "SkyDex <notify@yourdomain.com>"
+//   RESEND_FROM_EMAIL    — Fallback from address if SKYDEX_MAIL_FROM is not set
 exports.handler = async (event) => {
   const headers = {
     'Content-Type': 'application/json; charset=utf-8',

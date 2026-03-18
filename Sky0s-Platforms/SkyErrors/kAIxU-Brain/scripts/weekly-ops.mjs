@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+// EXECUTION MODEL: Standalone Node.js script — run via CLI or external cron (GitHub Actions, etc.).
+// This is NOT a Cloudflare Workers scheduled handler. Do NOT deploy as a CF Worker.
+// Trigger example (GitHub Actions cron):
+//   - cron: '0 9 * * 1'  # Run every Monday at 9:00 UTC
+//   - run: node scripts/weekly-ops.mjs
 import { spawnSync } from "node:child_process";
 
 function run(command, args) {

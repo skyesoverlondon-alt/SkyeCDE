@@ -1,3 +1,11 @@
+# Archived Scaffold — Do Not Deploy
+
+This folder is an archived scaffold used to bootstrap the live gate.
+
+- Do not deploy from this directory.
+- The live gate is in `../0megaSkyeGate-The-Actual-Gate/`.
+- The worker name here remains `kaixu-super-gate`, which is intentionally different from the live `0megaskyegate` deployment target.
+
 # Kaixu Sovereign Multimodal Gateway Patch Pack
 
 This additive pack hardens the existing Kaixu gateway into a lane-aware multimodal control surface.

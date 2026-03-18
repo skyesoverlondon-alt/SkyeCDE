@@ -1,14 +1,14 @@
 /*
   REQUIRED kAIxu0megaSkyeGate Client Module
   Base URL: https://0megaskyegate.skyesoverlondon.workers.dev
-  Non-stream POST: /.netlify/functions/gateway-chat
-  Stream SSE POST: /.netlify/functions/gateway-stream
+  Non-stream POST: /v1/chat
+  Stream SSE POST: /v1/stream
   Auth: Authorization: Bearer <KAIXU_VIRTUAL_KEY>
   Payload shape:
     { provider, model, messages:[{role,content}], max_tokens, temperature }
   Streaming: fetch + ReadableStream parsing. No EventSource.
 */
-const KAIXU_BASE_URL = "https://0megaskyegate.skyesoverlondon.workers.dev";
+const KAIXU_BASE_URL = (window.OMEGA_GATE_URL || localStorage.getItem("OMEGA_GATE_URL") || "https://0megaskyegate.skyesoverlondon.workers.dev").replace(/\/+$/, "");
 
 let __kaixuKeyMem = "";
 function kaixuKeyGet(){ return __kaixuKeyMem || ""; }
@@ -30,7 +30,7 @@ function mapGatewayError(status, data){
 
 async function kaixuChat({ provider, model, messages, max_tokens=512, temperature=0.4, kaixuKey }){
   const key = kaixuKey || kaixuKeyGet();
-  const res = await fetch(`${KAIXU_BASE_URL}/.netlify/functions/gateway-chat`, {
+  const res = await fetch(`${KAIXU_BASE_URL}/v1/chat`, {
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -99,7 +99,7 @@ function parseSseFrame(frame){
 async function kaixuStreamChat({ provider, model, messages, max_tokens=512, temperature=0.4, kaixuKey, onMeta, onDelta, onDone, onError }){
   const key = kaixuKey || kaixuKeyGet();
 
-  const res = await fetch(`${KAIXU_BASE_URL}/.netlify/functions/gateway-stream`, {
+  const res = await fetch(`${KAIXU_BASE_URL}/v1/stream`, {
     method:"POST",
     headers:{
       "Content-Type":"application/json",

@@ -1,6 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { authLogin, authMe, authSignup, createCheckout, createRequest } from './hub-api.js';
 
 const $ = (id)=>document.getElementById(id);
 
@@ -9,18 +7,7 @@ function toast(el, msg, kind=""){
   el.className = "status" + (kind ? (" " + kind) : "");
 }
 
-function hasCfg(){
-  const c = window.NOBLE_SOUL_FIREBASE_CONFIG || {};
-  return c.apiKey && c.projectId && c.appId;
-}
-if(!hasCfg()){
-  toast($("authStatus"), "Missing Firebase config. Paste it in firebase-config.js and reload.", "bad");
-  throw new Error("Missing config");
-}
-
-const app = initializeApp(window.NOBLE_SOUL_FIREBASE_CONFIG);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let currentUser = null;
 
 const authCard = $("authCard");
 const mainCard = $("mainCard");
@@ -28,6 +15,18 @@ const authStatus = $("authStatus");
 const reqStatus = $("reqStatus");
 const quoteBox = $("quoteBox");
 const form = $("reqForm");
+const payBtn = $("payBtn");
+
+function friendlyCheckoutError(error){
+  const raw = String(error?.message || error || '').toLowerCase();
+  if(raw.includes('stripe_secret_key') || raw.includes('api key')){
+    return 'Checkout is temporarily unavailable because Stripe is not configured on this hub. Your request was saved, but payment could not start.';
+  }
+  if(raw.includes('failed to fetch') || raw.includes('networkerror') || raw.includes('load failed')){
+    return 'We could not reach Stripe checkout right now. Your request was saved; please try again in a minute.';
+  }
+  return 'We could not start Stripe checkout right now. Your request was saved; please try again shortly.';
+}
 
 const PRICING = {
   boarding: { baseNight: 85 },
@@ -165,8 +164,10 @@ $("signInBtn").addEventListener("click", async ()=>{
   const pass = $("pass").value;
   if(!email || !pass){ toast(authStatus, "Enter email + password.", "bad"); return; }
   try{
-    await signInWithEmailAndPassword(auth, email, pass);
+    const data = await authLogin(email, pass);
+    currentUser = data.user || null;
     toast(authStatus, "Signed in ✅", "ok");
+    syncAuthUI();
   }catch(e){
     toast(authStatus, "Sign-in failed: " + (e?.message||e), "bad");
   }
@@ -177,65 +178,71 @@ $("signUpBtn").addEventListener("click", async ()=>{
   const pass = $("pass").value;
   if(!email || !pass){ toast(authStatus, "Enter email + password.", "bad"); return; }
   try{
-    await createUserWithEmailAndPassword(auth, email, pass);
+    const data = await authSignup(email, pass, email.split('@')[0], 'client');
+    currentUser = data.user || null;
     toast(authStatus, "Account created ✅", "ok");
+    syncAuthUI();
   }catch(e){
     toast(authStatus, "Sign-up failed: " + (e?.message||e), "bad");
   }
 });
 
-$("payBtn")?.addEventListener("click", async ()=>{
+payBtn?.addEventListener("click", async ()=>{
   toast(reqStatus, "", "");
   if(!form.checkValidity()){
     form.reportValidity();
     toast(reqStatus, "Missing required fields.", "bad");
     return;
   }
-  if(!auth.currentUser){
+  if(!currentUser){
     toast(reqStatus, "Sign in first.", "bad");
     return;
   }
 
   const d = getData();
   const q = calcQuote(d);
+  payBtn.disabled = true;
 
   try{
     toast(reqStatus, "Creating request…", "");
-    const reqDoc = await addDoc(collection(db, "booking_requests"), {
-      ...d,
-      clientUid: auth.currentUser.uid,
-      clientEmail: auth.currentUser.email || null,
+    const request = await createRequest({
+      clientUid: currentUser.id,
+      clientEmail: currentUser.email || null,
+      requestType: d.service === 'daystay' ? 'daystay' : 'one_time',
+      payload: d,
       quote: q,
-      status: "created_unpaid",
-      createdAt: serverTimestamp()
     });
 
     toast(reqStatus, "Redirecting to payment…", "");
-    const resp = await fetch("/.netlify/functions/create-checkout", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        requestId: reqDoc.id,
-        clientUid: auth.currentUser.uid
-      })
+    const checkout = await createCheckout({
+      requestId: request.requestId,
+      clientUid: currentUser.id,
     });
-
-    const j = await resp.json();
-    if(!j.ok) throw new Error(j.error || "checkout error");
-    window.location.href = j.url;
+    if(!checkout.url) throw new Error('missing_checkout_url');
+    window.location.href = checkout.url;
   }catch(e){
     console.error(e);
-    toast(reqStatus, "Failed: " + (e?.message||e), "bad");
+    toast(reqStatus, friendlyCheckoutError(e), "bad");
+  }finally{
+    payBtn.disabled = false;
   }
 });
 
-onAuthStateChanged(auth, (u)=>{
-  if(!u){
-    authCard.style.display = "block";
-    mainCard.style.display = "none";
+function syncAuthUI(){
+  if(!currentUser){
+    authCard.style.display = 'block';
+    mainCard.style.display = 'none';
     return;
   }
   authCard.style.display = "none";
   mainCard.style.display = "block";
   renderQuote();
+}
+
+authMe().then((data) => {
+  currentUser = data.user || null;
+  syncAuthUI();
+}).catch(() => {
+  currentUser = null;
+  syncAuthUI();
 });

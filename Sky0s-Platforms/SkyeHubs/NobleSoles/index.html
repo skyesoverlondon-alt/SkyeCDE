@@ -61,17 +61,17 @@
     </section>
 
     <section class="card">
-      <div class="firebaseGate" id="firebaseGate">
+      <div class="connectGate" id="connectGate">
         <h2>Connect to submit</h2>
         <p>
           This intake uses a secure backend to store your submission and photos.
-          Add your Firebase config in <code>firebase-config.js</code>, then reload.
+          If the form can’t reach the backend, retry here after checking your environment variables.
         </p>
         <div class="gateActions">
-          <button id="retryFirebaseBtn" class="btn btn--primary" type="button">I added config — Retry</button>
+          <button id="retryConnectBtn" class="btn btn--primary" type="button">Retry connection</button>
           <a class="btn btn--ghost" href="README_SETUP.html" target="_blank" rel="noreferrer">Setup Guide</a>
         </div>
-        <div id="firebaseStatus" class="status"></div>
+        <div id="connectStatus" class="status"></div>
       </div>
 
       <form id="intakeForm" class="form" novalidate>
@@ -558,7 +558,6 @@
     </section>
   </main>
 
-  <script src="firebase-config.js"></script>
   <script type="module" src="app.js"></script>
   <script>
     // Register service worker (PWA)

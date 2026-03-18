@@ -17,7 +17,7 @@
         <img class="brand__icon" src="assets/icon-192.png" alt="SkyePortal Vault" />
         <div class="brand__text">
           <div class="brand__title">SkyePortal Vault</div>
-          <div class="brand__subtitle">Personal Control Plane (Local-First • Encrypted • Netlify Broker)</div>
+          <div class="brand__subtitle">Personal Control Plane (Local-First • Encrypted • Neon + R2 Broker)</div>
         </div>
       </div>
       <div class="topbar__right">
@@ -75,8 +75,8 @@
       <section id="shell" class="shell hidden">
         <aside class="nav">
           <button class="nav__item" data-tab="dashboard">Dashboard</button>
-          <button class="nav__item" data-tab="projects">Projects</button>
-          <button class="nav__item" data-tab="rules">Rules Packs</button>
+          <button class="nav__item" data-tab="projects">Stacks</button>
+          <button class="nav__item" data-tab="rules">Infra Packs</button>
           <button class="nav__item" data-tab="apps">Apps</button>
           <button class="nav__item" data-tab="env">Env Profiles</button>
           <button class="nav__item" data-tab="broker">Broker</button>
@@ -89,11 +89,11 @@
             <div class="hero">
               <div>
                 <h2>One vault. Many apps.</h2>
-                <p class="muted">Store Firebase projects, rules packs, env profiles, and encrypted credentials once. Reuse forever.</p>
+                <p class="muted">Store Neon stacks, infra packs, env profiles, and encrypted credentials once. Reuse forever.</p>
               </div>
               <div class="hero__stats">
-                <div class="stat"><div class="stat__num" id="statProjects">0</div><div class="stat__label">Projects</div></div>
-                <div class="stat"><div class="stat__num" id="statRules">0</div><div class="stat__label">Rules Packs</div></div>
+                <div class="stat"><div class="stat__num" id="statProjects">0</div><div class="stat__label">Stacks</div></div>
+                <div class="stat"><div class="stat__num" id="statRules">0</div><div class="stat__label">Infra Packs</div></div>
                 <div class="stat"><div class="stat__num" id="statApps">0</div><div class="stat__label">Apps</div></div>
                 <div class="stat"><div class="stat__num" id="statEnv">0</div><div class="stat__label">Env Profiles</div></div>
               </div>
@@ -102,15 +102,15 @@
             <div class="cards">
               <div class="card">
                 <h3>Fast path</h3>
-                <p class="muted">Add a Firebase Project → Add a Rules Pack → Create an Env Profile → Export env blocks → (Optional) deploy rules via Broker.</p>
+                <p class="muted">Add a Stack → Add an Infra Pack → Create an Env Profile → Export env blocks → (Optional) publish infra via Broker.</p>
                 <div class="row">
-                  <button class="btn btn--primary" data-goto="projects">Add Project</button>
-                  <button class="btn" data-goto="rules">Add Rules Pack</button>
+                  <button class="btn btn--primary" data-goto="projects">Add Stack</button>
+                  <button class="btn" data-goto="rules">Add Infra Pack</button>
                 </div>
               </div>
               <div class="card">
                 <h3>Safety rails</h3>
-                <p class="muted">This UI never pushes your service account JSON to other apps. The Broker uses env secrets and issues short-lived scoped JWTs.</p>
+                <p class="muted">This UI never pushes database credentials or bucket keys into downstream apps. The Broker uses env secrets and issues short-lived scoped JWTs.</p>
                 <div class="row">
                   <button class="btn" data-goto="broker">Open Broker Tools</button>
                 </div>
@@ -120,20 +120,20 @@
 
           <div id="tab_projects" class="tab hidden">
             <div class="tab__head">
-              <h2>Projects</h2>
+              <h2>Stacks</h2>
               <div class="row">
-                <button id="btnAddProject" class="btn btn--primary">New Project</button>
+                <button id="btnAddProject" class="btn btn--primary">New Stack</button>
               </div>
             </div>
             <div id="projectsList" class="list"></div>
 
             <dialog id="dlgProject" class="dlg">
               <form method="dialog" class="dlg__form">
-                <h3 id="dlgProjectTitle">New Project</h3>
+                <h3 id="dlgProjectTitle">New Stack</h3>
                 <div class="grid2">
                   <div class="field">
                     <label>Name</label>
-                    <input id="p_name" required placeholder="e.g., FamilyMedPassport" />
+                    <input id="p_name" required placeholder="e.g., FamilyMedPlatform" />
                   </div>
                   <div class="field">
                     <label>Environment</label>
@@ -147,8 +147,8 @@
 
                 <div class="grid2">
                   <div class="field">
-                    <label>Firebase Project ID</label>
-                    <input id="p_projectId" required placeholder="e.g., my-firebase-project" />
+                    <label>Stack ID</label>
+                    <input id="p_projectId" required placeholder="e.g., familymed-prod" />
                   </div>
                   <div class="field">
                     <label>Allowed Origins (comma)</label>
@@ -156,14 +156,25 @@
                   </div>
                 </div>
 
+                <div class="grid2">
+                  <div class="field">
+                    <label>Cloudflare R2 Bucket</label>
+                    <input id="p_r2Bucket" placeholder="e.g., familymed-assets" />
+                  </div>
+                  <div class="field">
+                    <label>R2 Public Base URL</label>
+                    <input id="p_r2PublicBaseUrl" placeholder="e.g., https://cdn.example.com" />
+                  </div>
+                </div>
+
                 <div class="field">
-                  <label>Firebase Public Config (JSON)</label>
-                  <textarea id="p_publicConfig" rows="6" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
+                  <label>Public Platform Config (JSON)</label>
+                  <textarea id="p_publicConfig" rows="6" placeholder='{"APP_ORIGIN":"https://example.com","R2_PUBLIC_BASE_URL":"https://cdn.example.com"}'></textarea>
                 </div>
 
                 <div class="field">
                   <label>Notes</label>
-                  <textarea id="p_notes" rows="3" placeholder="Redirect URIs, Auth providers, etc."></textarea>
+                  <textarea id="p_notes" rows="3" placeholder="Neon branch notes, R2 access patterns, redirects, auth details"></textarea>
                 </div>
 
                 <div class="row row--end">
@@ -176,35 +187,35 @@
 
           <div id="tab_rules" class="tab hidden">
             <div class="tab__head">
-              <h2>Rules Packs</h2>
+              <h2>Infra Packs</h2>
               <div class="row">
-                <button id="btnAddRules" class="btn btn--primary">New Rules Pack</button>
+                <button id="btnAddRules" class="btn btn--primary">New Infra Pack</button>
               </div>
             </div>
             <div id="rulesList" class="list"></div>
 
             <dialog id="dlgRules" class="dlg">
               <form method="dialog" class="dlg__form">
-                <h3 id="dlgRulesTitle">New Rules Pack</h3>
+                <h3 id="dlgRulesTitle">New Infra Pack</h3>
                 <div class="grid2">
                   <div class="field">
                     <label>Name</label>
-                    <input id="r_name" required placeholder="e.g., Baseline Multi-Tenant" />
+                    <input id="r_name" required placeholder="e.g., Baseline Neon + R2" />
                   </div>
                   <div class="field">
                     <label>Tags (comma)</label>
-                    <input id="r_tags" placeholder="baseline, firestore, storage" />
+                    <input id="r_tags" placeholder="baseline, neon, r2" />
                   </div>
                 </div>
 
                 <div class="field">
-                  <label>Firestore rules</label>
-                  <textarea id="r_firestore" rows="10" placeholder="rules_version = '2'; service cloud.firestore { ... }"></textarea>
+                  <label>Neon bootstrap SQL</label>
+                  <textarea id="r_sql" rows="10" placeholder="create table if not exists app_users (...);"></textarea>
                 </div>
 
                 <div class="field">
-                  <label>Storage rules</label>
-                  <textarea id="r_storage" rows="10" placeholder="rules_version = '2'; service firebase.storage { ... }"></textarea>
+                  <label>Cloudflare R2 manifest (JSON)</label>
+                  <textarea id="r_r2" rows="10" placeholder='{"cors":[{"allowedOrigins":["https://example.com"],"allowedMethods":["GET"]}]}'></textarea>
                 </div>
 
                 <div class="row row--end">
@@ -281,7 +292,7 @@
                     <select id="e_app"></select>
                   </div>
                   <div class="field">
-                    <label>Project</label>
+                    <label>Stack</label>
                     <select id="e_project"></select>
                   </div>
                 </div>
@@ -303,13 +314,13 @@
 
                 <div class="field">
                   <label>Public env (JSON)</label>
-                  <textarea id="e_public" rows="6" placeholder='{"VITE_PUBLIC_FOO":"bar","FIREBASE_PROJECT_ID":"..."}'></textarea>
+                  <textarea id="e_public" rows="6" placeholder='{"VITE_PUBLIC_FOO":"bar","R2_PUBLIC_BASE_URL":"https://cdn.example.com"}'></textarea>
                   <div class="hint">Safe to ship to browsers.</div>
                 </div>
 
                 <div class="field">
                   <label>Private env (ENCRYPTED JSON)</label>
-                  <textarea id="e_private" rows="6" placeholder='{"SERVICE_ACCOUNT_JSON":"{...}","SOME_API_KEY":"..."}'></textarea>
+                  <textarea id="e_private" rows="6" placeholder='{"DATABASE_URL":"postgresql://...","R2_SECRET_ACCESS_KEY":"..."}'></textarea>
                   <div class="hint">Stored encrypted in your vault export. Do NOT paste these into your client apps.</div>
                 </div>
 
@@ -369,7 +380,7 @@
                 </div>
                 <div class="field">
                   <label>Scopes (comma)</label>
-                  <input id="b_scopes" value="config:read,rules:deploy" />
+                  <input id="b_scopes" value="config:read,infra:deploy" />
                 </div>
               </div>
               <div class="row">
@@ -383,31 +394,31 @@
             </div>
 
             <div class="card">
-              <h3>Deploy a Rules Pack (server-side)</h3>
-              <p class="muted">This calls Netlify Function <code>/.netlify/functions/deployRules</code> and uses your service account JSON stored in Netlify env (never sent to this UI).</p>
+              <h3>Deploy an Infra Pack (server-side)</h3>
+              <p class="muted">This calls Netlify Function <code>/.netlify/functions/deployinfra</code> and uses your Neon and R2 credentials from Netlify env, never from this UI.</p>
 
               <div class="grid2">
                 <div class="field">
-                  <label>Target Project</label>
+                  <label>Target Stack</label>
                   <select id="d_project"></select>
                 </div>
                 <div class="field">
-                  <label>Rules Pack</label>
+                  <label>Infra Pack</label>
                   <select id="d_pack"></select>
                 </div>
               </div>
 
               <div class="grid2">
                 <div class="field">
-                  <label>Deploy Firestore</label>
-                  <select id="d_firestore">
+                  <label>Apply Neon SQL</label>
+                  <select id="d_applySql">
                     <option value="yes" selected>yes</option>
                     <option value="no">no</option>
                   </select>
                 </div>
                 <div class="field">
-                  <label>Deploy Storage</label>
-                  <select id="d_storage">
+                  <label>Publish R2 Manifest</label>
+                  <select id="d_publishR2">
                     <option value="yes" selected>yes</option>
                     <option value="no">no</option>
                   </select>
@@ -415,7 +426,7 @@
               </div>
 
               <div class="row">
-                <button id="btnDeploy" class="btn btn--primary">Deploy</button>
+                <button id="btnDeploy" class="btn btn--primary">Deploy Infra</button>
                 <span class="status" id="d_status"></span>
               </div>
 

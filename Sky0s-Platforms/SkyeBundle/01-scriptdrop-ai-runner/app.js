@@ -1,12 +1,82 @@
 
 const APP_KEY = 'SKYE_SCRIPTDROP_RUNNER_V1';
 const SETTINGS_KEY = 'SKYE_SCRIPTDROP_SETTINGS_V1';
+const DEFAULT_ENDPOINT = 'https://0megaskyegate.skyesoverlondon.workers.dev';
 let stagedFiles = [];
 let currentPack = load(APP_KEY, null);
 const defaultPrompt = 'Build a runner pack with steps, objection handling, voicemail, SMS, email follow-up, assessment copy, and normalized JSON.';
-$('#system-prompt').value = load(SETTINGS_KEY, {}).systemPrompt || defaultPrompt;
-$('#endpoint-url').value = load(SETTINGS_KEY, {}).endpoint || '';
-$('#endpoint-token').value = load(SETTINGS_KEY, {}).token || '';
+
+function normalizeSettings(settings = {}){
+  return {
+    endpoint: String(settings.endpoint || '').trim() || DEFAULT_ENDPOINT,
+    token: String(settings.token || '').trim(),
+    systemPrompt: String(settings.systemPrompt || '').trim() || defaultPrompt
+  };
+}
+
+function draftSettings(){
+  return {
+    endpoint: $('#endpoint-url').value.trim(),
+    token: $('#endpoint-token').value.trim(),
+    systemPrompt: $('#system-prompt').value.trim() || defaultPrompt
+  };
+}
+
+function hideBanner(){
+  const banner = $('#config-banner');
+  if(!banner) return;
+  banner.classList.add('hidden');
+  banner.innerHTML = '';
+}
+
+function showBanner(message, tone='warning'){
+  const banner = $('#config-banner');
+  if(!banner) return;
+  banner.dataset.tone = tone;
+  banner.innerHTML = `<span>${message}</span><button type="button" class="ghost">Dismiss</button>`;
+  banner.classList.remove('hidden');
+  banner.querySelector('button')?.addEventListener('click', hideBanner, { once: true });
+}
+
+function renderConfigBanner(){
+  if(!$('#endpoint-token').value.trim()){
+    showBanner('No API token configured. Open Settings to enter your token.', 'warning');
+    return;
+  }
+  hideBanner();
+}
+
+function applySettings(settings){
+  const next = normalizeSettings(settings);
+  $('#system-prompt').value = next.systemPrompt;
+  $('#endpoint-url').value = next.endpoint;
+  $('#endpoint-token').value = next.token;
+  store(SETTINGS_KEY, next);
+  renderConfigBanner();
+  return next;
+}
+
+function resolveEndpointForRequest(){
+  const next = normalizeSettings(draftSettings());
+  applySettings(next);
+  return next.endpoint;
+}
+
+function validateEndpointUrl(endpoint){
+  let parsed;
+  try {
+    parsed = new URL(endpoint);
+    if(!['https:', 'http:'].includes(parsed.protocol)) throw new Error();
+  } catch {
+    throw new Error('Invalid endpoint URL. Please check your settings.');
+  }
+  if(parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1'){
+    throw new Error('localhost endpoints are not allowed in production.');
+  }
+  return parsed.toString();
+}
+
+applySettings(load(SETTINGS_KEY, {}));
 
 function saveSettings(){
   store(SETTINGS_KEY, {
@@ -14,6 +84,7 @@ function saveSettings(){
     token: $('#endpoint-token').value.trim(),
     systemPrompt: $('#system-prompt').value.trim()
   });
+  renderConfigBanner();
 }
 ['change','input'].forEach(evt=>{
   $('#endpoint-url').addEventListener(evt, saveSettings);
@@ -197,9 +268,13 @@ async function buildLocal(){
   renderPack();
 }
 async function sendToEndpoint(){
-  const endpoint = $('#endpoint-url').value.trim();
-  if(!endpoint){
-    $('#ingest-preview').textContent = 'Endpoint URL required';
+  const endpoint = resolveEndpointForRequest();
+  let validatedEndpoint;
+  try {
+    validatedEndpoint = validateEndpointUrl(endpoint);
+  } catch (err) {
+    showBanner(err.message, 'danger');
+    $('#ingest-preview').textContent = err.message;
     return;
   }
   const fd = new FormData();
@@ -208,7 +283,7 @@ async function sendToEndpoint(){
   fd.append('systemPrompt', $('#system-prompt').value.trim() || defaultPrompt);
   try{
     $('#ingest-preview').textContent = 'Sending...';
-    const res = await fetch(endpoint, {
+    const res = await fetch(validatedEndpoint, {
       method:'POST',
       headers: $('#endpoint-token').value.trim() ? { Authorization: `Bearer ${$('#endpoint-token').value.trim()}` } : {},
       body: fd
@@ -256,10 +331,7 @@ $('#import-app').addEventListener('change', async e=>{
   try{
     const data = await readJSONFile(file);
     if(data.settings){
-      $('#endpoint-url').value = data.settings.endpoint || '';
-      $('#endpoint-token').value = data.settings.token || '';
-      $('#system-prompt').value = data.settings.systemPrompt || defaultPrompt;
-      saveSettings();
+      applySettings(data.settings);
     }
     if(data.pack){
       currentPack = normalizePack(data.pack);
@@ -274,8 +346,10 @@ $('#reset-app').addEventListener('click', ()=>{
   if(!confirm('Reset app state?')) return;
   localStorage.removeItem(APP_KEY); localStorage.removeItem(SETTINGS_KEY);
   currentPack = null; stagedFiles = [];
-  $('#endpoint-url').value = ''; $('#endpoint-token').value = ''; $('#system-prompt').value = defaultPrompt; $('#raw-notes').value='';
+  applySettings({ endpoint: DEFAULT_ENDPOINT, token: '', systemPrompt: defaultPrompt });
+  $('#raw-notes').value='';
   $('#ingest-preview').textContent=''; $('#source-status').textContent='No source files';
   renderPack();
 });
 renderPack();
+renderConfigBanner();

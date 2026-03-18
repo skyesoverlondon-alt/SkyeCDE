@@ -2,7 +2,7 @@
   "name": "sole-sheets-auth",
   "private": true,
   "version": "1.0.0",
-  "description": "Static login UI + Netlify Functions backend using Google Sheets as DB (no Firestore).",
+  "description": "Static login UI + Netlify Functions backend using Google Sheets as DB.",
   "type": "commonjs",
   "dependencies": {
     "@neondatabase/serverless": "^0.10.2",

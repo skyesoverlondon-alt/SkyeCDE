@@ -1,13 +1,10 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js";
+import { filesToPayload, submitIntake } from './hub-api.js';
 
 const $ = (id) => document.getElementById(id);
 const form = $("intakeForm");
-const firebaseGate = $("firebaseGate");
-const firebaseStatus = $("firebaseStatus");
-const retryFirebaseBtn = $("retryFirebaseBtn");
+const connectGate = $('connectGate');
+const connectStatus = $('connectStatus');
+const retryConnectBtn = $('retryConnectBtn');
 
 const steps = Array.from(document.querySelectorAll(".step"));
 const stepperItems = Array.from(document.querySelectorAll(".stepper__item"));
@@ -23,56 +20,32 @@ const progressPct = $("progressPct");
 const reviewBox = $("reviewBox");
 
 let currentStep = 0;
-let app, auth, db, storage;
-let ready = false;
-let authedUser = null;
+let ready = true;
 
 function toastStatus(el, msg, kind=""){
   el.textContent = msg || "";
   el.className = "status" + (kind ? (" " + kind) : "");
 }
 
-function hasFirebaseConfig(){
-  const cfg = window.NOBLE_SOUL_FIREBASE_CONFIG || {};
-  return cfg && cfg.apiKey && cfg.projectId && cfg.appId;
-}
-
 function showGate(show){
-  firebaseGate.classList.toggle("is-on", !!show);
+  connectGate.classList.toggle('is-on', !!show);
   form.style.display = show ? "none" : "block";
 }
 
-async function initFirebase(){
+async function initBackend(){
   try{
-    if(!hasFirebaseConfig()){
-      showGate(true);
-      toastStatus(firebaseStatus, "Missing Firebase config. Open firebase-config.js and paste your config.", "bad");
-      ready = false;
-      return;
-    }
     showGate(false);
-    app = initializeApp(window.NOBLE_SOUL_FIREBASE_CONFIG);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
-
-    await signInAnonymously(auth);
-
-    onAuthStateChanged(auth, (u)=>{
-      authedUser = u || null;
-    });
-
     ready = true;
-    toastStatus(firebaseStatus, "", "");
+    toastStatus(connectStatus, "", "");
   }catch(e){
     console.error(e);
     showGate(true);
-    toastStatus(firebaseStatus, "Firebase init error: " + (e?.message || e), "bad");
+    toastStatus(connectStatus, 'Backend connection error: ' + (e?.message || e), 'bad');
     ready = false;
   }
 }
 
-retryFirebaseBtn?.addEventListener("click", initFirebase);
+retryConnectBtn?.addEventListener("click", initBackend);
 
 function setStep(i){
   currentStep = Math.max(0, Math.min(steps.length-1, i));
@@ -225,7 +198,7 @@ resetBtn.addEventListener("click", ()=>{
   setStep(0);
 });
 
-function draftKey(){ return "noble_soul_detailer_draft_v1"; }
+function draftKey(){ return "sol_mobile_detailer_draft_v2"; }
 
 saveDraftBtn.addEventListener("click", ()=>{
   const data = collectFormData();
@@ -288,8 +261,7 @@ function buildReview(){
   reviewBox.appendChild(pre);
 }
 
-async function uploadFiles(submissionId){
-  // Returns { bucketName: [ {name, url, path, size, type} ] }
+async function uploadFiles(){
   const fileInputs = [
     ["photoLiving", "living"],
     ["photoSleep", "sleeping"],
@@ -303,21 +275,7 @@ async function uploadFiles(submissionId){
     const inp = form.querySelector(`input[name="${inputName}"]`);
     if(!inp || !inp.files || inp.files.length === 0) continue;
 
-    result[bucket] = [];
-    for(const file of Array.from(inp.files)){
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_").slice(0,120);
-      const path = `detailer_intake/${submissionId}/${bucket}/${Date.now()}_${safeName}`;
-      const r = ref(storage, path);
-      await uploadBytes(r, file, { contentType: file.type || "application/octet-stream" });
-      const url = await getDownloadURL(r);
-      result[bucket].push({
-        name: file.name,
-        url,
-        path,
-        size: file.size,
-        type: file.type || null
-      });
-    }
+    result[bucket] = await filesToPayload(inp.files);
   }
   return result;
 }
@@ -325,7 +283,7 @@ async function uploadFiles(submissionId){
 function disableUI(disabled){
   submitStatus.classList.remove("ok","bad");
   form.querySelectorAll("input,select,textarea,button").forEach(el=>{
-    if(el.id === "retryFirebaseBtn") return;
+    if(el.id === 'retryConnectBtn') return;
     el.disabled = disabled;
   });
 }
@@ -358,8 +316,8 @@ form.addEventListener("submit", async (e)=>{
     return;
   }
 
-  if(!ready || !authedUser){
-    toastStatus(submitStatus, "Backend not ready. Ensure Firebase is configured, then retry.", "bad");
+  if(!ready){
+    toastStatus(submitStatus, "Backend not ready. Retry the connection and submit again.", "bad");
     return;
   }
 
@@ -370,24 +328,11 @@ form.addEventListener("submit", async (e)=>{
   toastStatus(submitStatus, "Uploading photos…", "");
 
   try{
-    const uploads = await uploadFiles(submissionId);
+    const uploads = await uploadFiles();
 
     toastStatus(submitStatus, "Finalizing submission…", "");
 
-    const payload = {
-      ...data,
-      uploads,
-      submissionId,
-      createdAt: serverTimestamp(),
-      status: "submitted",
-      source: "noble_soul_intake_web",
-      auth: {
-        uid: authedUser.uid,
-        provider: authedUser.providerData?.[0]?.providerId || "anonymous"
-      }
-    };
-
-    await setDoc(doc(db, "detailer_intake", submissionId), payload);
+    await submitIntake(data, uploads, submissionId);
 
     toastStatus(submitStatus, "Submitted ✅ Thank you. Ops will review and contact you.", "ok");
     localStorage.removeItem(draftKey());
@@ -403,4 +348,4 @@ form.addEventListener("submit", async (e)=>{
 
 // Boot
 setStep(0);
-await initFirebase();
+initBackend();

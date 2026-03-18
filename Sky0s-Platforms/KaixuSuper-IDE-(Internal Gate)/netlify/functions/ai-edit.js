@@ -6,7 +6,7 @@ const { checkQuota, recordUsage } = require('./_lib/quota');
 const { checkRateLimit } = require('./_lib/ratelimit');
 
 const DEFAULT_MODEL = 'kAIxU-flash';
-const getWorkerUrl  = () => (process.env.KAIXUSI_WORKER_URL || '').replace(/\/+$/, '');
+const getWorkerUrl  = () => (process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
 
 // Map IDE branded model names → XnthGateway { provider, model } pairs.
 // Override via env: KAIXU_FLASH_PROVIDER / KAIXU_FLASH_MODEL / KAIXU_PRO_PROVIDER / KAIXU_PRO_MODEL
@@ -26,11 +26,11 @@ function resolveModel(brandedName) {
 }
 
 function getGateEnv() {
-  const token = process.env.KAIXUSI_SECRET || '';
+  const token = process.env.KAIXU_APP_TOKEN || '';
   const defaultModel = process.env.KAIXU_DEFAULT_MODEL || DEFAULT_MODEL;
-  if (!token) throw new Error('Missing KAIXUSI_SECRET');
+  if (!token) throw new Error('Missing KAIXU_APP_TOKEN');
   const url = getWorkerUrl();
-  if (!url) throw new Error('Missing KAIXUSI_WORKER_URL');
+  if (!url) throw new Error('Missing OMEGA_GATE_URL');
   return { token, defaultModel, url };
 }
 

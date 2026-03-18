@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // server.js — Static file server + gateway proxy
-// Proxies /api/* and /.netlify/functions/* to omegaskyegate.netlify.app
+// Proxies /api/* and /.netlify/functions/* to kaixugateway13.netlify.app
 // Eliminates CORS issue on codespace/github.dev origins
 // Run: node server.js
 
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 8080;
-const GATEWAY = 'https://0megaskyegate.skyesoverlondon.workers.dev';
+const GATEWAY = 'https://kaixugateway13.netlify.app';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',

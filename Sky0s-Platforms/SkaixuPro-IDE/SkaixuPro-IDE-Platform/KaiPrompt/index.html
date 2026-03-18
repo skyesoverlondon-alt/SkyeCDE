@@ -444,7 +444,7 @@
         setInterval(async () => {
             const checks = [];
             try { const r = await fetch('/api/kaixu-key',{signal:AbortSignal.timeout(5000)}); if(r.ok){const d=await r.json(); checks.push('server=UP'); checks.push(d.key?`key=...${d.key.slice(-4)}`:'key=MISSING');}else checks.push(`server=ERR(${r.status})`); } catch { checks.push('server=DOWN'); }
-            try { const g = await fetch('https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat',{method:'HEAD',signal:AbortSignal.timeout(5000)}).catch(()=>null); checks.push(g?`gateway=${g.status}`:'gateway=UNREACHABLE'); } catch { checks.push('gateway=TIMEOUT'); }
+            try { const g = await fetch('https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat',{method:'HEAD',signal:AbortSignal.timeout(5000)}).catch(()=>null); checks.push(g?`gateway=${g.status}`:'gateway=UNREACHABLE'); } catch { checks.push('gateway=TIMEOUT'); }
             checks.push(`localStorage=${!!localStorage.getItem('KAIXU_VIRTUAL_KEY')?'HAS_KEY':'NO_KEY'}`);
             checks.push(`online=${navigator.onLine}`);
             broadcastLog(`[HEARTBEAT] ${checks.join(' | ')}`, 'info');
@@ -453,7 +453,7 @@
         // ── KAIXU GATEWAY CLIENT ──
         const KAIXU_IS_LOCAL = (location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.hostname.includes('codespaces')||location.hostname.endsWith('.app.github.dev')||location.port==='8000');
         const KAIXU_GATEWAY_PRIMARY = '/api';
-        const KAIXU_GATEWAY_FALLBACK = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+        const KAIXU_GATEWAY_FALLBACK = 'https://kaixugateway13.netlify.app';
         const kaixuDiag = { lastBase: null, lastError: null, lastPayload: null };
         window.kaixuDiag = kaixuDiag;
 

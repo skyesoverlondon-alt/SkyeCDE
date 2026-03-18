@@ -1,12 +1,21 @@
-const CACHE = "noble-soul-intake-v1";
+const CACHE = "sol-mobile-detailing-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./admin.html",
+  "./request.html",
+  "./client.html",
+  "./caregiver.html",
+  "./portal.html",
   "./README_SETUP.html",
   "./styles.css",
   "./app.js",
-  "./firebase-config.js",
+  "./admin.js",
+  "./hub-api.js",
+  "./request.js",
+  "./client.js",
+  "./caregiver.js",
+  "./portal.js",
   "./manifest.webmanifest",
   "./assets/logo.svg",
   "./assets/icon-192.png",

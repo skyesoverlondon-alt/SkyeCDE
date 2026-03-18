@@ -65,7 +65,7 @@
         streamingAbort = new AbortController();
         const originalFetch = window.fetch;
         window.fetch = (input, init={}) => {
-          if(typeof input === "string" && input.includes("/gateway-stream")){
+          if(typeof input === "string" && input.includes("/v1/stream")){
             init.signal = streamingAbort.signal;
           }
           return originalFetch(input, init);

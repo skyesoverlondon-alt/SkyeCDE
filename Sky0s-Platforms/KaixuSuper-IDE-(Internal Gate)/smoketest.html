@@ -295,10 +295,10 @@ textarea.glow-input { resize: vertical; min-height: 70px; }
 <div class="config-band">
   <div class="cf">
     <label>Worker URL</label>
-    <input id="workerUrl" value="" data-fill-worker />
+    <input id="workerUrl" value="https://0megaskyegate.skyesoverlondon.workers.dev" data-fill-worker />
   </div>
   <div class="cf">
-    <label>KAIXUSI_SECRET</label>
+    <label>KAIXU_APP_TOKEN</label>
     <input id="secret" type="password" placeholder="Bearer token" />
   </div>
   <div class="cf">
@@ -509,7 +509,7 @@ async function sendChat() {
   const body = {
     model: $('kaixuModel').value,
     messages: [{ role: 'user', content: $('chatMsg').value }],
-    app_id: 'kaixusi-smoketest'
+    app_id: 'kaixuSuperIDE-smoketest'
   };
   const t = Date.now();
   try {
@@ -521,7 +521,7 @@ async function sendChat() {
     badges('chatBadges', [
       { t: ok ? 'pass' : 'fail', v: ok ? `✓ ${r.status}` : `✗ ${r.status}` },
       { t: 'info', v: `${ms}ms` },
-      { t: d.kaixusi ? 'pass' : 'warn', v: `kaixusi:${!!d.kaixusi}` },
+      { t: ok ? 'pass' : 'warn', v: 'gate:0megaSkyeGate' },
       { t: 'info', v: 'kAIxU' },
     ]);
     if (d.usage) {
@@ -550,7 +550,7 @@ async function sendStream() {
   const body = {
     model: $('kaixuModel').value,
     messages: [{ role: 'user', content: $('streamMsg').value }],
-    app_id: 'kaixusi-smoketest'
+    app_id: 'kaixuSuperIDE-smoketest'
   };
   const t = Date.now();
   try {
@@ -599,7 +599,7 @@ async function sendEmbed() {
   spin(btn, '');
   $('embedBadges').innerHTML = ''; $('embedMeta').innerHTML = ''; $('embedVecs').innerHTML = '';
   const texts = $('embedTexts').value.split('\n').map(s => s.trim()).filter(Boolean);
-  const body = { model: $('embedModel').value, texts, app_id: 'kaixusi-smoketest' };
+  const body = { model: $('embedModel').value, texts, app_id: 'kaixuSuperIDE-smoketest' };
   const t = Date.now();
   try {
     const r = await fetch(`${wu()}/v1/embed`, { method:'POST', headers: ah(), body: JSON.stringify(body) });
@@ -666,7 +666,7 @@ async function sendAttrib() {
     messages: [{ role: 'user', content: $('aMsg').value }],
     user_id:      $('aUserId').value || null,
     workspace_id: $('aWsId').value  || null,
-    app_id: 'kaixusi-smoketest'
+    app_id: 'kaixuSuperIDE-smoketest'
   };
   try {
     const r = await fetch(`${wu()}/v1/chat`, { method:'POST', headers: ah(), body: JSON.stringify(body) });

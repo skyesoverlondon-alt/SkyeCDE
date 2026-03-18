@@ -62,7 +62,7 @@
   /* ─────────────────────────────────────────────────────
      KAIXU GATEWAY CONFIG  (matches other apps in repo)
   ───────────────────────────────────────────────────── */
-  const GATEWAY_URL = 'https://0megaskyegate.skyesoverlondon.workers.dev/api/chat';
+  const GATEWAY_URL = 'https://kaixugateway13.netlify.app/api/chat';
   const GATEWAY_ALT = '/api/kaixu-chat';
   const KEY_STORAGE  = 'KAIXU_VIRTUAL_KEY';
   const SYS_STORAGE  = 'kaixu_sys';
@@ -1126,11 +1126,11 @@
 
     const gw2Badge = document.createElement('span'); gw2Badge.textContent = '…';
     gw2Badge.style.background = '#1e293b'; gw2Badge.style.color = '#94a3b8';
-    const { row: gw2Row, val: gw2Val } = diagRow('Gateway (fallback)', 'omegaskyegate.netlify.app', gw2Badge);
+    const { row: gw2Row, val: gw2Val } = diagRow('Gateway (fallback)', 'kaixugateway13.netlify.app', gw2Badge);
     diagPanel.appendChild(gw2Row);
 
     const diagLink = document.createElement('a');
-    diagLink.href = 'https://0megaskyegate.skyesoverlondon.workers.dev';
+    diagLink.href = 'https://kaixugateway13.netlify.app';
     diagLink.target = '_blank';
     diagLink.rel = 'noopener noreferrer';
     diagLink.style.cssText = 'display:block;text-align:center;font-size:11px;color:rgba(255,215,0,.6);text-decoration:none;padding:8px;border-radius:8px;border:1px dashed rgba(255,215,0,.2);margin-top:4px;transition:color .2s;';
@@ -1159,7 +1159,7 @@
       if (diagRan) return; diagRan = true;
       gw1Badge.textContent = '⏳'; gw2Badge.textContent = '⏳';
       pingGateway(window.location.origin + '/api/kaixu-chat', gw1Badge, gw1Val);
-      pingGateway('https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat', gw2Badge, gw2Val);
+      pingGateway('https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat', gw2Badge, gw2Val);
     }
 
     // ── ASSEMBLE ──

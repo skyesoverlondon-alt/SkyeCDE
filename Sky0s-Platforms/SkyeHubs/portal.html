@@ -34,7 +34,7 @@
         Co-Hosts can upload daily updates and chat with clients for each stay.
       </p>
       <div class="notice">
-        This portal requires a Firebase backend. Paste your config in <code>firebase-config.js</code> then reload.
+        This portal now uses SkyeHubs Neon-backed auth, stays, updates, and messaging.
       </div>
     </div>
     <div class="hero__right">
@@ -54,7 +54,7 @@
 
   <section class="card">
     <h2>Choose your portal</h2>
-    <p class="muted">Sign in with your email/password. Stays are linked to your account by UID.</p>
+    <p class="muted">Sign in with your email/password. Stays are linked to your approved SkyeHubs account.</p>
     <div class="grid">
       <a class="btn btn--primary" href="./host.html" style="text-align:center; padding:16px; display:block;">I’m a Client</a>
       <a class="btn btn--primary" href="./cohost.html" style="text-align:center; padding:16px; display:block;">I’m a Co-Host</a>
@@ -68,7 +68,6 @@
   </section>
 </main>
 
-<script src="firebase-config.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));

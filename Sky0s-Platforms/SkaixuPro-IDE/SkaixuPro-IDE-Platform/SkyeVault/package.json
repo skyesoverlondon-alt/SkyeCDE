@@ -2,7 +2,10 @@
   "name": "skyeportal-vault-control-plane",
   "private": true,
   "version": "1.0.0",
-  "description": "SkyePortal Vault \u2014 local-first encrypted control plane + Netlify broker",
+  "description": "SkyePortal Vault \u2014 local-first encrypted control plane for Neon and Cloudflare R2",
   "type": "module",
-  "dependencies": {}
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.888.0",
+    "pg": "^8.16.3"
+  }
 }

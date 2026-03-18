@@ -1,5 +1,4 @@
 
-const DEFAULT_URL = 'https://example.com/';
 const MENU_IDS = {
   page: 'chromeboard-import-page',
   link: 'chromeboard-import-link',
@@ -9,11 +8,11 @@ const MENU_IDS = {
 
 async function getBaseUrl() {
   const stored = await chrome.storage.local.get(['chromeboardUrl']);
-  return (stored.chromeboardUrl || DEFAULT_URL).trim();
+  return (stored.chromeboardUrl || '').trim();
 }
 
 function normalizeBaseUrl(url) {
-  if (!url) return DEFAULT_URL;
+  if (!url) return '';
   return url.endsWith('/') ? url : `${url}/`;
 }
 
@@ -28,6 +27,10 @@ function buildImportUrl(baseUrl, payload) {
 
 async function openImport(payload) {
   const baseUrl = await getBaseUrl();
+  if (!baseUrl) {
+    await chrome.runtime.openOptionsPage();
+    return;
+  }
   const finalUrl = buildImportUrl(baseUrl, payload);
   await chrome.tabs.create({ url: finalUrl });
 }

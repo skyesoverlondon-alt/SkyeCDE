@@ -1,11 +1,11 @@
 # SkyePortal Vault — Control Plane (Netlify-ready)
 
 This is your personal **one-stop shop** for:
-- Firebase projects registry (dev/stage/prod)
-- Versioned Firestore/Storage rules packs
+- Neon stack registry (dev/stage/prod)
+- Versioned infra packs for Neon SQL and Cloudflare R2 manifests
 - App identities (app_id / allowed origins)
 - Env profiles (public env + encrypted private env stored inside the vault)
-- Netlify Broker functions to mint short-lived scoped JWTs and deploy rules server-side via the Firebase Rules API
+- Netlify Broker functions to mint short-lived scoped JWTs, apply Neon SQL, and publish Cloudflare R2 manifests server-side
 
 ## 1) Deploy to Netlify
 1. Create a new Netlify site from this folder (or drop it into your existing repo).
@@ -24,10 +24,20 @@ This is your personal **one-stop shop** for:
   }
   ```
 
-- `VAULT_GOOGLE_SA_JSON`  
-  Your Google service account JSON as a single-line string.  
-  This service account must have permission to manage Firebase Rules for the target project(s).
-  Recommended role: **Firebase Admin** (or a least-privilege role that can update Firebase Rules releases).
+- `DATABASE_URL`  
+  Neon/Postgres connection string used when applying SQL from an infra pack.
+
+- `CLOUDFLARE_ACCOUNT_ID`  
+  Cloudflare account ID for the target R2 account.
+
+- `CLOUDFLARE_R2_ACCESS_KEY_ID`  
+  R2 access key with write access to the manifest bucket.
+
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`  
+  Matching R2 secret access key.
+
+- `VAULT_R2_MANIFEST_BUCKET`  
+  Default R2 bucket used when a stack does not specify its own bucket.
 
 ### Optional
 - `VAULT_TOKEN_TTL_SECONDS`  
@@ -42,7 +52,7 @@ This is your personal **one-stop shop** for:
       "endpoints": { "broker": "/.netlify/functions" }
     },
     "skaixuide": {
-      "public": { "FIREBASE_PROJECT_ID": "my-project", "SOME_FLAG": "1" },
+      "public": { "R2_PUBLIC_BASE_URL": "https://cdn.example.com", "SOME_FLAG": "1" },
       "endpoints": { "broker": "https://YOUR-NETLIFY-SITE.netlify.app/.netlify/functions" }
     }
   }
@@ -52,19 +62,19 @@ This is your personal **one-stop shop** for:
 - Open the deployed site
 - Choose **Initialize new vault** (first time)
 - Create:
-  - Projects
-  - Rules Packs
+  - Stacks
+  - Infra Packs
   - Apps
   - Env Profiles
 - In the **Broker tab**:
   - Set Broker URL to your site URL
   - Use app_id `vault-ui` and the secret you set in `VAULT_APP_SECRETS`
   - Mint token
-  - Deploy rules packs to a chosen Firebase project
+  - Apply SQL and publish R2 manifests to a chosen stack
 
 ## 3) Security model (non-negotiable)
 - The vault encrypts data locally; exports are encrypted blobs.
-- The Broker never sends service account JSON to the browser.
+- The Broker never sends database credentials or bucket keys to the browser.
 - Apps should receive only non-secret config or short-lived tokens.
 
 ## 4) API endpoints (Broker)
@@ -75,10 +85,10 @@ This is your personal **one-stop shop** for:
 - `GET /.netlify/functions/config?app_id=...`
   - returns app-specific public config from `VAULT_PUBLIC_CONFIG_JSON`
 
-- `POST /.netlify/functions/deployRules`
+- `POST /.netlify/functions/deployinfra`
   - header: `Authorization: Bearer <token>`
-  - scope required: `rules:deploy`
-  - body: `{ projectId, firestoreRules, storageRules }`
+  - scope required: `infra:deploy`
+  - body: `{ stackId, sqlBootstrap, r2Manifest, r2Bucket }`
 
 ## 5) Local dev
 You can run this locally with Netlify CLI:

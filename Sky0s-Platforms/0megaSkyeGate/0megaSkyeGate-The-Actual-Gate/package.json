@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "apply-schema": "wrangler d1 execute sky_currency --remote --file=src/db/schema.sql",
+    "deploy": "npm run apply-schema && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "cf-typegen": "wrangler types"
   },

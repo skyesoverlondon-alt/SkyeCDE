@@ -437,7 +437,7 @@
                          location.hostname === '127.0.0.1' ||
                          location.hostname.includes('codespaces') ||
                          location.hostname.endsWith('.app.github.dev');
-        const GW = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+        const GW = IS_LOCAL ? '/api' : 'https://kaixugateway13.netlify.app';
         const diagChannel = new BroadcastChannel('kaixu_events');
         function broadcastLog(msg, type = 'info') {
             try { diagChannel.postMessage({ source: 'SkyeViewRed', message: msg, type, timestamp: Date.now() }); } catch(e) {}

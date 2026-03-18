@@ -17,9 +17,13 @@ exports.handler = async (event) => {try{
 
     const active = kres.rows.find(k => k.is_active) || null;
 
+    const exportedAt = new Date().toISOString();
+    const handle = String(ures.rows[0].handle || "user").trim().replace(/[^a-z0-9._-]+/gi, "-") || "user";
+    const filename = `vault-pack-${handle}-${exportedAt.slice(0, 10)}.json`;
+
     return json(200, {
       schema: "SMV_VAULT_PACK_V1",
-      exported_at: new Date().toISOString(),
+      exported_at: exportedAt,
       user: {
         handle: ures.rows[0].handle,
         email: ures.rows[0].email,
@@ -34,6 +38,10 @@ exports.handler = async (event) => {try{
         created_at: k.created_at
       })),
       active_version: active ? active.version : null
+    }, {
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff"
     });
 
   }catch(err){

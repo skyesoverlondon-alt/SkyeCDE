@@ -185,21 +185,48 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        const appId = 'kaixu-neuralspacepro';
+        const storeBase = '/.netlify/functions/neuralspace-store';
 
-        // Firebase Setup
-        const firebaseConfig = JSON.parse(window.__firebase_config || '{}');
-        const appId = window.__app_id || 'kaixu-nexus-v1';
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        function getLocalUserId() {
+            const key = 'neuralspace_user_id';
+            let value = localStorage.getItem(key);
+            if (!value) {
+                value = `nsp_user_${crypto.randomUUID()}`;
+                localStorage.setItem(key, value);
+            }
+            return value;
+        }
 
         // App State
         let apiKey = "";
-        let user = null, currentChatId = null, activeMode = 'chat', isSearchOn = true, attachments = [], conversation = [], abortCtrl = null;
+        let user = { uid: getLocalUserId() }, currentChatId = null, activeMode = 'chat', isSearchOn = true, attachments = [], conversation = [], abortCtrl = null;
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        async function storeGet(action, params = {}) {
+            const url = new URL(storeBase, window.location.origin);
+            url.searchParams.set('action', action);
+            Object.entries(params).forEach(([key, value]) => {
+                if (value != null) url.searchParams.set(key, value);
+            });
+            const response = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+            const payload = await response.json();
+            if (!response.ok || payload.ok === false) throw new Error(payload.error || `request_failed:${action}`);
+            return payload;
+        }
+
+        async function storePost(action, body) {
+            const url = new URL(storeBase, window.location.origin);
+            url.searchParams.set('action', action);
+            const response = await fetch(url.toString(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const payload = await response.json();
+            if (!response.ok || payload.ok === false) throw new Error(payload.error || `request_failed:${action}`);
+            return payload;
+        }
 
         // --- ENGINE SETTINGS ---
         function loadLocalStore() {
@@ -239,18 +266,12 @@
         window.toggleKB = () => document.getElementById('kb-drawer').classList.toggle('-translate-x-full');
         window.autoResize = (t) => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; };
 
-        // Authentication Observer
-        onAuthStateChanged(auth, (u) => { 
-            user = u; 
-            if (user) { 
-                const userUidEl = document.getElementById('user-uid');
-                if (userUidEl) userUidEl.textContent = user.uid.slice(0, 15); 
-                syncArchives(); 
-                loadLocalStore(); 
-            } else {
-                signInAnonymously(auth);
-            }
-        });
+        function initializeLocalIdentity() {
+            const userUidEl = document.getElementById('user-uid');
+            if (userUidEl) userUidEl.textContent = user.uid.slice(0, 15);
+            syncArchives();
+            loadLocalStore();
+        }
 
         // File Processing
         window.handleFiles = async (e) => {
@@ -331,8 +352,13 @@
             if (!text && attachments.length === 0) return;
 
             if (!currentChatId) {
-                const ref = await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'chats'), { title: text.slice(0, 30) || "Neural Stream", updatedAt: Timestamp.now() });
-                currentChatId = ref.id;
+                const created = await storePost('create-chat', {
+                    appId,
+                    userId: user.uid,
+                    title: text.slice(0, 30) || 'Neural Stream'
+                });
+                currentChatId = created.chatId;
+                await syncArchives();
             }
 
             const welcomeView = document.getElementById('welcome-view');
@@ -421,23 +447,29 @@
 
         async function saveMessage(role, content, atts = null) {
             if (!user || !currentChatId) return;
-            await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'chats', currentChatId, 'messages'), { role, content, attachments: atts ? atts.map(a => ({ name: a.name, type: a.type })) : null, timestamp: Date.now() });
-            await updateDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'chats', currentChatId), { updatedAt: Timestamp.now() });
+            await storePost('add-message', {
+                appId,
+                userId: user.uid,
+                chatId: currentChatId,
+                role,
+                content,
+                attachments: atts ? atts.map(a => ({ name: a.name, type: a.type })) : null
+            });
+            await syncArchives();
         }
 
         async function syncArchives() {
             if (!user) return;
-            onSnapshot(collection(db, 'artifacts', appId, 'users', user.uid, 'chats'), (snap) => {
-                const list = document.getElementById('history-list');
-                if (!list) return;
-                list.innerHTML = '';
-                snap.docs.forEach(chat => {
-                    const div = document.createElement('div');
-                    div.className = `p-3 text-xs cursor-pointer hover:bg-white/5 rounded-xl truncate text-gray-400 hover:text-white transition-colors`;
-                    div.textContent = chat.data().title || "Neural Session";
-                    div.onclick = () => loadSession(chat.id);
-                    list.appendChild(div);
-                });
+            const list = document.getElementById('history-list');
+            if (!list) return;
+            const payload = await storeGet('list-chats', { appId, userId: user.uid });
+            list.innerHTML = '';
+            payload.chats.forEach((chat) => {
+                const div = document.createElement('div');
+                div.className = `p-3 text-xs cursor-pointer hover:bg-white/5 rounded-xl truncate text-gray-400 hover:text-white transition-colors`;
+                div.textContent = chat.title || 'Neural Session';
+                div.onclick = () => loadSession(chat.id);
+                list.appendChild(div);
             });
         }
 
@@ -448,8 +480,8 @@
             if (welcomeView) welcomeView.classList.add('hidden');
             if (msgList) msgList.innerHTML = '<div class="py-20 text-center text-gray-600 animate-pulse font-bold tracking-widest text-[10px]">RE-INITIALIZING kAIxu STREAM...</div>';
             
-            const snap = await getDocs(collection(db, 'artifacts', appId, 'users', user.uid, 'chats', id, 'messages'));
-            const msgs = snap.docs.map(d => d.data()).sort((a, b) => a.timestamp - b.timestamp);
+            const payload = await storeGet('list-messages', { appId, userId: user.uid, chatId: id });
+            const msgs = payload.messages || [];
             
             if (msgList) msgList.innerHTML = '';
             conversation = [];
@@ -506,6 +538,7 @@
 
         // Initialize marked with katex extension
         marked.use(markedKatex({ throwOnError: false }));
+        initializeLocalIdentity();
 
         // Event Listeners
         const userInputEl = document.getElementById('user-input');

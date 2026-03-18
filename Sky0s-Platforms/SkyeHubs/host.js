@@ -1,30 +1,28 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import {
+  authLogin,
+  authLogout,
+  authMe,
+  authSignup,
+  listStayMessages,
+  listStays,
+  listStayUpdates,
+  postStayMessage,
+} from './hub-api.js';
 
 const $ = (id)=>document.getElementById(id);
 
 function toast(el,msg,kind=""){ el.textContent=msg||""; el.className="status"+(kind?(" "+kind):""); }
 function escapeHtml(s){ return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
 
-function hasCfg(){ const c = window.SKYHUBS_FIREBASE_CONFIG || {}; return c.apiKey && c.projectId && c.appId; }
-if(!hasCfg()){ toast($("authStatus"), "Missing Firebase config. Paste it in firebase-config.js and reload.", "bad"); throw new Error("Missing config"); }
-
-const app = initializeApp(window.SKYHUBS_FIREBASE_CONFIG);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
 let currentStayId=null;
-let unsubUpdates=null, unsubMessages=null;
 
-async function loadStays(uid){
+async function loadStays(){
   const list = $("stayList");
   const cal = $("calendar");
   const details = $("stayDetails");
   list.textContent="Loading…"; cal.textContent=""; details.textContent="Select a stay.";
-  const q = query(collection(db,"stays"), where("hostUid","==", uid), orderBy("turnoverDate","desc"));
-  const snap = await getDocs(q);
-  const rows = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  const data = await listStays();
+  const rows = data.stays || [];
 
   list.innerHTML="";
   if(!rows.length){ list.textContent="No stays found."; cal.textContent=""; return; }
@@ -135,83 +133,83 @@ function renderDetails(stay){
 function selectStay(id, stay){
   currentStayId=id;
   renderDetails({id, ...stay});
-  wireUpdates();
-  wireMessages();
+  loadUpdates();
+  loadMessages();
 }
 
-function wireUpdates(){
+async function loadUpdates(){
   const box=$("updates");
-  if(unsubUpdates) unsubUpdates();
   if(!currentStayId){ box.textContent="Select a stay."; return; }
   box.textContent="Loading updates…";
-  const q=query(collection(db,"stays",currentStayId,"updates"), orderBy("createdAt","desc"));
-  unsubUpdates=onSnapshot(q,(snap)=>{
-    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-    box.innerHTML="";
-    if(!rows.length){ box.textContent="No updates yet."; return; }
-    rows.forEach(u=>{
-      const div=document.createElement("div");
-      div.style.padding="10px";
-      div.style.border="1px solid rgba(255,255,255,0.12)";
-      div.style.borderRadius="14px";
-      div.style.background="rgba(0,0,0,0.18)";
-      div.style.marginBottom="10px";
-      const t=u.createdAt?.toDate?u.createdAt.toDate().toLocaleString():"";
-      div.innerHTML=`<b>${t}</b><div style="color:rgba(255,255,255,.82); margin-top:6px; white-space:pre-wrap">${escapeHtml(u.note||"")}</div>`;
-      const photos=Array.isArray(u.photos)?u.photos:[];
-      if(photos.length){
-        const grid=document.createElement("div");
-        grid.style.display="grid";
-        grid.style.gridTemplateColumns="repeat(2, minmax(0,1fr))";
-        grid.style.gap="8px"; grid.style.marginTop="10px";
-        photos.forEach(p=>{
-          const a=document.createElement("a");
-          a.href=p.url; a.target="_blank"; a.rel="noreferrer";
-          const img=document.createElement("img");
-          img.src=p.url; img.alt="Proof photo";
-          img.style.width="100%"; img.style.borderRadius="12px"; img.style.border="1px solid rgba(255,255,255,0.12)";
-          a.appendChild(img); grid.appendChild(a);
-        });
-        div.appendChild(grid);
-      }
-      box.appendChild(div);
-    });
+  const data = await listStayUpdates(currentStayId);
+  const rows = data.updates || [];
+  box.innerHTML="";
+  if(!rows.length){ box.textContent="No updates yet."; return; }
+  rows.forEach(u=>{
+    const div=document.createElement("div");
+    div.style.padding="10px";
+    div.style.border="1px solid rgba(255,255,255,0.12)";
+    div.style.borderRadius="14px";
+    div.style.background="rgba(0,0,0,0.18)";
+    div.style.marginBottom="10px";
+    const t=u.created_at ? new Date(u.created_at).toLocaleString() : "";
+    div.innerHTML=`<b>${t}</b><div style="color:rgba(255,255,255,.82); margin-top:6px; white-space:pre-wrap">${escapeHtml(u.note||"")}</div>`;
+    const photos=Array.isArray(u.photos)?u.photos:[];
+    if(photos.length){
+      const grid=document.createElement("div");
+      grid.style.display="grid";
+      grid.style.gridTemplateColumns="repeat(2, minmax(0,1fr))";
+      grid.style.gap="8px"; grid.style.marginTop="10px";
+      photos.forEach(p=>{
+        if(!p.dataUrl) return;
+        const a=document.createElement("a");
+        a.href=p.dataUrl; a.target="_blank"; a.rel="noreferrer";
+        const img=document.createElement("img");
+        img.src=p.dataUrl; img.alt="Proof photo";
+        img.style.width="100%"; img.style.borderRadius="12px"; img.style.border="1px solid rgba(255,255,255,0.12)";
+        a.appendChild(img); grid.appendChild(a);
+      });
+      div.appendChild(grid);
+    }
+    box.appendChild(div);
   });
 }
 
-function wireMessages(){
+async function loadMessages(){
   const box=$("messages");
-  if(unsubMessages) unsubMessages();
   if(!currentStayId){ box.textContent="Select a stay."; return; }
   box.textContent="Loading messages…";
-  const q=query(collection(db,"stays",currentStayId,"messages"), orderBy("createdAt","asc"));
-  unsubMessages=onSnapshot(q,(snap)=>{
-    const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
-    box.innerHTML="";
-    if(!rows.length){ box.textContent="No messages yet."; return; }
-    rows.forEach(m=>{
-      const div=document.createElement("div");
-      div.style.padding="10px";
-      div.style.borderBottom="1px solid rgba(255,255,255,0.10)";
-      const t=m.createdAt?.toDate?m.createdAt.toDate().toLocaleString():"";
-      div.innerHTML=`<b>${escapeHtml(m.fromRole||"user")}</b> <span style="color:rgba(255,255,255,.55); font-size:12px">${t}</span>
-        <div style="margin-top:6px; white-space:pre-wrap">${escapeHtml(m.text||"")}</div>`;
-      box.appendChild(div);
-    });
-    box.scrollTop=box.scrollHeight;
+  const data = await listStayMessages(currentStayId);
+  const rows = data.messages || [];
+  box.innerHTML="";
+  if(!rows.length){ box.textContent="No messages yet."; return; }
+  rows.forEach(m=>{
+    const div=document.createElement("div");
+    div.style.padding="10px";
+    div.style.borderBottom="1px solid rgba(255,255,255,0.10)";
+    const t=m.created_at ? new Date(m.created_at).toLocaleString() : "";
+    div.innerHTML=`<b>${escapeHtml(m.from_role||"user")}</b> <span style="color:rgba(255,255,255,.55); font-size:12px">${t}</span>
+      <div style="margin-top:6px; white-space:pre-wrap">${escapeHtml(m.text||"")}</div>`;
+    box.appendChild(div);
   });
+  box.scrollTop=box.scrollHeight;
 }
 
 $("signInBtn").addEventListener("click", async ()=>{
   const email=$("email").value.trim(), pass=$("pass").value;
   if(!email||!pass){ toast($("authStatus"), "Enter email + password.", "bad"); return; }
-  try{ await signInWithEmailAndPassword(auth,email,pass); toast($("authStatus"), "Signed in ✅", "ok"); }
+  try{
+    const data = await authLogin(email,pass);
+    if(data.user?.role === 'cohost') throw new Error('host_access_required');
+    toast($("authStatus"), "Signed in ✅", "ok");
+    await bootstrap();
+  }
   catch(e){ toast($("authStatus"), "Sign-in failed: "+(e?.message||e), "bad"); }
 });
 $("signUpBtn").addEventListener("click", async ()=>{
   const email=$("email").value.trim(), pass=$("pass").value;
   if(!email||!pass){ toast($("authStatus"), "Enter email + password.", "bad"); return; }
-  try{ await createUserWithEmailAndPassword(auth,email,pass); toast($("authStatus"), "Account created ✅", "ok"); }
+  try{ await authSignup(email,pass,'SkyeHubs Host','host'); toast($("authStatus"), "Account created ✅", "ok"); await bootstrap(); }
   catch(e){ toast($("authStatus"), "Sign-up failed: "+(e?.message||e), "bad"); }
 });
 $("sendMsgBtn").addEventListener("click", async ()=>{
@@ -220,31 +218,33 @@ $("sendMsgBtn").addEventListener("click", async ()=>{
   if(!txt){ toast($("msgStatus"), "Type a message.", "bad"); return; }
   if(!currentStayId){ toast($("msgStatus"), "Select a stay first.", "bad"); return; }
   try{
-    await addDoc(collection(db,"stays",currentStayId,"messages"), {
-      text: txt,
-      fromUid: auth.currentUser.uid,
-      fromRole: "host",
-      createdAt: serverTimestamp()
-    });
+    await postStayMessage(currentStayId, txt);
     $("msgText").value="";
     toast($("msgStatus"), "Sent ✅", "ok");
+    await loadMessages();
   }catch(e){
     toast($("msgStatus"), "Send failed: "+(e?.message||e), "bad");
   }
 });
 
-$("signOutBtn").addEventListener("click", ()=>signOut(auth));
+$("signOutBtn").addEventListener("click", async ()=>{
+  await authLogout();
+  currentStayId=null;
+  $("authCard").style.display="block";
+  $("mainCard").style.display="none";
+});
 
-onAuthStateChanged(auth, async (u)=>{
-  if(!u){
+async function bootstrap(){
+  try{
+    const data = await authMe();
+    if(data.user?.role === 'cohost') throw new Error('host_access_required');
+    $("authCard").style.display="none";
+    $("mainCard").style.display="block";
+    await loadStays();
+  }catch(_){
     $("authCard").style.display="block";
     $("mainCard").style.display="none";
-    currentStayId=null;
-    if(unsubUpdates) unsubUpdates();
-    if(unsubMessages) unsubMessages();
-    return;
   }
-  $("authCard").style.display="none";
-  $("mainCard").style.display="block";
-  await loadStays(u.uid);
-});
+}
+
+bootstrap();

@@ -1,3 +1,5 @@
+  .connectGate{
+  .connectGate.is-on{display:block}
 /* Noble Soul Intake — clean purple/gold UI */
 :root{
   --bg: #07020f;
@@ -216,13 +218,13 @@ p{margin: 10px 0; color: var(--muted); line-height: 1.5}
   color: rgba(255,255,255,0.85);
 }
 
-.firebaseGate{
+.connectGate{
   display:none;
   padding: 12px;
   border-radius: 14px;
   border: 1px solid rgba(245,197,66,0.22);
   background: rgba(245,197,66,0.10);
 }
-.firebaseGate.is-on{display:block}
+.connectGate.is-on{display:block}
 .gateActions{display:flex; gap: 10px; flex-wrap:wrap; margin-top:10px}
 .fineprint{padding: 12px 18px}

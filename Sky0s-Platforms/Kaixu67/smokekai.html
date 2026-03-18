@@ -257,6 +257,8 @@
     <button class="btn-run" id="btn-run">▶ Run All Tests</button>
   </div>
 
+  <div id="configNotice" style="margin:12px 0 0;padding:10px 12px;border:1px solid rgba(255,213,90,.28);border-radius:14px;background:rgba(255,213,90,.08);font-size:12px;line-height:1.45;color:var(--gold)"></div>
+
   <!-- Test cards -->
   <div class="tests" id="tests-container">
 
@@ -363,15 +365,25 @@
 
 </div><!-- /wrap -->
 
+<script src="./_shared/config.js"></script>
 <script>
-const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const sharedConfig = window.Kaixu67SharedConfig;
+const API_BASE = sharedConfig.resolveApiBase();
 const $ = id => document.getElementById(id);
-const DEFAULT_SMOKEHOUSE_BASE = "https://kaixusi.skyesoverlondon.workers.dev";
-const KAIXU0S_SMOKEHOUSE_URL = "https://kaixusi.skyesoverlondon.workers.dev/smokehouse";
+const DEFAULT_SMOKEHOUSE_BASE = "https://0megaskyegate.skyesoverlondon.workers.dev";
+const KAIXU0S_SMOKEHOUSE_URL = "https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse";
+const TOKEN_STORAGE_KEY = 'kaixu_smoke_token';
 const KNOWN_BRAIN_BASES = [
-  "https://kaixusi.skyesoverlondon.workers.dev",
   "https://0megaskyegate.skyesoverlondon.workers.dev"
 ];
+
+function refreshConfigNotice() {
+  sharedConfig.renderConfigNotice($("configNotice"), {
+    apiBase: API_BASE,
+    tokenValue: $("token-input").value,
+    tokenLabel: 'app token'
+  });
+}
 
 function normalizeSmokehouseUrl(raw) {
   const value = String(raw || "").trim();
@@ -437,6 +449,8 @@ function configureSmokehouseLinks() {
 }
 
 configureSmokehouseLinks();
+sharedConfig.bindTokenInput($("token-input"), TOKEN_STORAGE_KEY, refreshConfigNotice);
+refreshConfigNotice();
 
 // ── toggle detail body ──
 function toggleBody(id) {
@@ -756,6 +770,7 @@ let lastReport = null;
 $("btn-run").addEventListener("click", async () => {
   const token = $("token-input").value.trim();
   const btn = $("btn-run");
+  refreshConfigNotice();
   btn.disabled = true;
   btn.textContent = "⏳ Running…";
   $("btn-export").disabled = true;

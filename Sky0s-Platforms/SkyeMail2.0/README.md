@@ -55,8 +55,9 @@ Admin recovery (break-glass)
 Inbound email (custom-domain addressing)
 You have two inbound pathways:
 
-A) VPS SMTP Bridge → /.netlify/functions/smtp-ingest
+A) VPS SMTP Bridge → /smtp-ingest
 - This is “zero-trust friendly” because the bridge can encrypt client-side before POSTing to Netlify.
+- The checked-in route rewrites `/smtp-ingest` to `/.netlify/functions/smtp-ingest`, so the bridge can target a stable public path instead of the Netlify implementation path.
 - Secured by HMAC signature header (SMTP_BRIDGE_SECRET).
 
 Env:
@@ -145,6 +146,11 @@ SAML (SP-initiated) SSO
 Notes
 - This build enforces SP-initiated by requiring a matching outstanding request ID (InResponseTo).
 - Full XMLDSig signature verification is not implemented in this version; rely on IdP TLS + strict InResponseTo + issuer/destination checks.
+
+SSO env verification checklist
+- Shared routes depend on `PUBLIC_BASE_URL` (or Netlify URL envs) so the checked-in ACS and OIDC callback URLs resolve to the deployed origin.
+- SAML login requires `SAML_SP_PRIVATE_KEY_PEM` for redirect signing.
+- OIDC procurement mode stores org secrets with KMS and therefore requires `CONFIG_KMS_KEY_ID` in the Netlify environment.
 
 
 Public Trust Pack

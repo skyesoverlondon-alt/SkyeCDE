@@ -4,7 +4,7 @@
   "private": true,
   "description": "Noble Soul Caregiver Intake + Client/Caregiver Portal + Stripe checkout (Netlify)",
   "dependencies": {
-    "firebase-admin": "^12.1.0",
+    "pg": "^8.13.1",
     "stripe": "^15.12.0"
   }
 }

@@ -510,7 +510,7 @@ input,textarea,select{font-family:inherit;font-size:13px;outline:none;border:non
 
 /* ─── GATEWAY ─── */
 const IS_LOCAL = location.hostname.includes('localhost') || location.hostname.includes('127.0.0.1') || location.hostname.includes('codespaces') || location.hostname.endsWith('.app.github.dev');
-const GW = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GW = IS_LOCAL ? '/api' : 'https://kaixugateway13.netlify.app';
 const KS = 'KAIXU_VIRTUAL_KEY';
 const BC = new BroadcastChannel('kaixu_events');
 const bcLog = (msg, type='info') => BC.postMessage({source:'Webby', message:msg, type, timestamp:Date.now()});

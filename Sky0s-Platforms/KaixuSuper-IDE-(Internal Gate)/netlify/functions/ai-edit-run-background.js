@@ -7,7 +7,7 @@
 //   3. Netlify immediately returns 202 — this function runs asynchronously
 //   4. Client polls /api/ai-job-status?jobId=X every 2s until status=done|error
 //
-// Env: KAIXUSI_WORKER_URL, KAIXUSI_SECRET, DATABASE_URL
+// Env: OMEGA_GATE_URL, KAIXU_APP_TOKEN, DATABASE_URL
 
 const { verifyToken, getBearerToken, json } = require('./_lib/auth');
 const { readJson }                           = require('./_lib/body');
@@ -18,7 +18,7 @@ const { checkQuota, recordUsage }            = require('./_lib/quota');
 
 // ── Re-use the same model map as ai-edit.js ──────────────────────────────────
 const DEFAULT_MODEL = 'kAIxU-flash';
-const getWorkerUrl  = () => (process.env.KAIXUSI_WORKER_URL || '').replace(/\/+$/, '');
+const getWorkerUrl  = () => (process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
 
 const MODEL_MAP = {
   'kAIxU-flash': {
@@ -83,9 +83,9 @@ Rules:
 }
 
 async function gateGenerate({ provider, model, messages, userId, workspaceId, orgId }) {
-  const secret = process.env.KAIXUSI_SECRET;
+  const secret = process.env.KAIXU_APP_TOKEN;
   const base   = getWorkerUrl();
-  if (!secret || !base) throw new Error('Missing KAIXUSI_SECRET or KAIXUSI_WORKER_URL');
+  if (!secret || !base) throw new Error('Missing KAIXU_APP_TOKEN or OMEGA_GATE_URL');
 
   const res  = await fetch(`${base}/v1/chat`, {
     method: 'POST',

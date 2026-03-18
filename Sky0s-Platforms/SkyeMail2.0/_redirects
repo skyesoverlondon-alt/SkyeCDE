@@ -18,6 +18,8 @@
 
 /org      /org.html              200
 
+/smtp-ingest  /.netlify/functions/smtp-ingest  200
+
 /sso/saml/login    /.netlify/functions/sso-saml-login    200
 /sso/saml/acs      /.netlify/functions/sso-saml-acs      200
 

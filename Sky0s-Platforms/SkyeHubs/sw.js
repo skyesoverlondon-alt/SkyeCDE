@@ -16,7 +16,6 @@ const ASSETS = [
   "./cohost.js",
   "./portal.js",
   "./request.js",
-  "./firebase-config.js",
   "./manifest.webmanifest",
   "./assets/logo.svg",
   "./assets/icon-192.png",

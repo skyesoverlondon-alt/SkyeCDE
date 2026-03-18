@@ -545,7 +545,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:12px 0}
 // CORE CONFIG
 // ══════════════════════════════════════════════
 const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-const GW = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GW = (IS_LOCAL ? '/api' : 'https://kaixugateway13.netlify.app') + '/.netlify/functions/gateway-chat';
 const getKey = () => localStorage.getItem('KAIXU_VIRTUAL_KEY') || '';
 const BC = new BroadcastChannel('kaixu_events');
 

@@ -3,330 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SkyeHubs Intake — Setup Guide</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>SkyeHubs Setup Guide</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font: 16px/1.55 Georgia, serif; background: #0b1020; color: #f4f1ea; }
+    main { max-width: 920px; margin: 0 auto; padding: 40px 24px 80px; }
+    h1, h2 { font-family: "Trebuchet MS", sans-serif; }
+    h1 { font-size: 2.4rem; margin-bottom: 0.4rem; }
+    h2 { margin-top: 2.4rem; }
+    pre { background: rgba(255,255,255,0.08); padding: 16px; border-radius: 14px; overflow: auto; }
+    code { font-family: "Courier New", monospace; }
+    .note { padding: 14px 16px; border: 1px solid rgba(255,255,255,0.16); border-radius: 14px; background: rgba(255,255,255,0.05); }
+    ul { padding-left: 20px; }
+  </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <img class="brand__logo" src="assets/logo.svg" alt="SkyeHubs" />
-    <div class="brand__text">
-      <div class="brand__title">SkyeHubs</div>
-      <div class="brand__sub">Co-Host Intake Setup</div>
-    </div>
+<main>
+  <h1>SkyeHubs Setup</h1>
+  <p>This hub now runs on Neon/Postgres for operational data, Stripe for checkout, and Netlify Functions for session-backed APIs.</p>
+
+  <div class="note">
+    Required runtime pieces: <code>DATABASE_URL</code>, <code>STRIPE_SECRET_KEY</code>, and <code>SITE_URL</code> or <code>URL</code>.
   </div>
-  <div class="topbar__actions">
-    <a class="btn btn--ghost" href="./index.html">Back to Intake</a>
-  </div>
-</header>
 
-<main class="wrap">
-  <section class="card">
-    <h2>What this site does</h2>
-    <p class="muted">
-      This is a Netlify-ready oncohosting website that collects cohost info + uploads photos of the home areas.
-      Submissions are stored in Firebase Firestore, and photos are stored in Firebase Storage.
-    </p>
-  </section>
+  <h2>Environment Variables</h2>
+  <ul>
+    <li><code>DATABASE_URL</code>: Neon/Postgres connection string.</li>
+    <li><code>STRIPE_SECRET_KEY</code>: Stripe secret key for checkout session creation and payment verification.</li>
+    <li><code>SITE_URL</code> or <code>URL</code>: Public base URL used for Stripe success/cancel redirects.</li>
+    <li><code>DEFAULT_DEPOSIT_CENTS</code>: Optional override for the initial deposit amount.</li>
+    <li><code>SESSION_COOKIE_SECURE</code>: Optional. Set to <code>false</code> for local HTTP testing only.</li>
+    <li><code>ADMIN_EMAILS</code>: Optional comma-separated list of emails that should automatically receive the admin role.</li>
+  </ul>
 
-  <section class="card">
-    <h2>Step-by-step Firebase setup</h2>
-    <ol style="color: rgba(255,255,255,0.84); line-height:1.6">
-      <li>Go to Firebase Console and create a project.</li>
-      <li>Inside the project, add a <b>Web App</b> and copy the config object.</li>
-      <li>Enable <b>Authentication</b>:
-        <ul>
-          <li>Enable <b>Anonymous</b> (for cohost submissions).</li>
-          <li>Enable <b>Email/Password</b> (for admin viewer).</li>
-        </ul>
-      </li>
-      <li>Create Firestore database (<b>Production mode</b> is fine).</li>
-      <li>Enable Storage.</li>
-      <li>Paste your Firebase config into <code>firebase-config.js</code>.</li>
-      <li>Deploy this folder to Netlify.</li>
-    </ol>
-    <p class="muted">
-      After you paste the config, reload the intake page and you should be able to submit.
-    </p>
-  </section>
+  <h2>Database Bootstrapping</h2>
+  <p>No manual table creation is required. The first function call will create the schema automatically, including:</p>
+  <ul>
+    <li><code>hub_users</code> and <code>hub_sessions</code></li>
+    <li><code>cohost_intake</code> and <code>cohosts</code></li>
+    <li><code>host_requests</code>, <code>stays</code>, and <code>subscriptions</code></li>
+    <li><code>stay_updates</code> and <code>stay_messages</code></li>
+  </ul>
 
-  <section class="card">
-    <h2>Security rules (recommended)</h2>
-    <p class="muted">
-      These example rules allow anyone authenticated (anonymous is authenticated) to create submissions,
-      but only your admin UID can read them. Replace <code>ADMIN_UID_HERE</code> with your real UID.
-    </p>
+  <h2>Operational Flow</h2>
+  <ul>
+    <li><code>/index.html</code>: cohost intake form writes to <code>cohost_intake</code>.</li>
+    <li><code>/admin.html</code>: admin reviews submissions, approves cohosts, sets roles, and creates stays.</li>
+    <li><code>/request.html</code>: client creates a <code>host_requests</code> row and is redirected to Stripe Checkout.</li>
+    <li><code>/success.html</code>: checkout success finalizes payment and creates the stay.</li>
+    <li><code>/host.html</code> and <code>/cohost.html</code>: session-backed stay updates and messaging.</li>
+    <li><code>/portal.html</code>: route chooser for client and cohost portal access.</li>
+  </ul>
 
-<pre style="white-space:pre-wrap; color: rgba(255,255,255,0.84)">
-Firestore Rules (Firestore → Rules):
+  <h2>Local Development</h2>
+  <pre><code>npm install
+netlify dev</code></pre>
+  <p>Use a local Postgres-compatible <code>DATABASE_URL</code> or your Neon development branch. For local non-HTTPS sessions, set <code>SESSION_COOKIE_SECURE=false</code>.</p>
 
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isAdmin() { return request.auth != null && request.auth.uid == "ADMIN_UID_HERE"; }
-
-    match /cohost_intake/{docId} {
-      allow create: if request.auth != null;
-      allow read, list, update, delete: if isAdmin();
-    }
-  }
-}
-
-Storage Rules (Storage → Rules):
-
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    function isAdmin() { return request.auth != null && request.auth.uid == "ADMIN_UID_HERE"; }
-    match /cohost_intake/{submissionId}/{bucketName}/{fileName} {
-      allow write: if request.auth != null;      // allows uploads from intake
-      allow read: if isAdmin();                  // only admin can view/download
-    }
-  }
-}
-</pre>
-
-    <p class="muted">
-      To find your admin UID: sign in on <code>admin.html</code> once, then check Firebase Console → Authentication → Users.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>Netlify deploy</h2>
-    <ol style="color: rgba(255,255,255,0.84); line-height:1.6">
-      <li>Zip this folder (or drag-and-drop it into Netlify).</li>
-      <li>Netlify will detect it as a static site automatically.</li>
-      <li>Visit:
-        <ul>
-          <li><code>/index.html</code> — cohost intake</li>
-          <li><code>/admin.html</code> — admin viewer</li>
-        </ul>
-      </li>
-    </ol>
-  </section>
-
-  <section class="card">
-    <h2>Portal pages (clients + cohosts)</h2>
-    <ol style="color: rgba(255,255,255,0.84); line-height:1.6">
-      <li><code>/portal.html</code> — choose Client vs Co-Host</li>
-      <li><code>/host.html</code> — client views updates + messages</li>
-      <li><code>/cohost.html</code> — cohost posts updates + messages</li>
-    </ol>
-    <p class="muted">
-      Clients and cohosts sign in using Email/Password (Firebase Auth). Admin creates stays and links them by UID.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>Security rules (updated for stays + portal)</h2>
-    <p class="muted">
-      Replace <code>ADMIN_UID_HERE</code>. These rules allow:
-      clients to read their own stays + post messages,
-      cohosts (role-based) to read their assigned stays + post updates/messages,
-      and admin to read/list everything.
-    </p>
-
-<pre style="white-space:pre-wrap; color: rgba(255,255,255,0.84)">
-Firestore Rules (Firestore → Rules):
-
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isSignedIn() { return request.auth != null; }
-    function isAdmin() { return isSignedIn() && request.auth.uid == "ADMIN_UID_HERE"; }
-
-    // Role doc: /users/{uid} => {role: "cohost"|"client"|"admin"}
-    match /users/{uid} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
-      allow write: if isAdmin();
-    }
-
-    match /cohost_intake/{docId} {
-      allow create: if isSignedIn();                // intake submissions
-      allow read, list, update, delete: if isAdmin();
-    }
-
-    match /stays/{stayId} {
-      function isClient() { return isSignedIn() && resource.data.clientUid == request.auth.uid; }
-      function isCo-Host() { return isSignedIn() && resource.data.cohostUid == request.auth.uid; }
-
-      allow create, update, delete: if isAdmin();
-      allow read, list: if isAdmin() || isClient() || isCo-Host();
-
-      match /updates/{updateId} {
-        allow read, list: if isAdmin() || isClient() || isCo-Host();
-        allow create: if isAdmin() || isCo-Host();
-        allow update, delete: if isAdmin() || isCo-Host();
-      }
-
-      match /messages/{messageId} {
-        allow read, list: if isAdmin() || isClient() || isCo-Host();
-        allow create: if isAdmin() || isClient() || isCo-Host();
-        allow update, delete: if isAdmin();
-      }
-    }
-  }
-}
-
-Storage Rules (Storage → Rules):
-
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    function isSignedIn() { return request.auth != null; }
-    function isAdmin() { return isSignedIn() && request.auth.uid == "ADMIN_UID_HERE"; }
-
-    // Intake photo uploads
-    match /cohost_intake/{submissionId}/{bucketName}/{fileName} {
-      allow write: if isSignedIn();
-      allow read: if isAdmin();
-    }
-
-    // Stay update photos
-    match /stays/{stayId}/updates/{fileName} {
-      // For tighter security you can restrict reads to stay participants via Cloud Functions.
-      // MVP: allow reads to signed-in users, but you should prefer restricting by participants.
-      allow write: if isSignedIn();
-      allow read: if isSignedIn();
-    }
-  }
-}
-</pre>
-
-    <p class="muted">
-      For maximum privacy on Storage reads, you can move photo read authorization behind a server function.
-      The above is the simplest MVP to get you live today.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>Stripe (payments) + auto-stay</h2>
-    <p class="muted">
-      The client request page (<code>/request.html</code>) creates a Firestore <code>stay_requests</code> doc, then starts Stripe Checkout.
-      After payment, <code>/success.html</code> calls a Netlify Function that:
-      marks the request as paid, auto-matches a cohost (MVP), and creates a <code>stays</code> record.
-    </p>
-
-    <h3 style="margin-top:12px;">Netlify environment variables</h3>
-    <ol style="color: rgba(255,255,255,0.84); line-height:1.6">
-      <li><code>STRIPE_SECRET_KEY</code> = your Stripe secret key</li>
-      <li><code>DEFAULT_DEPOSIT_CENTS</code> = deposit (default 5000 for $50)</li>
-      <li><code>SITE_URL</code> = your deployed site URL (Netlify provides <code>URL</code>, but set this for clarity)</li>
-      <li><code>FIREBASE_SERVICE_ACCOUNT_JSON</code> = Firebase Admin service account JSON (stringified)</li>
-    </ol>
-
-    <p class="muted">
-      To get the Firebase Admin service account: Firebase Console → Project Settings → Service accounts → Generate new private key.
-      Copy the JSON and paste it as a single-line string into <code>FIREBASE_SERVICE_ACCOUNT_JSON</code>.
-    </p>
-
-    <div class="notice">
-      This MVP charges a fixed deposit via Stripe Checkout (configurable). You can later charge the full quote by computing
-      the request subtotal inside the server function (recommended once you lock your pricing rules).
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Collections used</h2>
-    <ul style="color: rgba(255,255,255,0.84); line-height:1.6">
-      <li><code>cohost_intake</code> — intake submissions</li>
-      <li><code>users</code> — role flags</li>
-      <li><code>cohosts</code> — active cohost profiles used for auto-matching</li>
-      <li><code>stay_requests</code> — client requests prior to stay</li>
-      <li><code>stays</code> — active stays (used by client/cohost portals)</li>
-      <li><code>stays/{id}/updates</code> — updates with photos</li>
-      <li><code>stays/{id}/messages</code> — messages</li>
-    </ul>
-    <p class="muted">
-      For matching to work, create cohost profiles in <code>cohosts</code> with at least:
-      <code>{uid, name, city, catsOk, medsOk, status:"active"}</code>.
-      You can do this manually at first, or we can automate it from the intake approval step next.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>SkyeHubs Rules + Collections</h2>
-    <p class="muted">Use these names in Firestore and Storage rules. Replace <code>ADMIN_UID_HERE</code>.</p>
-<pre style="white-space:pre-wrap; color: rgba(255,255,255,0.84)">
-Firestore Rules:
-
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isSignedIn() { return request.auth != null; }
-    function isAdmin() { return isSignedIn() && request.auth.uid == "ADMIN_UID_HERE"; }
-
-    match /users/{uid} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
-      allow write: if isAdmin();
-    }
-
-    match /cohost_intake/{docId} {
-      allow create: if isSignedIn();
-      allow read, list, update, delete: if isAdmin();
-    }
-
-    match /cohosts/{uid} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
-      allow write: if isAdmin();
-    }
-
-    match /host_requests/{requestId} {
-      allow create: if isSignedIn();
-      allow read, list, update, delete: if isAdmin();
-    }
-
-    match /subscriptions/{subId} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.hostUid);
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /stays/{stayId} {
-      function isHost() { return isSignedIn() && resource.data.hostUid == request.auth.uid; }
-      function isCohost() { return isSignedIn() && resource.data.cohostUid == request.auth.uid; }
-
-      allow create, update, delete: if isAdmin();
-      allow read, list: if isAdmin() || isHost() || isCohost();
-
-      match /updates/{updateId} {
-        allow read, list: if isAdmin() || isHost() || isCohost();
-        allow create: if isAdmin() || isCohost();
-        allow update, delete: if isAdmin() || isCohost();
-      }
-
-      match /messages/{messageId} {
-        allow read, list: if isAdmin() || isHost() || isCohost();
-        allow create: if isAdmin() || isHost() || isCohost();
-        allow update, delete: if isAdmin();
-      }
-    }
-  }
-}
-
-Storage Rules:
-
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    function isSignedIn(){ return request.auth != null; }
-    function isAdmin(){ return isSignedIn() && request.auth.uid == "ADMIN_UID_HERE"; }
-
-    match /cohost_intake/{submissionId}/{bucketName}/{fileName} {
-      allow write: if isSignedIn();
-      allow read: if isAdmin();
-    }
-
-    match /stays/{stayId}/updates/{fileName} {
-      allow write: if isSignedIn();
-      allow read: if isSignedIn();
-    }
-  }
-}
-</pre>
-  </section>
+  <h2>Verification</h2>
+  <ul>
+    <li>Submit a cohost intake and verify it appears in admin.</li>
+    <li>Approve the intake and verify a <code>hub_users</code> record plus a <code>cohosts</code> record are created.</li>
+    <li>Create a client account from <code>/request.html</code>, submit a request, and complete a Stripe test checkout.</li>
+    <li>Confirm the success flow creates a <code>stays</code> record and that both portals can see messages and updates.</li>
+  </ul>
 </main>
-
-
-
 </body>
 </html>

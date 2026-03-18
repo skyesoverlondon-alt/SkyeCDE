@@ -488,7 +488,7 @@ https://fonts.gstatic.com</textarea>
 <script>
 // ── Config ──────────────────────────────────────────────────────────
 const IS_LOCAL = location.hostname==='localhost'||location.hostname==='127.0.0.1';
-const GW_URL = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GW_URL = (IS_LOCAL?'/api':'https://kaixugateway13.netlify.app')+'/.netlify/functions/gateway-chat';
 const bc = new BroadcastChannel('kaixu_events');
 
 let currentTpl = 'minimal';

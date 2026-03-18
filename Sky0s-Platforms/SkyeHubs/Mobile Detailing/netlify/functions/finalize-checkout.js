@@ -1,138 +1,141 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const admin = require("firebase-admin");
+const crypto = require('crypto');
 
-function initFirebaseAdmin(){
-  if(admin.apps.length) return admin.app();
-  const svc = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if(!svc) throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_JSON env var");
-  const cred = admin.credential.cert(JSON.parse(svc));
-  return admin.initializeApp({ credential: cred });
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) throw new Error('Missing STRIPE_SECRET_KEY env var');
+  return require('stripe')(process.env.STRIPE_SECRET_KEY);
 }
 
-function pickDetailer(detailers, req){
-  // MVP matcher: ZIP match preferred, else city substring; filter by status active and vehicleCount capacity.
-  const zip = (req.zip || "").trim();
-  const addr = (req.address || "").toLowerCase();
-  const vehicleCount = parseInt(req.vehicleCount || "1", 10) || 1;
+const { query } = require('./_lib/db');
+const { ensureSchema } = require('./_lib/schema');
 
-  const pool = detailers.filter(d=>{
-    if(d.status && d.status !== "active") return false;
-    const max = parseInt(d.maxVehiclesPerSlot || d.maxVehicles || "0", 10) || 0;
-    if(max && vehicleCount > max) return false;
+function pickDetailer(detailers, requestPayload) {
+  const zip = String(requestPayload.zip || '').trim();
+  const address = String(requestPayload.address || '').toLowerCase();
+  const vehicleCount = parseInt(requestPayload.vehicleCount || '1', 10) || 1;
 
-    if(zip && d.zip && String(d.zip).trim() === zip) return true;
-    if(d.city && addr.includes(String(d.city).toLowerCase())) return true;
-    return !zip && !d.zip; // fallback
+  const pool = detailers.filter((detailer) => {
+    if (detailer.status && detailer.status !== 'active') return false;
+    const maxVehicles = parseInt(detailer.max_vehicles || '0', 10) || 0;
+    if (maxVehicles && vehicleCount > maxVehicles) return false;
+    if (zip && detailer.zip && String(detailer.zip).trim() === zip) return true;
+    if (detailer.city && address.includes(String(detailer.city).toLowerCase())) return true;
+    return !zip && !detailer.zip;
   });
 
   return pool[0] || null;
 }
 
 exports.handler = async (event) => {
-  try{
-    const sessionId = (event.queryStringParameters?.session_id || "").trim();
-    if(!sessionId){
-      return { statusCode: 400, body: JSON.stringify({ok:false, error:"missing_session_id"}) };
+  try {
+    await ensureSchema();
+    const sessionId = String(event.queryStringParameters?.session_id || '').trim();
+    if (!sessionId) {
+      return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'missing_session_id' }) };
     }
 
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if(session.payment_status !== "paid"){
-      return { statusCode: 200, body: JSON.stringify({ok:false, error:"not_paid"}) };
+    if (session.payment_status !== 'paid') {
+      return { statusCode: 200, body: JSON.stringify({ ok: false, error: 'not_paid' }) };
     }
 
     const requestId = session.metadata?.requestId;
-    const requestType = session.metadata?.requestType || "one_time";
-    if(!requestId){
-      return { statusCode: 400, body: JSON.stringify({ok:false, error:"missing_requestId"}) };
+    if (!requestId) {
+      return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'missing_requestId' }) };
     }
 
-    initFirebaseAdmin();
-    const db = admin.firestore();
-
-    const reqRef = db.collection("service_requests").doc(requestId);
-    const reqSnap = await reqRef.get();
-    if(!reqSnap.exists){
-      return { statusCode: 404, body: JSON.stringify({ok:false, error:"request_not_found"}) };
-    }
-    const req = reqSnap.data();
-
-    // Idempotency
-    if(req.status === "paid_confirmed" || req.status === "job_created"){
-      return { statusCode: 200, body: JSON.stringify({ok:true, already:true, jobId: req.jobId || null}) };
+    const reqRes = await query('SELECT * FROM service_requests WHERE id = $1 LIMIT 1', [requestId]);
+    if (!reqRes.rowCount) {
+      return { statusCode: 404, body: JSON.stringify({ ok: false, error: 'request_not_found' }) };
     }
 
-    await reqRef.set({
-      status: "paid_confirmed",
-      paidAt: admin.firestore.FieldValue.serverTimestamp(),
-      stripe: {
-        sessionId: session.id,
-        amount_total: session.amount_total,
-        currency: session.currency
-      }
-    }, { merge:true });
+    const request = reqRes.rows[0];
+    const payload = request.payload || {};
+    if (request.status === 'paid_confirmed' || request.status === 'job_created') {
+      return { statusCode: 200, body: JSON.stringify({ ok: true, already: true, jobId: request.job_id || null }) };
+    }
 
-    // Load detailers for matching
-    const dSnap = await db.collection("detailers").where("status","==","active").get().catch(()=>null);
-    const detailers = dSnap ? dSnap.docs.map(doc=>({id: doc.id, ...doc.data()})) : [];
-    const chosen = pickDetailer(detailers, req);
+    await query(
+      `
+        UPDATE service_requests
+        SET status = 'paid_confirmed', paid_at = NOW(), updated_at = NOW(), stripe_session_id = $2, stripe_amount_total = $3, stripe_currency = $4
+        WHERE id = $1
+      `,
+      [requestId, session.id, session.amount_total || null, session.currency || null]
+    );
 
-    // Create job
-    const jobPayload = {
-      clientUid: req.clientUid,
-      clientName: req.clientName || "",
-      clientEmail: req.clientEmail || "",
-      detailerUid: chosen ? chosen.uid : null,
-      detailerName: chosen ? (chosen.name || "") : "",
-      address: req.address || "",
-      zip: req.zip || "",
-      preferredDate: req.preferredDate || "",
-      timeWindow: req.timeWindow || "",
-      vehicleCount: req.vehicleCount || "1",
-      vehicleType: req.vehicleType || "",
-      vehicleLabel: req.vehicleType ? `${req.vehicleType} x${req.vehicleCount||1}` : `Vehicle x${req.vehicleCount||1}`,
-      serviceLevel: req.serviceLevel || "",
-      interior: req.interior || "yes",
-      heavySoil: req.heavySoil || "no",
-      addons: {
-        engine: req.engine || "no",
-        headlights: req.headlights || "no",
-        odor: req.odor || "no"
-      },
-      requestType: req.requestType || requestType,
-      plan: req.plan || "none",
-      quote: req.quote || null,
-      requestId,
-      status: chosen ? "scheduled" : "pending_assignment",
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    };
+    const detailersRes = await query('SELECT uid, email, name, city, zip, max_vehicles, status FROM detailers WHERE status = $1', ['active']).catch(() => ({ rows: [] }));
+    const chosen = pickDetailer(detailersRes.rows || [], payload);
 
-    const jobRef = await db.collection("jobs").add(jobPayload);
+    const job = await query(
+      `
+        INSERT INTO jobs (
+          id, client_uid, client_name, client_email, detailer_uid, detailer_name,
+          address, zip, preferred_date, time_window, vehicle_count, vehicle_type,
+          service_level, interior, heavy_soil, addons, request_type, plan, notes, quote,
+          status, source_request_id, created_at, updated_at
+        ) VALUES (
+          gen_random_uuid()::text, $1, $2, $3, $4, $5,
+          $6, $7, $8, $9, $10, $11,
+          $12, $13, $14, $15::jsonb, $16, $17, $18, $19::jsonb,
+          $20, $21, NOW(), NOW()
+        )
+        RETURNING id
+      `,
+      [
+        request.client_uid,
+        String(payload.clientName || '').trim() || null,
+        request.client_email,
+        chosen ? chosen.uid : null,
+        chosen ? (chosen.name || '') : null,
+        String(payload.address || '').trim() || null,
+        String(payload.zip || '').trim() || null,
+        String(payload.preferredDate || '').trim() || null,
+        String(payload.timeWindow || '').trim() || null,
+        parseInt(payload.vehicleCount || '1', 10) || 1,
+        String(payload.vehicleType || '').trim() || null,
+        String(payload.serviceLevel || '').trim() || null,
+        String(payload.interior || 'yes').trim(),
+        String(payload.heavySoil || 'no').trim(),
+        JSON.stringify({
+          engine: payload.engine || 'no',
+          headlights: payload.headlights || 'no',
+          odor: payload.odor || 'no',
+        }),
+        String(request.request_type || 'one_time').trim(),
+        String(payload.plan || 'none').trim(),
+        String(payload.notes || '').trim() || null,
+        JSON.stringify(request.quote || {}),
+        chosen ? 'scheduled' : 'pending_assignment',
+        requestId,
+      ]
+    );
 
-    // Subscriptions collection (MVP): record subscription intent and active flag
     let subscriptionId = null;
-    if((req.requestType === "subscription") && req.plan && req.plan !== "none"){
-      const subRef = await db.collection("subscriptions").add({
-        clientUid: req.clientUid,
-        clientEmail: req.clientEmail || "",
-        plan: req.plan,
-        status: "active",
-        startedAt: admin.firestore.FieldValue.serverTimestamp(),
-        latestJobId: jobRef.id
-      });
-      subscriptionId = subRef.id;
-      await jobRef.set({ subscriptionId }, { merge:true });
+    if (String(payload.requestType || '').trim() === 'subscription' && String(payload.plan || 'none').trim() !== 'none') {
+      subscriptionId = crypto.randomBytes(12).toString('hex');
+      await query(
+        `
+          INSERT INTO subscriptions (id, client_uid, client_email, plan, status, latest_job_id, started_at, updated_at)
+          VALUES ($1, $2, $3, $4, 'active', $5, NOW(), NOW())
+        `,
+        [subscriptionId, request.client_uid, request.client_email, String(payload.plan || '').trim(), job.rows[0].id]
+      );
+      await query('UPDATE jobs SET subscription_id = $2, updated_at = NOW() WHERE id = $1', [job.rows[0].id, subscriptionId]);
     }
 
-    await reqRef.set({
-      status: "job_created",
-      jobId: jobRef.id,
-      detailerAssigned: chosen ? true : false,
-      subscriptionId
-    }, { merge:true });
+    await query(
+      `
+        UPDATE service_requests
+        SET status = 'job_created', updated_at = NOW(), job_id = $2, detailer_uid = $3, detailer_name = $4, subscription_id = $5
+        WHERE id = $1
+      `,
+      [requestId, job.rows[0].id, chosen ? chosen.uid : null, chosen ? (chosen.name || '') : null, subscriptionId]
+    );
 
-    return { statusCode: 200, body: JSON.stringify({ok:true, jobId: jobRef.id, detailerAssigned: !!chosen, subscriptionId}) };
-  }catch(e){
-    console.error(e);
-    return { statusCode: 500, body: JSON.stringify({ok:false, error: e.message || String(e)}) };
+    return { statusCode: 200, body: JSON.stringify({ ok: true, jobId: job.rows[0].id, detailerAssigned: !!chosen, subscriptionId }) };
+  } catch (error) {
+    console.error(error);
+    return { statusCode: 500, body: JSON.stringify({ ok: false, error: error.message || String(error) }) };
   }
 };

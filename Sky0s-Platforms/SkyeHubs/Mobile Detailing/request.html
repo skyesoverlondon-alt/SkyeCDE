@@ -28,14 +28,9 @@
 <main class="wrap">
   <section class="card hero">
     <div class="hero__left">
-      <h1>Mobile detailing that proves itself 📸✨</h1>
-      <p>
-        Book a one-time service or start a monthly subscription. You’ll get before/after photo proof, job notes,
-        and direct messaging with your assigned detailer.
-      </p>
-      <div class="notice">
-        Requires Firebase + Stripe to accept payments. Setup inside <code>README_SETUP.html</code>.
-      </div>
+      <h1>Mobile detailing that proves itself</h1>
+      <p>Book a one-time service or start a monthly subscription. You’ll get before/after photo proof, service notes, and direct messaging with your assigned detailer.</p>
+      <div class="notice">Payments run through Stripe and operations data is stored in the shared Neon/Postgres backend.</div>
     </div>
     <div class="hero__right">
       <div class="mini">
@@ -62,14 +57,14 @@
 
   <section class="card" id="mainCard" style="display:none;">
     <h2>Service request</h2>
-    <p class="muted">Tell us the vehicle + service level. You’ll see an instant estimate. Then pay to lock it in.</p>
+    <p class="muted">Tell us the vehicle and service level. You’ll see an instant estimate, then pay to lock it in.</p>
 
     <form id="reqForm" class="form" novalidate>
       <div class="grid">
         <label class="field"><span>Your name *</span><input name="clientName" required /></label>
         <label class="field"><span>Phone *</span><input name="clientPhone" required /></label>
         <label class="field"><span>Service address *</span><input name="address" required placeholder="Street + city" /></label>
-        <label class="field"><span>ZIP *</span><input name="zip" required pattern="\d{5}" placeholder="#####"/></label>
+        <label class="field"><span>ZIP *</span><input name="zip" required pattern="\d{5}" placeholder="#####" /></label>
       </div>
 
       <div class="grid">
@@ -80,9 +75,7 @@
             <option value="subscription">Monthly subscription</option>
           </select>
         </label>
-
         <label class="field"><span>Preferred date *</span><input name="preferredDate" type="date" required /></label>
-
         <label class="field"><span>Time window *</span>
           <select name="timeWindow" required>
             <option value="" selected disabled>Select</option>
@@ -92,7 +85,6 @@
             <option>5pm–8pm</option>
           </select>
         </label>
-
         <label class="field"><span>Vehicle count *</span>
           <select name="vehicleCount" required>
             <option value="" selected disabled>Select</option>
@@ -112,28 +104,19 @@
             <option value="luxury">Luxury/Exotic</option>
           </select>
         </label>
-
         <label class="field"><span>Service level *</span>
           <select name="serviceLevel" required>
             <option value="" selected disabled>Select</option>
-            <option value="express">Express Wash + Wipe (45–75m)</option>
-            <option value="standard">Standard Detail (2–3h)</option>
-            <option value="premium">Premium Detail (3–5h)</option>
+            <option value="express">Express Wash + Wipe</option>
+            <option value="standard">Standard Detail</option>
+            <option value="premium">Premium Detail</option>
           </select>
         </label>
-
         <label class="field"><span>Interior?</span>
-          <select name="interior">
-            <option value="yes">Yes</option>
-            <option value="no">No (Exterior only)</option>
-          </select>
+          <select name="interior"><option value="yes">Yes</option><option value="no">No (Exterior only)</option></select>
         </label>
-
         <label class="field"><span>Pet hair / heavy soil?</span>
-          <select name="heavySoil">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
+          <select name="heavySoil"><option value="no">No</option><option value="yes">Yes</option></select>
         </label>
       </div>
 
@@ -146,33 +129,18 @@
             <option value="obsidian">OBSIDIAN — 4x/mo Express</option>
           </select>
         </label>
-
         <label class="field"><span>Add-on: Engine bay</span>
-          <select name="engine">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
+          <select name="engine"><option value="no">No</option><option value="yes">Yes</option></select>
         </label>
-
         <label class="field"><span>Add-on: Headlight restore</span>
-          <select name="headlights">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
+          <select name="headlights"><option value="no">No</option><option value="yes">Yes</option></select>
         </label>
-
         <label class="field"><span>Add-on: Odor treatment</span>
-          <select name="odor">
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
+          <select name="odor"><option value="no">No</option><option value="yes">Yes</option></select>
         </label>
       </div>
 
-      <label class="field">
-        <span>Notes *</span>
-        <textarea name="notes" rows="4" required placeholder="Gate codes, water access, areas to focus, stains, etc."></textarea>
-      </label>
+      <label class="field"><span>Notes *</span><textarea name="notes" rows="4" required placeholder="Gate codes, water access, areas to focus, stains, etc."></textarea></label>
 
       <section class="card" style="margin-top:14px;">
         <h2>Price estimate</h2>
@@ -181,20 +149,19 @@
       </section>
 
       <div class="actions" style="margin-top:14px;">
-        <button id="payBtn" class="btn btn--primary" type="button">Pay & Submit</button>
-        <button id="saveReqBtn" class="btn btn--ghost" type="button">Save Draft</button>
-        <button id="loadReqBtn" class="btn btn--ghost" type="button">Load Draft</button>
+        <button id="saveReqBtn" class="btn btn--ghost" type="button">Save draft</button>
+        <button id="loadReqBtn" class="btn btn--ghost" type="button">Load draft</button>
+        <button id="payBtn" class="btn btn--primary" type="button">Pay deposit</button>
         <div id="reqStatus" class="status"></div>
       </div>
     </form>
   </section>
 </main>
 
-<script src="firebase-config.js"></script>
 <script type="module" src="request.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
   }
 </script>
 </body>

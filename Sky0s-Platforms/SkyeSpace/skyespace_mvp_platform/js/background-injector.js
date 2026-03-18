@@ -1,9 +1,13 @@
 
 (function(){
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const shell = document.createElement('div');
   shell.id = 'bg-shell';
   shell.innerHTML = '<canvas id="bg-canvas"></canvas><img id="bg-brand" src="assets/logo.png" alt="Skye logo">';
   document.body.prepend(shell);
+  if (prefersReducedMotion) {
+    return;
+  }
   const canvas = shell.querySelector('#bg-canvas');
   const ctx = canvas.getContext('2d');
   let w=0,h=0,stars=[],ribbons=[],nodes=[];

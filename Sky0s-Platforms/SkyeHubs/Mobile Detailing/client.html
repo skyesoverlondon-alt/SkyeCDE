@@ -28,7 +28,7 @@
 <main class="wrap">
   <section class="card" id="authCard">
     <h2>Sign in</h2>
-    <p class="muted">Use the email you gave the partner/business (or SOL ops) when booking.</p>
+    <p class="muted">Use the email you gave the business when booking.</p>
     <div class="grid">
       <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
       <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
@@ -42,20 +42,15 @@
 
   <section class="card" id="mainCard" style="display:none;">
     <h2>Your jobs</h2>
-    <p class="muted">Select a booking to view job updates and message your detailer.</p>
+    <p class="muted">Select a job to view updates and message your detailer.</p>
     <div class="grid">
-      <div>
-        <div id="bookingList" class="review" style="max-height:520px; overflow:auto;"></div>
-      </div>
+      <div><div id="bookingList" class="review" style="max-height:520px; overflow:auto;"></div></div>
       <div>
         <div class="review" id="bookingDetails"></div>
-
-        <h2 style="margin-top:14px;">Service job updates</h2>
-        <div id="job updates" class="review" style="max-height:360px; overflow:auto;"></div>
-
+        <h2 style="margin-top:14px;">Service updates</h2>
+        <div id="updates" class="review" style="max-height:360px; overflow:auto;"></div>
         <h2 style="margin-top:14px;">Messages</h2>
         <div id="messages" class="review" style="max-height:260px; overflow:auto;"></div>
-
         <div class="actions" style="margin-top:10px;">
           <input id="msgText" class="btn" style="flex:1; min-width:220px;" placeholder="Type a message…" />
           <button id="sendMsgBtn" class="btn btn--primary" type="button">Send</button>
@@ -66,17 +61,14 @@
   </section>
 
   <section class="card fineprint">
-    <p class="muted">
-      If you can’t sign in, contact ops. Bookings must be linked to your account email by admin.
-    </p>
+    <p class="muted">If you can’t sign in, contact ops. Jobs must be linked to your account email by admin.</p>
   </section>
 </main>
 
-<script src="firebase-config.js"></script>
 <script type="module" src="client.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
   }
 </script>
 </body>

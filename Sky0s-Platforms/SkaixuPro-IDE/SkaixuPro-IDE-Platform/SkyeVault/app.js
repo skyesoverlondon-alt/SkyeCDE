@@ -1,8 +1,8 @@
 /* SkyePortal Vault — Local-first encrypted control plane
-   - IndexedDB storage
-   - Passphrase-derived AES-GCM key (PBKDF2)
-   - Encrypted export/import
-   - Netlify broker integration (mint token, deploy rules via Firebase Rules API)
+  - IndexedDB storage
+  - Passphrase-derived AES-GCM key (PBKDF2)
+  - Encrypted export/import
+  - Netlify broker integration (mint token, apply Neon SQL, publish R2 manifests)
 */
 
 (function () {
@@ -340,10 +340,14 @@
     el.innerHTML = list.map(p => itemShell(
       `${p.name} (${p.env})`,
       [
-        `projectId: ${p.projectId}`,
+        `stackId: ${p.projectId}`,
+        `bucket: ${p.r2Bucket || "—"}`,
         `origins: ${(p.allowedOrigins||[]).join(", ") || "—"}`
       ],
-      [{ text: "Firebase", kind: "badge--gold" }],
+      [
+        { text: "Neon", kind: "badge--gold" },
+        { text: "R2", kind: "badge--gold" }
+      ],
       `
         <button class="btn btn--ghost" data-act="editProject" data-id="${p.id}">Edit</button>
         <button class="btn btn--ghost" data-act="copyPublicConfig" data-id="${p.id}">Copy Public Config</button>
@@ -360,13 +364,13 @@
         if (act === "editProject") openProjectDialog(p);
         if (act === "copyPublicConfig") {
           await navigator.clipboard.writeText(JSON.stringify(p.publicConfig || {}, null, 2));
-          await audit("project:copy_public_config", { projectId: p.projectId });
+          await audit("stack:copy_public_config", { stackId: p.projectId });
         }
         if (act === "delProject") {
-          if (!confirm("Delete project?")) return;
+          if (!confirm("Delete stack?")) return;
           state.data.projects = state.data.projects.filter(x => x.id !== id);
           await txDel(state.db, "projects", id);
-          await audit("project:delete", { projectId: p.projectId });
+          await audit("stack:delete", { stackId: p.projectId });
           await sealVault();
           refreshAll();
         }
@@ -386,8 +390,8 @@
       (r.tags||[]).slice(0,4).map(t => ({ text: t, kind: "badge--gold" })),
       `
         <button class="btn btn--ghost" data-act="editRules" data-id="${r.id}">Edit</button>
-        <button class="btn btn--ghost" data-act="copyFirestore" data-id="${r.id}">Copy Firestore</button>
-        <button class="btn btn--ghost" data-act="copyStorage" data-id="${r.id}">Copy Storage</button>
+        <button class="btn btn--ghost" data-act="copySql" data-id="${r.id}">Copy SQL</button>
+        <button class="btn btn--ghost" data-act="copyR2" data-id="${r.id}">Copy R2</button>
         <button class="btn btn--danger" data-act="delRules" data-id="${r.id}">Delete</button>
       `
     )).join("");
@@ -399,19 +403,19 @@
         const r = state.data.rulesPacks.find(x => x.id === id);
         if (!r) return;
         if (act === "editRules") openRulesDialog(r);
-        if (act === "copyFirestore") {
-          await navigator.clipboard.writeText(r.firestoreRules || "");
-          await audit("rules:copy_firestore", { pack: r.name });
+        if (act === "copySql") {
+          await navigator.clipboard.writeText(r.sqlBootstrap || "");
+          await audit("infra:copy_sql", { pack: r.name });
         }
-        if (act === "copyStorage") {
-          await navigator.clipboard.writeText(r.storageRules || "");
-          await audit("rules:copy_storage", { pack: r.name });
+        if (act === "copyR2") {
+          await navigator.clipboard.writeText(r.r2Manifest || "");
+          await audit("infra:copy_r2", { pack: r.name });
         }
         if (act === "delRules") {
-          if (!confirm("Delete rules pack?")) return;
+          if (!confirm("Delete infra pack?")) return;
           state.data.rulesPacks = state.data.rulesPacks.filter(x => x.id !== id);
           await txDel(state.db, "rulesPacks", id);
-          await audit("rules:delete", { pack: r.name });
+          await audit("infra:delete", { pack: r.name });
           await sealVault();
           refreshAll();
         }
@@ -471,7 +475,7 @@
         `${e.name} (${e.env})`,
         [
           `app: ${app?.name || "—"} (${app?.appId || "—"})`,
-          `project: ${proj?.name || "—"} (${proj?.projectId || "—"})`
+          `stack: ${proj?.name || "—"} (${proj?.projectId || "—"})`
         ],
         [{ text: "Env Profile", kind: "badge--gold" }],
         `
@@ -537,11 +541,13 @@
   let editingProjectId = null;
   function openProjectDialog(p = null) {
     editingProjectId = p?.id || null;
-    $("#dlgProjectTitle").textContent = p ? "Edit Project" : "New Project";
+    $("#dlgProjectTitle").textContent = p ? "Edit Stack" : "New Stack";
     $("#p_name").value = p?.name || "";
     $("#p_env").value = p?.env || "prod";
     $("#p_projectId").value = p?.projectId || "";
     $("#p_origins").value = (p?.allowedOrigins || []).join(", ");
+    $("#p_r2Bucket").value = p?.r2Bucket || "";
+    $("#p_r2PublicBaseUrl").value = p?.r2PublicBaseUrl || "";
     $("#p_publicConfig").value = p?.publicConfig ? JSON.stringify(p.publicConfig, null, 2) : "";
     $("#p_notes").value = p?.notes || "";
     $("#dlgProject").showModal();
@@ -550,11 +556,11 @@
   let editingRulesId = null;
   function openRulesDialog(r = null) {
     editingRulesId = r?.id || null;
-    $("#dlgRulesTitle").textContent = r ? "Edit Rules Pack" : "New Rules Pack";
+    $("#dlgRulesTitle").textContent = r ? "Edit Infra Pack" : "New Infra Pack";
     $("#r_name").value = r?.name || "";
     $("#r_tags").value = (r?.tags || []).join(", ");
-    $("#r_firestore").value = r?.firestoreRules || defaultFirestoreRules();
-    $("#r_storage").value = r?.storageRules || defaultStorageRules();
+    $("#r_sql").value = r?.sqlBootstrap || defaultNeonSql();
+    $("#r_r2").value = r?.r2Manifest || defaultR2Manifest();
     $("#dlgRules").showModal();
   }
 
@@ -604,28 +610,36 @@
     return envToNetlifyBlock(obj);
   }
 
-  function defaultFirestoreRules() {
-    return `rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Baseline: require auth by default.
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}`;
+  function defaultNeonSql() {
+    return `create schema if not exists app_private;
+
+create table if not exists public.app_users (
+  id uuid primary key,
+  email text not null unique,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.asset_manifest (
+  id bigserial primary key,
+  bucket text not null,
+  object_key text not null,
+  created_at timestamptz not null default now()
+);`;
   }
 
-  function defaultStorageRules() {
-    return `rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    // Baseline: require auth by default.
-    match /{allPaths=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}`;
+  function defaultR2Manifest() {
+    return JSON.stringify({
+      bucketPolicy: {
+        visibility: "private",
+        allowedOrigins: ["https://example.com"],
+        allowedMethods: ["GET", "PUT"],
+        cacheControl: "public, max-age=3600"
+      },
+      folders: [
+        { keyPrefix: "uploads/", purpose: "user uploads" },
+        { keyPrefix: "exports/", purpose: "generated exports" }
+      ]
+    }, null, 2);
   }
 
   // ---------- Save actions ----------
@@ -634,12 +648,14 @@ service firebase.storage {
     const env = $("#p_env").value;
     const projectId = $("#p_projectId").value.trim();
     const allowedOrigins = csvSplit($("#p_origins").value);
+    const r2Bucket = $("#p_r2Bucket").value.trim();
+    const r2PublicBaseUrl = $("#p_r2PublicBaseUrl").value.trim();
     const publicConfig = safeJsonParse($("#p_publicConfig").value.trim() || "{}", {});
     const notes = $("#p_notes").value.trim();
 
     const obj = {
       id: editingProjectId || uid("proj"),
-      name, env, projectId, allowedOrigins, publicConfig, notes,
+      name, env, projectId, allowedOrigins, r2Bucket, r2PublicBaseUrl, publicConfig, notes,
       createdAt: editingProjectId ? (state.data.projects.find(x => x.id === editingProjectId)?.createdAt || nowISO()) : nowISO(),
       updatedAt: nowISO()
     };
@@ -649,7 +665,7 @@ service firebase.storage {
     else state.data.projects.push(obj);
 
     await txPut(state.db, "projects", obj);
-    await audit(editingProjectId ? "project:update" : "project:create", { projectId });
+    await audit(editingProjectId ? "stack:update" : "stack:create", { stackId: projectId });
     await sealVault();
     refreshAll();
   }
@@ -657,12 +673,12 @@ service firebase.storage {
   async function saveRules() {
     const name = $("#r_name").value.trim();
     const tags = csvSplit($("#r_tags").value);
-    const firestoreRules = $("#r_firestore").value;
-    const storageRules = $("#r_storage").value;
+    const sqlBootstrap = $("#r_sql").value;
+    const r2Manifest = $("#r_r2").value;
 
     const obj = {
       id: editingRulesId || uid("rules"),
-      name, tags, firestoreRules, storageRules,
+      name, tags, sqlBootstrap, r2Manifest,
       createdAt: editingRulesId ? (state.data.rulesPacks.find(x => x.id === editingRulesId)?.createdAt || nowISO()) : nowISO(),
       updatedAt: nowISO()
     };
@@ -672,7 +688,7 @@ service firebase.storage {
     else state.data.rulesPacks.push(obj);
 
     await txPut(state.db, "rulesPacks", obj);
-    await audit(editingRulesId ? "rules:update" : "rules:create", { pack: name });
+    await audit(editingRulesId ? "infra:update" : "infra:create", { pack: name });
     await sealVault();
     refreshAll();
   }
@@ -808,7 +824,7 @@ service firebase.storage {
     await audit("broker:test", {});
   }
 
-  async function deployRules() {
+  async function deployInfra() {
     const statusEl = $("#d_status");
     const resultEl = $("#d_result");
     resultEl.value = "";
@@ -820,21 +836,31 @@ service firebase.storage {
 
     const projId = $("#d_project").value;
     const packId = $("#d_pack").value;
-    const deployFirestore = $("#d_firestore").value === "yes";
-    const deployStorage = $("#d_storage").value === "yes";
+    const applySql = $("#d_applySql").value === "yes";
+    const publishR2 = $("#d_publishR2").value === "yes";
 
     const proj = state.data.projects.find(x => x.id === projId);
     const pack = state.data.rulesPacks.find(x => x.id === packId);
-    if (!proj || !pack) return toast(statusEl, "Select project and rules pack", 3500);
+    if (!proj || !pack) return toast(statusEl, "Select stack and infra pack", 3500);
+
+    let manifestPayload = null;
+    if (publishR2) {
+      manifestPayload = safeJsonParse(pack.r2Manifest || "", null);
+      if (manifestPayload === null && (pack.r2Manifest || "").trim()) {
+        manifestPayload = pack.r2Manifest;
+      }
+    }
 
     const body = {
-      projectId: proj.projectId,
-      firestoreRules: deployFirestore ? pack.firestoreRules : null,
-      storageRules: deployStorage ? pack.storageRules : null,
+      stackId: proj.projectId,
+      r2Bucket: proj.r2Bucket || null,
+      r2PublicBaseUrl: proj.r2PublicBaseUrl || null,
+      sqlBootstrap: applySql ? pack.sqlBootstrap : null,
+      r2Manifest: publishR2 ? manifestPayload : null,
       label: `vault-${pack.name}`.slice(0, 60)
     };
 
-    const res = await fetch(`${baseUrl}/.netlify/functions/deployRules`, {
+    const res = await fetch(`${baseUrl}/.netlify/functions/deployinfra`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -848,12 +874,12 @@ service firebase.storage {
 
     if (!res.ok) {
       toast(statusEl, `Deploy failed: ${data.error || res.status}`, 4500);
-      await audit("broker:deploy_rules_fail", { projectId: proj.projectId, pack: pack.name, error: data.error || res.status });
+      await audit("broker:deploy_infra_fail", { stackId: proj.projectId, pack: pack.name, error: data.error || res.status });
       return;
     }
 
     toast(statusEl, "Deployed ✅", 3500);
-    await audit("broker:deploy_rules_ok", { projectId: proj.projectId, pack: pack.name, deployed: data.deployed || {} });
+    await audit("broker:deploy_infra_ok", { stackId: proj.projectId, pack: pack.name, deployed: data.deployed || {} });
   }
 
   // ---------- Wiring ----------
@@ -912,7 +938,7 @@ service firebase.storage {
 
     // Broker
     $("#btnMint").addEventListener("click", mintToken);
-    $("#btnDeploy").addEventListener("click", deployRules);
+    $("#btnDeploy").addEventListener("click", deployInfra);
     $("#btnBrokerTest").addEventListener("click", testBroker);
 
     // Audit

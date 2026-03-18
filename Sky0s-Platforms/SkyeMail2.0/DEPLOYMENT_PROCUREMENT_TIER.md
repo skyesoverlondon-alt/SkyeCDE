@@ -138,6 +138,11 @@ To use KMS-managed keys:
 
 OIDC is configured per-organization and stored encrypted using CONFIG_KMS_KEY_ID.
 
+Required environment for checked-in SSO routes
+- PUBLIC_BASE_URL should point at the deployed SkyeMail origin so `/sso/saml/acs` and `/sso/oidc/callback` resolve correctly.
+- SAML requires `SAML_SP_PRIVATE_KEY_PEM` for signed AuthnRequest redirects.
+- OIDC procurement mode requires `CONFIG_KMS_KEY_ID` because client secrets are stored with KMS.
+
 
 Entra multi-tenant issuer pattern (Fortune-500 common issue)
 - For Entra multi-tenant apps, configure issuer as:

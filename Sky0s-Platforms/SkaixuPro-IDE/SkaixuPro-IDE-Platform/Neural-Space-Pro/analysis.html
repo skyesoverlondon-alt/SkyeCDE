@@ -272,7 +272,7 @@ footer{padding:2.5rem 8%;border-top:1px solid rgba(59,130,246,.06);display:flex;
           <div class="a-section-body">
             <p>The most technically complex component of Neural Space Pro is its streaming SSE client. This is not a simple <code>EventSource</code> — it is a <code>fetch</code> + <code>ReadableStream</code> implementation required because EventSource does not support custom authorization headers over POST. The entire streaming pipeline is custom-engineered.</p>
             <ul class="a-bullets">
-              <li><strong>Dual-base fallback:</strong> the streaming client attempts <code>/api</code> (Netlify proxy / local server.py) first, falls back to the direct Kaixu Gateway at <code>omegaskyegate.netlify.app</code> — no single point of failure.</li>
+              <li><strong>Dual-base fallback:</strong> the streaming client attempts <code>/api</code> (Netlify proxy / local server.py) first, falls back to the direct Kaixu Gateway at <code>kaixugateway13.netlify.app</code> — no single point of failure.</li>
               <li><strong>Idle watchdog:</strong> a <code>setTimeout</code>-based watchdog fires after 20 seconds of stream inactivity and cancels the reader, surfacing a clear diagnostic error rather than hanging silently.</li>
               <li><strong>First-data watchdog:</strong> a separate 15-second timeout fires if no data whatsoever arrives from the gateway — protecting operators from invisible stream failures.</li>
               <li><strong>Abort controller:</strong> operators can interrupt a running stream mid-generation via the Interrupt button, immediately cancelling the fetch without leaving dangling connections.</li>

@@ -1,11 +1,6 @@
-const admin = require("firebase-admin");
-
-function initFirebaseAdmin(){
-  if(admin.apps.length) return admin.app();
-  const svc = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if(!svc) throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_JSON env var");
-  return admin.initializeApp({ credential: admin.credential.cert(JSON.parse(svc)) });
-}
+const { query } = require('./_lib/db');
+const { ensureSchema } = require('./_lib/schema');
+const { hashPassword, json, normalizeEmail, requireRole } = require('./_lib/auth');
 
 function genTempPassword(){
   // 14 chars mixed
@@ -19,89 +14,79 @@ function genTempPassword(){
 
 exports.handler = async (event) => {
   try{
-    if(event.httpMethod !== "POST"){
-      return { statusCode: 405, body: JSON.stringify({ok:false, error:"method_not_allowed"}) };
-    }
-    initFirebaseAdmin();
-    const db = admin.firestore();
+    if(event.httpMethod !== 'POST') return json(405, {ok:false, error:'method_not_allowed'});
+    await ensureSchema();
+    const auth = await requireRole(event, ['admin']);
+    if(!auth.ok) return auth.response;
 
-    const body = JSON.parse(event.body || "{}");
-    const submissionId = (body.submissionId || "").trim();
-    if(!submissionId){
-      return { statusCode: 400, body: JSON.stringify({ok:false, error:"missing_submissionId"}) };
-    }
+    const body = JSON.parse(event.body || '{}');
+    const submissionId = String(body.submissionId || '').trim();
+    if(!submissionId) return json(400, {ok:false, error:'missing_submissionId'});
 
-    const ref = db.collection("caregiver_intake").doc(submissionId);
-    const snap = await ref.get();
-    if(!snap.exists){
-      return { statusCode: 404, body: JSON.stringify({ok:false, error:"submission_not_found"}) };
-    }
-    const data = snap.data() || {};
-    const email = (data.contact?.email || "").trim().toLowerCase();
-    const name = (data.contact?.fullName || "").trim();
-    const city = (data.home?.city || "").trim();
-    const catsOk = String(data.experience?.catExperience || "").toLowerCase().includes("yes") ? true : undefined;
-    const medsOk = (data.experience?.medsExperience || "").trim();
-    const capacity = parseInt(data.capacity?.maxPets || "0", 10) || null;
+    const submission = await query('SELECT * FROM caregiver_intake WHERE id = $1 LIMIT 1', [submissionId]);
+    if(!submission.rowCount) return json(404, {ok:false, error:'submission_not_found'});
+    const data = submission.rows[0];
+    const payload = data.payload || {};
+    const email = normalizeEmail(data.email || payload.email);
+    const name = [payload.firstName, payload.lastName].filter(Boolean).join(' ').trim();
+    const city = String(data.city || payload.city || '').trim();
+    const catsOk = String(payload.catExperience || '').toLowerCase().includes('yes');
+    const medsOk = String(payload.medsExperience || '').trim() || 'Unknown';
+    const capacity = parseInt(payload.maxPets || '0', 10) || null;
 
-    if(!email){
-      return { statusCode: 400, body: JSON.stringify({ok:false, error:"missing_email_in_intake"}) };
-    }
+    if(!email) return json(400, {ok:false, error:'missing_email_in_intake'});
 
-    // Try to find existing auth user by email; if not, create.
-    let user;
-    try{
-      user = await admin.auth().getUserByEmail(email);
-    }catch(_e){
-      user = null;
-    }
+    const existing = await query('SELECT id FROM hub_users WHERE email = $1 LIMIT 1', [email]);
+    let uid = existing.rows[0]?.id || null;
 
     let tempPassword = null;
-    if(!user){
+    if(!uid){
       tempPassword = genTempPassword();
-      user = await admin.auth().createUser({
-        email,
-        password: tempPassword,
-        displayName: name || undefined
-      });
+      const passwordHash = await hashPassword(tempPassword);
+      const created = await query(
+        `
+          INSERT INTO hub_users (id, email, password_hash, role, name, status, approved_at, created_at, updated_at)
+          VALUES (gen_random_uuid()::text, $1, $2, 'caregiver', $3, 'active', NOW(), NOW(), NOW())
+          RETURNING id
+        `,
+        [email, passwordHash, name || null]
+      );
+      uid = created.rows[0].id;
+    } else {
+      await query('UPDATE hub_users SET role = $2, name = COALESCE($3, name), status = $4, approved_at = NOW(), updated_at = NOW() WHERE id = $1', [uid, 'caregiver', name || null, 'active']);
     }
+    await query(
+      `
+        INSERT INTO caregivers (uid, email, name, city, cats_ok, meds_ok, max_pets, status, source, submission_id, approved_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, 'active', 'intake_approval', $8, NOW(), NOW())
+        ON CONFLICT (uid) DO UPDATE SET
+          email = EXCLUDED.email,
+          name = EXCLUDED.name,
+          city = EXCLUDED.city,
+          cats_ok = EXCLUDED.cats_ok,
+          meds_ok = EXCLUDED.meds_ok,
+          max_pets = EXCLUDED.max_pets,
+          status = 'active',
+          source = 'intake_approval',
+          submission_id = EXCLUDED.submission_id,
+          approved_at = NOW(),
+          updated_at = NOW()
+      `,
+      [uid, email, name || null, city || null, catsOk, medsOk, capacity, submissionId]
+    );
 
-    const uid = user.uid;
+    await query(
+      `
+        UPDATE caregiver_intake
+        SET status = 'approved', approved_at = NOW(), updated_at = NOW(), approved_user_id = $2
+        WHERE id = $1
+      `,
+      [submissionId, uid]
+    );
 
-    // Role doc
-    await db.collection("users").doc(uid).set({
-      role: "caregiver",
-      email,
-      name,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    }, { merge:true });
-
-    // Caregiver profile for matching
-    await db.collection("caregivers").doc(uid).set({
-      uid,
-      email,
-      name,
-      city,
-      catsOk: catsOk === undefined ? true : catsOk,
-      medsOk: medsOk || "Unknown",
-      maxPets: capacity,
-      status: "active",
-      source: "intake_approval",
-      submissionId,
-      approvedAt: admin.firestore.FieldValue.serverTimestamp()
-    }, { merge:true });
-
-    // Mark intake approved
-    await ref.set({
-      status: "approved",
-      approvedAt: admin.firestore.FieldValue.serverTimestamp(),
-      approvedUid: uid,
-      approvedEmail: email
-    }, { merge:true });
-
-    return { statusCode: 200, body: JSON.stringify({ok:true, uid, email, tempPassword}) };
+    return json(200, {ok:true, uid, email, tempPassword});
   }catch(e){
     console.error(e);
-    return { statusCode: 500, body: JSON.stringify({ok:false, error: e.message || String(e)}) };
+    return json(500, {ok:false, error: e.message || String(e)});
   }
 };

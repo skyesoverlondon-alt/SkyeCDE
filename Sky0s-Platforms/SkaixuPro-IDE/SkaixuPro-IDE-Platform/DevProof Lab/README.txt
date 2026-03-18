@@ -38,14 +38,14 @@ UI
 
 
 
-AI valuation (kAIxu0megaSkyeGate routing)
+AI valuation (kAIxuGateway13 routing)
 - You can choose who performs the valuation:
   - kAIxu Analyst (skAIxU-Pro2 via gateway)
   - kAIxU-Prime6.7 Analyst (OpenAI via gateway)
   - skAIxU Flow3.9 Analyst (Anthropic via gateway)
   - Custom provider/model (still via gateway)
 - You must supply a Kaixu Key (KAIXU_VIRTUAL_KEY). No provider keys are ever used.
-- In production on Netlify, all AI calls go to /api/... and are redirected to omegaskyegate.netlify.app (see netlify.toml).
+- In production on Netlify, all AI calls go to /api/... and are redirected to kaixugateway13.netlify.app (see netlify.toml).
 
 If the gateway returns:
 - 401 → invalid/missing Kaixu Key
@@ -56,8 +56,8 @@ If the gateway returns:
 
 AI features (IMPORTANT)
 - Netlify Drop deployments do not reliably honor netlify.toml redirects. This app therefore includes the required proxy in _redirects:
-  /api/* https://0megaskyegate.skyesoverlondon.workers.dev/:splat 200!
-- The UI calls /api/.netlify/functions/gateway-chat and /api/.netlify/functions/gateway-stream, which are proxied to kAIxu0megaSkyeGate.
+  /api/* https://kaixugateway13.netlify.app/:splat 200!
+- The UI calls /api/.netlify/functions/gateway-chat and /api/.netlify/functions/gateway-stream, which are proxied to kAIxuGateway13.
 
 
 AI headers

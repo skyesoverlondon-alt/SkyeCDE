@@ -299,7 +299,7 @@ textarea.console-in:focus{border-color:var(--accent)}
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <button class="insp-btn" onclick="manualPing()" style="background:var(--accent2);color:#000">▶ Ping Now</button>
       <button class="insp-btn" onclick="toggleAutoPing()" id="autoping-btn" style="background:var(--panel);color:var(--text);border:1px solid var(--border)">Start Auto-Ping (5s)</button>
-      <span style="font-size:11px;color:var(--muted)">Target: <span id="ping-target" style="font-family:var(--mono);color:var(--accent2)">omegaskyegate.netlify.app</span></span>
+      <span style="font-size:11px;color:var(--muted)">Target: <span id="ping-target" style="font-family:var(--mono);color:var(--accent2)">kaixugateway13.netlify.app</span></span>
     </div>
   </div>
 
@@ -328,7 +328,7 @@ textarea.console-in:focus{border-color:var(--accent)}
           <option>GET</option>
           <option>POST</option>
         </select>
-        <input id="insp-url" placeholder="https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat" />
+        <input id="insp-url" placeholder="https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat" />
         <button class="insp-btn" onclick="runInspect()">▶ Send</button>
       </div>
       <div id="insp-result" class="result-box"><span class="muted">// Response will appear here…</span></div>
@@ -336,7 +336,7 @@ textarea.console-in:focus{border-color:var(--accent)}
     <div class="card">
       <div class="card-title">Quick Endpoints</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="insp-btn" style="background:var(--panel);color:var(--text);border:1px solid var(--border);font-size:11px" onclick="quickInspect('https://0megaskyegate.skyesoverlondon.workers.dev/.netlify/functions/gateway-chat')">kAIxU Gateway</button>
+        <button class="insp-btn" style="background:var(--panel);color:var(--text);border:1px solid var(--border);font-size:11px" onclick="quickInspect('https://kaixugateway13.netlify.app/.netlify/functions/gateway-chat')">kAIxU Gateway</button>
         <button class="insp-btn" style="background:var(--panel);color:var(--text);border:1px solid var(--border);font-size:11px" onclick="quickInspect('https://fonts.googleapis.com/css2?family=Inter')">Google Fonts</button>
         <button class="insp-btn" style="background:var(--panel);color:var(--text);border:1px solid var(--border);font-size:11px" onclick="quickInspect(location.origin+'/skAIxuide/')">Local Root</button>
         <button class="insp-btn" style="background:var(--panel);color:var(--text);border:1px solid var(--border);font-size:11px" onclick="quickInspect(location.origin+'/Nexus-Pro/NexusPro.html')">This App</button>
@@ -425,7 +425,7 @@ textarea.console-in:focus{border-color:var(--accent)}
 <script>
 // ── Config ──────────────────────────────────────────
 const IS_LOCAL = location.hostname==='localhost'||location.hostname==='127.0.0.1';
-const GW_BASE  = IS_LOCAL ? '/api' : 'https://0megaskyegate.skyesoverlondon.workers.dev';
+const GW_BASE  = IS_LOCAL ? '/api' : 'https://kaixugateway13.netlify.app';
 const GW_URL   = GW_BASE + '/.netlify/functions/gateway-chat';
 const bc = new BroadcastChannel('kaixu_events');
 const SESSION_START = Date.now();
@@ -773,7 +773,7 @@ const APPS = [
   {name:'GotSOLE',           path:'/GotSOLE/'},
   {name:'ALLAI',             path:'/ALLAI.html'},
   {name:'Index Launcher',    path:'/index.html'},
-  {name:'KaiXu Gateway',     path:'https://0megaskyegate.skyesoverlondon.workers.dev/'},
+  {name:'KaiXu Gateway',     path:'https://kaixugateway13.netlify.app/'},
 ];
 
 function buildAppGrid(){

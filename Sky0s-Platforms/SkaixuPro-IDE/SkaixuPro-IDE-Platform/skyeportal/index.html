@@ -444,7 +444,7 @@ input.inp::placeholder,textarea.inp::placeholder{color:var(--muted)}
 <script>
 // ── Config ─────────────────────────────────────────────────────────
 const IS_LOCAL = location.hostname==='localhost'||location.hostname==='127.0.0.1';
-const GW_URL = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GW_URL = (IS_LOCAL?'/api':'https://kaixugateway13.netlify.app')+'/.netlify/functions/gateway-chat';
 const bc = new BroadcastChannel('kaixu_events');
 const STORE_KEY = 'SKYEPORTAL_KEYRING_V1';
 
@@ -483,7 +483,7 @@ const APPS = [
   {name:'Nebula TaskForce',   path:'/NEWNEW/',                       key:'KAIXU_VIRTUAL_KEY'},
   {name:'Project Aegis',      path:'/projectaegis-skyex/',           key:'KAIXU_VIRTUAL_KEY'},
   {name:'GotSOLE',            path:'/GotSOLE/',                      key:'KAIXU_VIRTUAL_KEY'},
-  {name:'kAIxU Gateway',      path:'https://0megaskyegate.skyesoverlondon.workers.dev/', key:null},
+  {name:'kAIxU Gateway',      path:'https://kaixugateway13.netlify.app/', key:null},
 ];
 
 // ── Keyring storage ────────────────────────────────────────────────

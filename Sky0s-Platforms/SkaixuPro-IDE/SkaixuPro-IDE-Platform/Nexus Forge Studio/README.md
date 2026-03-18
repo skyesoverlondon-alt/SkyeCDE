@@ -1,6 +1,6 @@
 # NexusForge Studio
 
-Offline-first “content + outreach” console (React + Vite). Stores everything locally in the browser (no Firebase/Supabase required).
+Offline-first “content + outreach” console (React + Vite). Stores everything locally in the browser with no hosted document store required.
 
 What it does:
 - Business Vault: store prospects/clients (accounts)

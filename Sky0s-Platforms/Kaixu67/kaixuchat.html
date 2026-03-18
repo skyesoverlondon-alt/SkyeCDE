@@ -261,6 +261,7 @@
       <label>MODEL</label>
       <select id="modelSelect"></select>
     </div>
+    <div id="configNotice" style="margin-top:8px;padding:8px 10px;border:1px solid rgba(255,213,90,.28);border-radius:12px;background:rgba(255,213,90,.08);font-size:11px;line-height:1.45;color:var(--gold)"></div>
     <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
       <a class="back-link" href="/index.html" style="display:flex;align-items:center;gap:7px"><span>⬡</span> Gateway console</a>
       <a class="back-link" href="/kAIxUchat.html" style="display:flex;align-items:center;gap:7px;color:var(--violet)"><span>✦</span> kAIxUchat</a>
@@ -312,8 +313,11 @@
   </div>
 </main>
 
+<script src="./_shared/config.js"></script>
 <script>
-const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const sharedConfig = window.Kaixu67SharedConfig;
+const API_BASE = sharedConfig.resolveApiBase();
+const TOKEN_STORAGE_KEY = 'kaixu_token';
 
 const STORAGE_KEY = 'kaixu_conversations';
 let conversations = [];
@@ -332,6 +336,15 @@ const welcome     = $('welcome');
 const topbarTitle = $('topbarTitle');
 const topbarModel = $('topbarModel');
 const healthDot   = $('healthDot');
+const configNotice = $('configNotice');
+
+function refreshConfigNotice() {
+  sharedConfig.renderConfigNotice(configNotice, {
+    apiBase: API_BASE,
+    tokenValue: tokenInput.value,
+    tokenLabel: 'app token'
+  });
+}
 
 // ── Persist ──────────────────────────────────────────────────────
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)) }
@@ -515,7 +528,15 @@ async function send() {
   const text = chatInput.value.trim();
   if (!text || busy) return;
   const token = tokenInput.value.trim();
-  if (!token) { alert('Paste your app token in the sidebar first.'); return; }
+  if (!token) {
+    alert(sharedConfig.buildNoticeMessage({
+      apiBase: API_BASE,
+      tokenValue: '',
+      tokenLabel: 'app token'
+    }).text);
+    refreshConfigNotice();
+    return;
+  }
   if (!activeId) newConvo();
   const convo = conversations.find(c => c.id === activeId);
   if (!convo) return;
@@ -612,15 +633,14 @@ $('toggleSidebar').addEventListener('click', () => sidebar.classList.toggle('col
 $('newChatBtn').addEventListener('click', newConvo);
 
 // ── Token persistence ─────────────────────────────────────────────
-const savedTok = localStorage.getItem('kaixu_token');
-if (savedTok) tokenInput.value = savedTok;
-tokenInput.addEventListener('input', () => localStorage.setItem('kaixu_token', tokenInput.value));
+sharedConfig.bindTokenInput(tokenInput, TOKEN_STORAGE_KEY, refreshConfigNotice);
 
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── Init ──────────────────────────────────────────────────────────
+refreshConfigNotice();
 load(); renderSidebar(); loadModels(); checkHealth();
 setInterval(checkHealth, 30000);
 if (conversations.length) switchConvo(conversations[0].id);

@@ -30,11 +30,10 @@
     <div class="hero__left">
       <h1>Stay Updates + Messaging 🐶📸💬</h1>
       <p>
-        Clients can view stay updates (photos + notes) and message the caregiver.
-        Caregivers can upload daily updates and chat with clients for each booking.
+        Clients can view stay updates and message the caregiver. Caregivers can upload daily updates and chat with clients for each booking.
       </p>
       <div class="notice">
-        This portal requires a Firebase backend. Paste your config in <code>firebase-config.js</code> then reload.
+        This portal uses the shared NobleSoles operations backend and account sessions.
       </div>
     </div>
     <div class="hero__right">
@@ -48,13 +47,13 @@
 
   <section class="card">
     <h2>New booking</h2>
-    <p class="muted">Create and pay for a new request (clients). Then use the portal to view updates.</p>
+    <p class="muted">Create and pay for a new request, then use the portal to view updates.</p>
     <a class="btn btn--primary" href="./request.html" style="display:inline-block; text-decoration:none;">Request Boarding</a>
   </section>
 
   <section class="card">
     <h2>Choose your portal</h2>
-    <p class="muted">Sign in with your email/password. Bookings are linked to your account by UID.</p>
+    <p class="muted">Sign in with your email/password. Bookings are linked to your approved account.</p>
     <div class="grid">
       <a class="btn btn--primary" href="./client.html" style="text-align:center; padding:16px; display:block;">I’m a Client</a>
       <a class="btn btn--primary" href="./caregiver.html" style="text-align:center; padding:16px; display:block;">I’m a Caregiver</a>
@@ -62,17 +61,15 @@
   </section>
 
   <section class="card fineprint">
-    <p class="muted">
-      Bookings are created by Admin (SOL ops). If you don’t see your booking after signing in, contact ops with your email address.
-    </p>
+    <p class="muted">Bookings are created by admin. If you don’t see your booking after signing in, contact ops with your account email.</p>
   </section>
 </main>
 
-<script src="firebase-config.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
   }
 </script>
+<script type="module" src="portal.js"></script>
 </body>
 </html>

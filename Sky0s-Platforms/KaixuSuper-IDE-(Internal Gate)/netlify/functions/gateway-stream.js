@@ -1,9 +1,9 @@
-// gateway-stream.js — local same-origin streaming proxy to KaixuSI Worker
+// gateway-stream.js — local same-origin streaming proxy to 0megaSkyeGate
 //
-// Streams SSE events from the KaixuSI Worker back to the browser client.
+// Streams SSE events from 0megaSkyeGate back to the browser client.
 // Browser must use fetch + ReadableStream parsing (NOT EventSource — cannot POST).
 //
-// SSE events emitted by KaixuSI Worker (proxied from provider):
+// SSE events (proxied from provider):
 //   meta:  { provider, model }
 //   delta: { text }
 //   done:  { usage: { input_tokens, output_tokens } }
@@ -15,14 +15,15 @@
 //   401 → invalid key
 //
 // Request body: { provider, model, messages, max_tokens?, temperature? }
-// Env: KAIXUSI_WORKER_URL, KAIXUSI_SECRET
+// Env: OMEGA_GATE_URL (default: https://0megaskyegate.skyesoverlondon.workers.dev), KAIXU_APP_TOKEN
 
 const crypto = require('crypto');
 const { getBearerToken, verifyToken } = require('./_lib/auth');
 const { query } = require('./_lib/db');
 const { checkRateLimit } = require('./_lib/ratelimit');
 
-const UPSTREAM = () => `${(process.env.KAIXUSI_WORKER_URL || '').replace(/\/+$/, '')}/v1/stream`;
+const GATE_BASE = () => (process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+const UPSTREAM = () => `${GATE_BASE()}/v1/stream`;
 
 async function resolveCustomerKey(token) {
   if (!token) return null;
@@ -61,10 +62,8 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers: CORS, body: 'Method not allowed' };
 
-  const virtualKey = process.env.KAIXUSI_SECRET;
-  if (!virtualKey) return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'KAIXUSI_SECRET not configured' }) };
-  const workerUrl = process.env.KAIXUSI_WORKER_URL;
-  if (!workerUrl) return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'KAIXUSI_WORKER_URL not configured' }) };
+  const virtualKey = process.env.KAIXU_APP_TOKEN;
+  if (!virtualKey) return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'KAIXU_APP_TOKEN not configured' }) };
 
   let bodyData;
   try { bodyData = JSON.parse(event.body || '{}'); }

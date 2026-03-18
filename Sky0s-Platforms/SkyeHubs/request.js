@@ -1,19 +1,23 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { authLogin, authMe, authSignup } from './hub-api.js';
 
 const $ = (id)=>document.getElementById(id);
 function toast(el,msg,kind=""){ el.textContent=msg||""; el.className="status"+(kind?(" "+kind):""); }
 
-function hasCfg(){ const c = window.SKYHUBS_FIREBASE_CONFIG || {}; return c.apiKey && c.projectId && c.appId; }
-if(!hasCfg()){ toast($("authStatus"), "Missing Firebase config. Paste it in firebase-config.js.", "bad"); throw new Error("Missing config"); }
-
-const app = initializeApp(window.SKYHUBS_FIREBASE_CONFIG);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
 const authCard=$("authCard"), mainCard=$("mainCard");
 const authStatus=$("authStatus"), reqStatus=$("reqStatus"), quoteBox=$("quoteBox"), form=$("reqForm");
+const payBtn = $("payBtn");
+let currentUser = null;
+
+function friendlyCheckoutError(error){
+  const raw = String(error?.message || error || '').toLowerCase();
+  if(raw.includes('stripe_secret_key') || raw.includes('api key')){
+    return 'Checkout is temporarily unavailable because Stripe is not configured on this hub. Your request was saved, but payment could not start.';
+  }
+  if(raw.includes('failed to fetch') || raw.includes('networkerror') || raw.includes('load failed')){
+    return 'We could not reach Stripe checkout right now. Your request was saved; please try again in a minute.';
+  }
+  return 'We could not start Stripe checkout right now. Your request was saved; please try again shortly.';
+}
 
 // Pricing (MVP): base by beds/baths + add-ons + urgency. Subs are flat buckets.
 const BASE = {
@@ -91,49 +95,80 @@ $("loadReqBtn")?.addEventListener("click", ()=>{
 $("signInBtn").addEventListener("click", async ()=>{
   const email=$("email").value.trim(), pass=$("pass").value;
   if(!email||!pass){ toast(authStatus,"Enter email + password.","bad"); return; }
-  try{ await signInWithEmailAndPassword(auth,email,pass); toast(authStatus,"Signed in ✅","ok"); }
+  try{
+    await authLogin(email,pass);
+    toast(authStatus,"Signed in ✅","ok");
+    await bootstrap();
+  }
   catch(e){ toast(authStatus,"Sign-in failed: "+(e?.message||e),"bad"); }
 });
 $("signUpBtn").addEventListener("click", async ()=>{
   const email=$("email").value.trim(), pass=$("pass").value;
   if(!email||!pass){ toast(authStatus,"Enter email + password.","bad"); return; }
-  try{ await createUserWithEmailAndPassword(auth,email,pass); toast(authStatus,"Account created ✅","ok"); }
+  try{
+    await authSignup(email,pass,'SkyeHubs Host','host');
+    toast(authStatus,"Account created ✅","ok");
+    await bootstrap();
+  }
   catch(e){ toast(authStatus,"Sign-up failed: "+(e?.message||e),"bad"); }
 });
 
-$("payBtn")?.addEventListener("click", async ()=>{
+payBtn?.addEventListener("click", async ()=>{
   toast(reqStatus,"","");
   if(!form.checkValidity()){ form.reportValidity(); toast(reqStatus,"Missing required fields.","bad"); return; }
-  if(!auth.currentUser){ toast(reqStatus,"Sign in first.","bad"); return; }
+  if(!currentUser){ toast(reqStatus,"Sign in first.","bad"); return; }
 
   const d=getData(); const q=calcQuote(d);
+  payBtn.disabled = true;
   try{
     toast(reqStatus,"Creating request…","");
-    const reqDoc = await addDoc(collection(db,"host_requests"), {
-      ...d,
-      hostUid: auth.currentUser.uid,
-      hostEmail: auth.currentUser.email || null,
-      quote: q,
-      status: "created_unpaid",
-      createdAt: serverTimestamp()
+    const createResp = await fetch("/.netlify/functions/create-request", {
+      method:"POST",
+      headers:{ "content-type":"application/json" },
+      body: JSON.stringify({
+        hostUid: currentUser.id,
+        hostEmail: currentUser.email || null,
+        requestType: d.requestType,
+        payload: d,
+        quote: q
+      })
     });
+    const createRaw = await createResp.text();
+    let createJson = {};
+    try{ createJson = JSON.parse(createRaw || '{}'); }catch(_){ createJson = {}; }
+    if(!createResp.ok || !createJson.ok || !createJson.requestId) throw new Error(createJson.error || createRaw || `request create error (${createResp.status})`);
 
     toast(reqStatus,"Redirecting to payment…","");
     const resp = await fetch("/.netlify/functions/create-checkout", {
       method:"POST",
       headers:{ "content-type":"application/json" },
-      body: JSON.stringify({ requestId: reqDoc.id, hostUid: auth.currentUser.uid, requestType: d.requestType, quoteSubtotal: q.subtotal })
+      body: JSON.stringify({ requestId: createJson.requestId, hostUid: currentUser.id, requestType: d.requestType, quoteSubtotal: q.subtotal })
     });
-    const j = await resp.json();
-    if(!j.ok) throw new Error(j.error || "checkout error");
+    const raw = await resp.text();
+    let j = {};
+    try{ j = JSON.parse(raw || '{}'); }catch(_){ j = {}; }
+    if(!resp.ok || !j.ok || !j.url) throw new Error(j.error || raw || `checkout error (${resp.status})`);
     window.location.href = j.url;
   }catch(e){
     console.error(e);
-    toast(reqStatus,"Failed: "+(e?.message||e),"bad");
+    toast(reqStatus, friendlyCheckoutError(e), "bad");
+  }finally{
+    payBtn.disabled = false;
   }
 });
 
-onAuthStateChanged(auth, (u)=>{
-  if(!u){ authCard.style.display="block"; mainCard.style.display="none"; return; }
-  authCard.style.display="none"; mainCard.style.display="block"; renderQuote();
-});
+async function bootstrap(){
+  try{
+    const data = await authMe();
+    currentUser = data.user;
+    authCard.style.display="none";
+    mainCard.style.display="block";
+    renderQuote();
+  }catch(_){
+    currentUser = null;
+    authCard.style.display="block";
+    mainCard.style.display="none";
+  }
+}
+
+bootstrap();

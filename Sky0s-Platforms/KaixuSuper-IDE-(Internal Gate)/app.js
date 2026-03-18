@@ -1633,6 +1633,7 @@ async function sendChat(overrideText) {
       }),
     });
     if (bgRes.status !== 202) {
+      toast('AI background runner unavailable — retrying with direct edit mode', 'warn');
       // Fallback: try synchronous ai-edit endpoint
       const data = await api('/api/ai-edit', {
         method: 'POST',
@@ -1653,6 +1654,7 @@ async function sendChat(overrideText) {
     // Remove thinking bubble if still present
     const tidx = chatMessages.findIndex(m => m.thinking);
     if (tidx !== -1) chatMessages.splice(tidx, 1);
+    toast(`AI edit failed — ${e.message}`, 'error');
     chatMessages.push({ role: 'assistant', text: `AI error: ${e.message}`, createdAt: Date.now(), operations: [], applied: false });
     renderChat();
     return;
@@ -2354,10 +2356,10 @@ async function triggerNetlifyDeploy() {
     const btn = document.getElementById('deploy-btn');
     if (btn) { btn.disabled = true; btn.textContent = '⏳ Deploying…'; }
     const res = await fetch(hook, { method: 'POST' });
-    if (res.ok) toast('🚀 Deploy triggered!', 'success');
-    else toast('Deploy hook responded ' + res.status, 'error');
+    if (res.ok) toast('🚀 Deploy triggered successfully', 'success');
+    else toast('Deploy trigger failed — webhook responded ' + res.status, 'error');
   } catch (e) {
-    toast('Deploy failed: ' + e.message, 'error');
+    toast('Deploy trigger failed — check webhook config: ' + e.message, 'error');
   } finally {
     const btn = document.getElementById('deploy-btn');
     if (btn) { btn.disabled = false; btn.textContent = '🚀 Deploy'; }

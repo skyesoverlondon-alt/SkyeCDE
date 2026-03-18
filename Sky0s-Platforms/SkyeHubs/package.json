@@ -4,7 +4,7 @@
   "private": true,
   "description": "SkyeHubs \u2014 Airbnb Co-Host Network (intake + approval + request/pay + stays calendar + photo proof + messaging) on Netlify",
   "dependencies": {
-    "firebase-admin": "^12.1.0",
+    "pg": "^8.13.1",
     "stripe": "^15.12.0"
   }
 }

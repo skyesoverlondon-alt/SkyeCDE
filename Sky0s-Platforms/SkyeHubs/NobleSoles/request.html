@@ -1,3 +1,4 @@
+  This flow now runs against the shared Neon-backed operations backend plus Stripe.
 <!doctype html>
 <html lang="en">
 <head>
@@ -33,7 +34,7 @@
         Submit a request, pay securely, and we’ll auto-match a vetted caregiver (or ops will place you manually if needed).
       </p>
       <div class="notice">
-        You’ll need a Firebase backend + Stripe keys to accept payments.
+        This flow now runs against the shared Neon-backed operations backend plus Stripe.
         Setup is included in <code>README_SETUP.html</code>.
       </div>
     </div>
@@ -152,7 +153,6 @@
   </section>
 </main>
 
-<script src="firebase-config.js"></script>
 <script type="module" src="request.js"></script>
 <script>
   if ('serviceWorker' in navigator) {

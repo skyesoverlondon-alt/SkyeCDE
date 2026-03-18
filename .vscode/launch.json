@@ -27,7 +27,7 @@
       "cwd": "${workspaceFolder}/applications/electron",
       "protocol": "inspector",
       "args": [
-        "scripts/theia-electron-main.js",
+        "scripts/skyes-over-london-electron-main.js",
         "--log-level=debug",
         "--hostname=localhost",
         "--no-cluster",

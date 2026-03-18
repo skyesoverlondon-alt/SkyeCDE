@@ -162,9 +162,9 @@ function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
 
 /* ─────────────────────────────────────────────────────────────
-   kAIxu0megaSkyeGate client (MANDATORY)
+   kAIxuGateway13 client (MANDATORY)
    - ALL AI calls must go through /api/.netlify/functions/* which Netlify redirects
-     to https://0megaskyegate.skyesoverlondon.workers.dev/:splat via netlify.toml.
+     to https://kaixugateway13.netlify.app/:splat via netlify.toml.
    - No direct provider SDKs. No provider keys.
 ───────────────────────────────────────────────────────────── */
 
@@ -221,7 +221,7 @@ function kaixuMapHTTPError(status){
 
 async function kaixuChat(payload){
   const key = kaixuGetKey();
-  const PROXY_HINT = "AI proxy not found (404). Ensure your Netlify deploy includes _redirects with: /api/* https://0megaskyegate.skyesoverlondon.workers.dev/:splat 200!";
+  const PROXY_HINT = "AI proxy not found (404). Ensure your Netlify deploy includes _redirects with: /api/* https://kaixugateway13.netlify.app/:splat 200!";
 
   const t0 = performance.now();
   const res = await fetch("/api/.netlify/functions/gateway-chat", {
@@ -668,7 +668,7 @@ function autoAppraise(scan, mode){
 
 
 /* ─────────────────────────────────────────────────────────────
-   AI valuation (via kAIxu0megaSkyeGate)
+   AI valuation (via kAIxuGateway13)
 ───────────────────────────────────────────────────────────── */
 
 function aiPresetToProviderModel(preset){
@@ -1024,7 +1024,7 @@ function getReportJSON(){
       last_month: state.ai?.last_month || null
     },
     logoDataUrl: state.logoDataUrl,
-    version: "SOLE-Nexus-Valuation-Studio-1.1 (AI via kAIxu0megaSkyeGate)"
+    version: "SOLE-Nexus-Valuation-Studio-1.1 (AI via kAIxuGateway13)"
   };
   return report;
 }
@@ -1148,7 +1148,7 @@ async function exportPDF(){
 
   // Snapshot table
   const engineLabel = (report.ai && report.ai.preset && report.ai.preset !== "local")
-    ? `${report.ai.preset} • ${report.ai.provider}/${report.ai.model} via kAIxu0megaSkyeGate`
+    ? `${report.ai.preset} • ${report.ai.provider}/${report.ai.model} via kAIxuGateway13`
     : "Local deterministic (no AI)";
   const snap = [
     ["Site URL", report.siteUrl],
@@ -1492,7 +1492,7 @@ async function init(){
   });
 
 
-  /* AI valuation UI wiring (kAIxu0megaSkyeGate) */
+  /* AI valuation UI wiring (kAIxuGateway13) */
   const keyEl = document.getElementById("kaixuKey");
   if(keyEl){
     const saved = sessionStorage.getItem("KAIXU_VIRTUAL_KEY") || "";

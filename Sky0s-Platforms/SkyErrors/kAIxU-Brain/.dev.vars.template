@@ -19,9 +19,9 @@ KAIXU_SERVICE_SECRET=your_shared_service_secret
 
 # Brain selector (no routing changes, just registry/resolve APIs)
 # Backward compatibility: legacy target IDs core67 and coresi4 are still accepted.
-# New integrations should use kaixu67 and kaixu0s.
-KAIXU_BRAIN_DEFAULT_TARGET=kaixu67
-KAIXU_BRAIN_BASE_KAIXU67=https://kaixu67.skyesoverlondon.workers.dev
+# New integrations should use 0megaSkyeGate.
+KAIXU_BRAIN_DEFAULT_TARGET=0megaskyegate
+KAIXU_BRAIN_BASE_KAIXU67=https://0megaskyegate.skyesoverlondon.workers.dev
 KAIXU_BRAIN_BASE_KAIXU0S=http://127.0.0.1:8787
 KAIXU_BRAIN_BASE_FLOW32=https://skaixu-flow-32.example.workers.dev
 

@@ -28,18 +28,17 @@
 <main class="wrap">
   <section class="card" id="authCard">
     <h2>Co-Host sign in</h2>
-    <p class="muted">Use your cohost account email/password (created after approval or by ops).</p>
+    <p class="muted">Use your approved cohost email/password. If ops approved you without an existing account, use the temporary password they issued.</p>
     <div class="grid">
       <label class="field"><span>Email</span><input id="email" type="email" autocomplete="email" /></label>
       <label class="field"><span>Password</span><input id="pass" type="password" autocomplete="current-password" /></label>
     </div>
     <div class="actions">
       <button id="signInBtn" class="btn btn--primary" type="button">Sign in</button>
-      <button id="signUpBtn" class="btn btn--ghost" type="button">Create account</button>
       <div id="authStatus" class="status"></div>
     </div>
     <div class="notice" style="margin-top:12px;">
-      <b>Important:</b> Only users flagged as <code>role: cohost</code> can access cohost stays (see setup guide).
+      <b>Important:</b> Only users flagged as <code>role: cohost</code> can access cohost stays.
     </div>
   </section>
 
@@ -89,7 +88,6 @@
   </section>
 </main>
 
-<script src="firebase-config.js"></script>
 <script type="module" src="cohost.js"></script>
 <script>
   if ('serviceWorker' in navigator) {

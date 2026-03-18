@@ -244,15 +244,15 @@
       <div class="grid">
         <div>
           <label for="base">Base URL</label>
-          <input id="base" placeholder="http://127.0.0.1:8701" />
+          <input id="base" placeholder="https://0megaskyegate.skyesoverlondon.workers.dev" />
         </div>
         <div>
           <label for="envPreset">Environment Preset</label>
           <select id="envPreset">
             <option value="custom" selected>Custom</option>
             <option value="local">Local Dev (127.0.0.1:8701)</option>
-            <option value="preview">Preview (set Base URL)</option>
-            <option value="prod">Production (set Base URL)</option>
+            <option value="preview">Preview (0megaSkyeGate default)</option>
+            <option value="prod">Production (0megaSkyeGate default)</option>
           </select>
         </div>
         <div>
@@ -359,6 +359,7 @@
     const LS_PERSIST = "smokehouse.standalone.persistToken";
     const LS_ENV = "smokehouse.standalone.envPreset";
     const LS_HISTORY = "smokehouse.standalone.history";
+    const LIVE_GATE_BASE = "https://0megaskyegate.skyesoverlondon.workers.dev";
 
     let lastVerifyEvidence = null;
     let lastDiagnostics = null;
@@ -495,6 +496,14 @@
       return isLocalHttp(base) && /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname || "");
     }
 
+    function isLocalSmokehouseHost() {
+      const host = String(window.location.hostname || "");
+      return /^(localhost|127\.0\.0\.1)$/i.test(host)
+        || host.includes('codespaces')
+        || host.endsWith('.github.dev')
+        || host.endsWith('.app.github.dev');
+    }
+
     function derivePortMappedApiBase(base, targetPort) {
       try {
         const u = new URL(base);
@@ -526,22 +535,23 @@
       const derived = toNormalizedBase(deriveApiBaseFromLocation());
       const mappedFromCurrent = toNormalizedBase(derivePortMappedApiBase(current, 8701));
       const mappedFromDerived = toNormalizedBase(derivePortMappedApiBase(derived, 8701));
-      const sameOrigin = toNormalizedBase(window.location.origin);
+      const sameOrigin = isLocalSmokehouseHost() ? toNormalizedBase(window.location.origin) : "";
       const local = "http://127.0.0.1:8701";
       const localAlt = "http://localhost:8701";
 
       const candidates = uniqueBases([
         current,
+        LIVE_GATE_BASE,
         mappedFromCurrent,
         derived,
         mappedFromDerived,
         sameOrigin,
-        local,
-        localAlt,
+        isLocalSmokehouseHost() ? local : "",
+        isLocalSmokehouseHost() ? localAlt : "",
       ]).filter(canUseBaseFromBrowser);
 
       if (!candidates.length) {
-        return [local];
+        return [isLocalSmokehouseHost() ? local : LIVE_GATE_BASE];
       }
 
       return candidates;
@@ -552,7 +562,11 @@
         const url = new URL(window.location.href);
 
         if (url.protocol !== "http:" && url.protocol !== "https:") {
-          return "http://127.0.0.1:8701";
+          return LIVE_GATE_BASE;
+        }
+
+        if (!isLocalSmokehouseHost()) {
+          return LIVE_GATE_BASE;
         }
 
         if (url.port) {
@@ -577,7 +591,7 @@
 
         return url.origin;
       } catch {
-        return "http://127.0.0.1:8701";
+        return LIVE_GATE_BASE;
       }
     }
 
@@ -992,7 +1006,7 @@
       if (preset === "local") {
         baseEl.value = "http://127.0.0.1:8701";
       } else if (preset === "preview" || preset === "prod") {
-        baseEl.value = deriveApiBaseFromLocation();
+        baseEl.value = LIVE_GATE_BASE;
       }
       persistSettings();
     }

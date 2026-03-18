@@ -228,6 +228,7 @@
     <div id="healthDot" title="Gateway status"></div>
     <input id="tokenInput" type="password" placeholder="Bearer token" style="width:140px"
       oninput="saveToken(this.value)" />
+    <div id="configNotice" style="max-width:280px;padding:6px 10px;border:1px solid rgba(255,213,90,.28);border-radius:999px;background:rgba(255,213,90,.08);font-size:11px;line-height:1.35;color:var(--gold);white-space:normal"></div>
     <select id="modelSel" onchange="saveModel(this.value)">
       <option value="kAIxU6.7-flash">kAIxU6.7 Flash — Skyes Over London</option>
       <option value="kAIxU6.7-pro">kAIxU6.7 Pro — Skyes Over London</option>
@@ -413,12 +414,15 @@
 <script src="https://unpkg.com/prettier@2.8.8/parser-markdown.js"></script>
 <!-- ESLint in the browser -->
 <script src="https://unpkg.com/eslint4b@8.57.0/dist/eslint4b.min.js"></script>
+<script src="./_shared/config.js"></script>
 <script>
-const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const sharedConfig = window.Kaixu67SharedConfig;
+const API_BASE = sharedConfig.resolveApiBase();
 const IDB_NAME = 'kaixu-ide';
 const IDB_STORE = 'files';
 const IDB_VERSION = 1;
 const GH_PREF_KEY = 'kaixu_ide_gh';
+const TOKEN_STORAGE_KEY = 'kaixu_ide_token';
 
 // ── STATE ──
 let editor = null;
@@ -440,8 +444,15 @@ let webcontainer = null;
 let runningTask = null;
 
 // ── PREFS ──
-function loadToken()  { return localStorage.getItem('kaixu_ide_token') || ''; }
-function saveToken(v) { localStorage.setItem('kaixu_ide_token', v); }
+function refreshConfigNotice() {
+  sharedConfig.renderConfigNotice(document.getElementById('configNotice'), {
+    apiBase: API_BASE,
+    tokenValue: loadToken(),
+    tokenLabel: 'IDE token'
+  });
+}
+function loadToken()  { return sharedConfig.getStoredValue(TOKEN_STORAGE_KEY) || ''; }
+function saveToken(v) { sharedConfig.setStoredValue(TOKEN_STORAGE_KEY, v); refreshConfigNotice(); }
 function loadModel()  { return localStorage.getItem('kaixu_ide_model') || 'kAIxU6.7-flash'; }
 function saveModel(v) { localStorage.setItem('kaixu_ide_model', v); }
 
@@ -650,6 +661,7 @@ document.getElementById('ghToken').value  = ghPrefs.token  || '';
 autoFormatEnabled = localStorage.getItem('kaixu_auto_format') === '1';
 document.getElementById('autoFormatToggle').checked = autoFormatEnabled;
 document.getElementById('taskLog').textContent = 'Waiting for command…';
+refreshConfigNotice();
 refreshPackageScripts();
 renderGitChangesList([]);
 
@@ -955,7 +967,11 @@ document.addEventListener('paste', e => {
 async function checkHealth() {
   const dot = document.getElementById('healthDot');
   const token = loadToken();
-  if (!token) { dot.className = ''; return; }
+  if (!token) {
+    dot.className = '';
+    refreshConfigNotice();
+    return;
+  }
   try {
     const r = await fetch(`${API_BASE}/v1/health`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -963,6 +979,7 @@ async function checkHealth() {
     const j = await r.json();
     dot.className = (j.ok && j.keyConfigured) ? 'ok' : 'bad';
   } catch { dot.className = 'bad'; }
+  refreshConfigNotice();
 }
 
 // ── LANGUAGE DETECTION ──

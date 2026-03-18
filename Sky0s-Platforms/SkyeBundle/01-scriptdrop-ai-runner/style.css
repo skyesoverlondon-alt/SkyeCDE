@@ -63,6 +63,17 @@ button.danger{background:linear-gradient(135deg,rgba(255,109,156,.28),rgba(157,8
 }
 .nav button{background:rgba(255,255,255,.04);border-radius:999px;padding:10px 14px}
 .nav button.active{background:linear-gradient(135deg,rgba(255,211,106,.24),rgba(47,233,255,.18));border-color:rgba(255,211,106,.35)}
+.notice-banner{
+ display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+ margin:0 0 18px;padding:14px 16px;border-radius:18px;border:1px solid rgba(255,211,106,.28);
+ background:rgba(255,211,106,.10);color:var(--gold);box-shadow:var(--shadow)
+}
+.notice-banner[data-tone="danger"]{
+ border-color:rgba(255,109,156,.28);background:rgba(255,109,156,.10);color:#ffd4e2
+}
+.notice-banner button{
+ flex:0 0 auto;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.05);box-shadow:none
+}
 .grid{display:grid;gap:18px}
 .grid.two{grid-template-columns:1.05fr .95fr}
 .grid.three{grid-template-columns:repeat(3,1fr)}
