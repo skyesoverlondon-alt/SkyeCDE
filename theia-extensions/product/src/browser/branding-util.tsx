@@ -260,20 +260,32 @@ function renderCardGrid(cards: StudioCard[], windowService: WindowService): Reac
 
 function renderRegistryTileGrid(apps: SkyePlatformApp[]): React.ReactNode {
     return <div className='skye-launcher-card-grid'>
-        {apps.map(app => <a
-            key={`${app.id}:${app.href}`}
-            className='skye-launcher-card'
-            href={app.href}
-            target={app.external ? '_blank' : undefined}
-            rel={app.external ? 'noreferrer' : undefined}
-        >
+        {apps.map(app => {
+            const content = <>
             <span className='skye-launcher-card-badge'>{badgeText(app.label)}</span>
             <span className='skye-launcher-card-copy'>
                 <strong>{app.label}</strong>
                 <small>{app.summary}</small>
             </span>
-            <span className='skye-launcher-card-cta'>{app.external ? 'External' : 'Launch'}</span>
-        </a>)}
+            <span className='skye-launcher-card-cta'>{app.launchable ? (app.external ? 'External' : 'Launch') : 'Inventory'}</span>
+        </>;
+
+            if (!app.launchable || !app.href) {
+                return <div key={`${app.id}:${app.inventoryPath ?? app.label}`} className='skye-launcher-card skye-launcher-card-static'>
+                    {content}
+                </div>;
+            }
+
+            return <a
+                key={`${app.id}:${app.href}`}
+                className='skye-launcher-card'
+                href={app.href}
+                target={app.external ? '_blank' : undefined}
+                rel={app.external ? 'noreferrer' : undefined}
+            >
+                {content}
+            </a>;
+        })}
     </div>;
 }
 
@@ -282,7 +294,7 @@ function findCorePlatforms(registry?: SkyePlatformRegistry): SkyePlatformApp[] {
         return [];
     }
     const selected = CORE_PLATFORM_LABELS
-        .map(label => registry.apps.find(app => app.label === label))
+        .map(label => registry.apps.find(app => app.label === label && app.launchable))
         .filter((app): app is SkyePlatformApp => !!app);
 
     return Array.from(new Map(selected.map(app => [`${app.id}:${app.href}`, app])).values());
@@ -311,6 +323,10 @@ export function renderRegistryStatus(registry?: SkyePlatformRegistry): React.Rea
             <div className='skye-launcher-metric'>
                 <strong>{registry?.apps.length ?? 0}</strong>
                 <span>catalog entries</span>
+            </div>
+            <div className='skye-launcher-metric'>
+                <strong>{registry?.apps.filter(app => app.launchable).length ?? 0}</strong>
+                <span>launchable entries</span>
             </div>
             <div className='skye-launcher-metric'>
                 <strong>{registry?.groups.length ?? 0}</strong>
@@ -350,16 +366,28 @@ export function renderRegistryCatalog(_windowService: WindowService, registry?: 
                         <span className='skye-catalog-group-count'>{apps.length} entries</span>
                     </div>
                     <div className='skye-registry-chip-list'>
-                        {apps.map(app => <a
-                            key={`${app.id}:${app.href}`}
-                            className='skye-registry-chip'
-                            href={app.href}
-                            target={app.external ? '_blank' : undefined}
-                            rel={app.external ? 'noreferrer' : undefined}
-                        >
-                            <strong>{app.label}</strong>
-                            <small>{app.external ? 'External property' : 'Built-in launch surface'}</small>
-                        </a>)}
+                        {apps.map(app => {
+                            const content = <>
+                                <strong>{app.label}</strong>
+                                <small>{app.launchable ? (app.external ? 'External property' : 'Launch surface') : `Inventory: ${app.inventoryPath ?? 'No launch path yet'}`}</small>
+                            </>;
+
+                            if (!app.launchable || !app.href) {
+                                return <div key={`${app.id}:${app.inventoryPath ?? app.label}`} className='skye-registry-chip skye-registry-chip-static'>
+                                    {content}
+                                </div>;
+                            }
+
+                            return <a
+                                key={`${app.id}:${app.href}`}
+                                className='skye-registry-chip'
+                                href={app.href}
+                                target={app.external ? '_blank' : undefined}
+                                rel={app.external ? 'noreferrer' : undefined}
+                            >
+                                {content}
+                            </a>;
+                        })}
                     </div>
                 </section>;
             })}

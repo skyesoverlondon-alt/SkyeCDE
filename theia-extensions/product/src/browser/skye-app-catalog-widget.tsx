@@ -50,6 +50,9 @@ export class SkyeAppCatalogWidget extends ReactWidget {
     }
 
     protected async launch(app: SkyePlatformApp): Promise<void> {
+        if (!app.href) {
+            return;
+        }
         const href = app.external ? app.href : new URL(app.href, window.location.origin).toString();
         await this.windowService.openNewWindow(href, { external: app.external });
     }
@@ -64,12 +67,13 @@ export class SkyeAppCatalogWidget extends ReactWidget {
                     <h3>{group.label}</h3>
                     {group.description && <p>{group.description}</p>}
                 </div>
-                <span className='skye-catalog-group-count'>{apps.length} apps</span>
+                <span className='skye-catalog-group-count'>{apps.length} entries</span>
             </div>
             <div className='skye-catalog-grid'>
                 {apps.map(app => <button
-                    key={app.id}
+                    key={`${app.id}:${app.inventoryPath ?? app.href ?? app.label}`}
                     className='skye-catalog-card'
+                    disabled={!app.launchable}
                     onClick={() => void this.launch(app)}
                 >
                     <span className='skye-catalog-card-badge'>{badgeText(app.label)}</span>
@@ -78,7 +82,7 @@ export class SkyeAppCatalogWidget extends ReactWidget {
                         <small>{app.summary}</small>
                     </span>
                     <span className='skye-catalog-card-meta'>
-                        <span>{app.external ? 'External' : 'Built-in launch'}</span>
+                        <span>{app.launchable ? (app.external ? 'External' : 'Launchable') : 'Inventory only'}</span>
                         <i className={codicon('arrow-up-right')}></i>
                     </span>
                 </button>)}
@@ -98,6 +102,7 @@ export class SkyeAppCatalogWidget extends ReactWidget {
 
         const groups = this.registry?.groups ?? [];
         const apps = this.registry?.apps ?? [];
+        const launchableCount = apps.filter(app => app.launchable).length;
 
         return <div className='skye-catalog-shell'>
             <section className='skye-catalog-hero'>
@@ -107,11 +112,15 @@ export class SkyeAppCatalogWidget extends ReactWidget {
                 <div className='skye-catalog-hero-stats'>
                     <div>
                         <strong>{apps.length}</strong>
-                        <span>Launchable apps</span>
+                        <span>Catalog entries</span>
+                    </div>
+                    <div>
+                        <strong>{launchableCount}</strong>
+                        <span>Launchable entries</span>
                     </div>
                     <div>
                         <strong>{groups.length}</strong>
-                        <span>Registry groups</span>
+                        <span>Platform groups</span>
                     </div>
                 </div>
             </section>

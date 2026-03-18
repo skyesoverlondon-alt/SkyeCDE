@@ -147,6 +147,9 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     }
 
     protected async launchApp(app: SkyePlatformApp): Promise<void> {
+        if (!app.href) {
+            return;
+        }
         const href = app.external ? app.href : new URL(app.href, window.location.origin).toString();
         await this.windowService.openNewWindow(href, { external: app.external });
     }
@@ -193,7 +196,7 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     }
 
     protected renderFeaturedApps(): React.ReactNode {
-        const featuredApps = (this.registry?.apps ?? []).filter(app => app.featured).slice(0, 6);
+        const featuredApps = (this.registry?.apps ?? []).filter(app => app.featured && app.launchable).slice(0, 6);
         if (!featuredApps.length) {
             return <section className='skye-launcher-section'>
                 <div className='skye-launcher-section-header'>
@@ -228,6 +231,7 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     protected renderRegistrySummary(): React.ReactNode {
         const groups = this.registry?.groups ?? [];
         const apps = this.registry?.apps ?? [];
+        const launchable = apps.filter(app => app.launchable).length;
         return <section className='skye-launcher-section'>
             <div className='skye-launcher-section-header'>
                 <h3>Registry status</h3>
@@ -236,7 +240,11 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
             <div className='skye-launcher-metric-strip'>
                 <div className='skye-launcher-metric'>
                     <strong>{apps.length}</strong>
-                    <span>launchable apps</span>
+                    <span>catalog entries</span>
+                </div>
+                <div className='skye-launcher-metric'>
+                    <strong>{launchable}</strong>
+                    <span>launchable entries</span>
                 </div>
                 <div className='skye-launcher-metric'>
                     <strong>{groups.length}</strong>
