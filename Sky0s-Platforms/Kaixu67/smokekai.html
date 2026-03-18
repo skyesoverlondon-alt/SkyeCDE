@@ -370,11 +370,11 @@
 const sharedConfig = window.Kaixu67SharedConfig;
 const API_BASE = sharedConfig.resolveApiBase();
 const $ = id => document.getElementById(id);
-const DEFAULT_SMOKEHOUSE_BASE = "https://0megaskyegate.skyesoverlondon.workers.dev";
-const KAIXU0S_SMOKEHOUSE_URL = "https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse";
+const DEFAULT_SMOKEHOUSE_BASE = sharedConfig.resolveApiBase();
+const KAIXU0S_SMOKEHOUSE_URL = `${DEFAULT_SMOKEHOUSE_BASE}/smokehouse`;
 const TOKEN_STORAGE_KEY = 'kaixu_smoke_token';
 const KNOWN_BRAIN_BASES = [
-  "https://0megaskyegate.skyesoverlondon.workers.dev"
+  DEFAULT_SMOKEHOUSE_BASE
 ];
 
 function refreshConfigNotice() {

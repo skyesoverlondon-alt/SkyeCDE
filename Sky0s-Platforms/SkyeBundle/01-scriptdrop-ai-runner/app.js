@@ -1,7 +1,11 @@
 
 const APP_KEY = 'SKYE_SCRIPTDROP_RUNNER_V1';
 const SETTINGS_KEY = 'SKYE_SCRIPTDROP_SETTINGS_V1';
-const DEFAULT_ENDPOINT = 'https://0megaskyegate.skyesoverlondon.workers.dev';
+const DEFAULT_ENDPOINT = (
+  typeof window.resolveOmegaGateUrl === 'function'
+    ? window.resolveOmegaGateUrl()
+    : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || '')
+).replace(/\/+$/, '');
 let stagedFiles = [];
 let currentPack = load(APP_KEY, null);
 const defaultPrompt = 'Build a runner pack with steps, objection handling, voicemail, SMS, email follow-up, assessment copy, and normalized JSON.';

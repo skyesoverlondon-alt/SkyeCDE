@@ -123,7 +123,7 @@
   for(var i=0;i<220;i++){var s=document.createElement('div');s.className='bg-star';var sz=Math.random()*3+1,col=colors[Math.floor(Math.random()*colors.length)];s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%';s.style.setProperty('--star-color',col);s.style.setProperty('--twinkle-dur',(Math.random()*2+1)+'s');s.style.setProperty('--twinkle-del',(Math.random()*5)+'s');s.style.setProperty('--drift-x',(Math.random()-.5)*200+'px');s.style.setProperty('--drift-y',(Math.random()-.5)*200+'px');s.style.setProperty('--drift-dur',(Math.random()*20+20)+'s');sc.appendChild(s);}
 })();</script>
 <script>
-const GATE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GATE = ((window.Kaixu67SharedConfig && window.Kaixu67SharedConfig.resolveApiBase ? window.Kaixu67SharedConfig.resolveApiBase() : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || ''))).replace(/\/+$/, '');
 const LS='kaixu_gate_token';
 const $=id=>document.getElementById(id);
 const tok=$('tok');

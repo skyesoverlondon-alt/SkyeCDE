@@ -1,0 +1,12 @@
+name = "0megaskyegate-backup-brain"
+main = "src/index.ts"
+compatibility_date = "2026-03-18"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[vars]
+APP_NAME = "Skyes Over London • 0megaSkyeGate Backup Brain"
+KAIXU_BACKUP_PROVIDER = "Skyes Over London Backup"
+KAIXU_BACKUP_MODEL = "kaixu/deep"

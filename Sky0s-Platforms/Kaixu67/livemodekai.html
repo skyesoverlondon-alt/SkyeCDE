@@ -46,9 +46,13 @@ pre{margin:0;white-space:pre-wrap;word-break:break-word;color:var(--muted)}
     <div class="box" style="font-size:12px">Uses localStorage key <strong>kaixuEnv</strong> so gateway and other tools stay in sync.</div>
   </div>
 <script>
+  const resolvedGateBase = (typeof window.resolveOmegaGateUrl === 'function'
+    ? window.resolveOmegaGateUrl()
+    : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || '')
+  ).replace(/\/+$/, '');
   const ENVS={
-    prod:'https://0megaskyegate.skyesoverlondon.workers.dev',
-    stage:'https://0megaskyegate.skyesoverlondon.workers.dev'
+    prod: resolvedGateBase,
+    stage: resolvedGateBase
   };
   const envSel=document.getElementById('env');
   const pill=document.getElementById('pill');

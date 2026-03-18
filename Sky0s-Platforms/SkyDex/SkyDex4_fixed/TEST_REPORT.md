@@ -7,4 +7,4 @@
 - Workspace pane no longer owns file-search/file-list as its primary surface.
 
 ## Remaining real-world dependency
-- Live OpenAI execution still depends on a valid `OPENAI_API_KEY` present in Netlify/local env. A 401 means the current secret was rejected by OpenAI.
+- Live SkyDex agent execution now depends on a valid `KAIXU_APP_TOKEN` and, when overridden, a reachable `OMEGA_GATE_URL` in Netlify/local env. A 401 means the configured gate token was rejected by 0megaSkyeGate.

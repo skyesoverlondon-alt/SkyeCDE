@@ -8,7 +8,11 @@
     { provider, model, messages:[{role,content}], max_tokens, temperature }
   Streaming: fetch + ReadableStream parsing. No EventSource.
 */
-const KAIXU_BASE_URL = (window.OMEGA_GATE_URL || localStorage.getItem("OMEGA_GATE_URL") || "https://0megaskyegate.skyesoverlondon.workers.dev").replace(/\/+$/, "");
+const KAIXU_BASE_URL = (
+  typeof window.resolveOmegaGateUrl === "function"
+    ? window.resolveOmegaGateUrl()
+    : (window.OMEGA_GATE_URL || localStorage.getItem("OMEGA_GATE_URL") || "")
+).replace(/\/+$/, "");
 
 let __kaixuKeyMem = "";
 function kaixuKeyGet(){ return __kaixuKeyMem || ""; }

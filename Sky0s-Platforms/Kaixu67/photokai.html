@@ -331,7 +331,7 @@ input[type=file]{display:none}
   </div>
 </div>
 <script type="module">
-const API_BASE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const API_BASE = ((window.Kaixu67SharedConfig && window.Kaixu67SharedConfig.resolveApiBase ? window.Kaixu67SharedConfig.resolveApiBase() : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || ''))).replace(/\/+$/, '');
 const DB_NAME  = 'photoKai';
 const DB_STORE = 'projects';
 

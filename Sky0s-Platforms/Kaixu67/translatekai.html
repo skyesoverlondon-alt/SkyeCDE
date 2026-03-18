@@ -203,7 +203,7 @@
 
 <script>
 
-const GATE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GATE = ((window.Kaixu67SharedConfig && window.Kaixu67SharedConfig.resolveApiBase ? window.Kaixu67SharedConfig.resolveApiBase() : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || ''))).replace(/\/+$/, '');
 const LS='kaixu_gate_token';
 const $=id=>document.getElementById(id);
 const tok=$('tok');if(!tok){}else{tok.value=localStorage.getItem(LS)||'';}

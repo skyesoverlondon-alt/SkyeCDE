@@ -352,7 +352,7 @@ POST /v1/stream   (SSE)</code></pre>
             transition: box-shadow .2s ease, transform .1s ease;
             white-space:nowrap;
           " onmouseover="this.style.boxShadow='0 0 28px rgba(59,255,178,.5)'; this.style.transform='scale(1.03)'" onmouseout="this.style.boxShadow='0 0 14px rgba(59,255,178,.2)'; this.style.transform='scale(1)'">🔬 Smoke Test</a>
-          <a href="https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse" target="_blank" rel="noopener noreferrer" style="
+          <a href="#" id="openOmegaSmokehouseLink" target="_blank" rel="noopener noreferrer" style="
             display:inline-block; margin-top:12px;
             background:transparent;
             border: 1.5px solid rgba(184,107,255,.6);
@@ -386,7 +386,11 @@ POST /v1/stream   (SSE)</code></pre>
     prod: sharedConfig.resolveApiBase(),
     stage: sharedConfig.resolveApiBase()
   };
+  const smokehouseLink = document.getElementById('openOmegaSmokehouseLink');
   let API_BASE = ENVS[localStorage.getItem('kaixuEnv') || 'prod'] || ENVS.prod;
+  if (smokehouseLink) {
+    smokehouseLink.href = API_BASE.replace(/\/+$/, '') + '/smokehouse';
+  }
   const TOKEN_STORAGE_KEY = 'kaixu_gateway_token';
   const envSelect = document.getElementById('envSelect');
   const $ = (id) => document.getElementById(id);

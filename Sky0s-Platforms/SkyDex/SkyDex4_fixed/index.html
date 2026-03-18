@@ -1639,7 +1639,7 @@
         <div class="brand-mark" aria-hidden="true"><img src="/SKYESOVERLONDONDIETYLOGO.png" alt="" /></div>
         <div class="brand-copy">
           <h1 class="brand-title"><span class="sky">SkyDex</span> <span class="dex">4.6</span></h1>
-          <p class="brand-subtitle" id="workspaceLabel">Secure workspace lane for SkyeDrive, direct OpenAI secret agenting, optional GitHub, and Netlify release flow</p>
+          <p class="brand-subtitle" id="workspaceLabel">Secure workspace lane for SkyeDrive, 0mega gate-routed agenting, optional GitHub, and Netlify release flow</p>
         </div>
       </div>
       <div class="header-actions">
@@ -1711,7 +1711,7 @@
             <div class="muted" id="snapshotDiffBody">Waiting for active source baseline.</div>
             <div class="diff-summary-list" id="snapshotDiffList"></div>
           </div>
-          <p class="muted">SkyDex 4.6 stays on the secured runtime path: workspace APIs, SkyeDrive sync, direct OpenAI secret agenting, optional GitHub push, and vaulted Netlify deploy.</p>
+          <p class="muted">SkyDex 4.6 stays on the secured runtime path: workspace APIs, SkyeDrive sync, 0mega gate-routed agenting, optional GitHub push, and vaulted Netlify deploy.</p>
         </div>
       </aside>
 
@@ -1780,8 +1780,8 @@
         <div class="panel-header">
           <div>
             <div class="eyebrow">Command Deck</div>
-            <h2 class="panel-title">OpenAI + Release Controls</h2>
-            <p class="panel-subtitle">Run prompts through a server-side OpenAI secret lane, then sync the same saved snapshot into SkyeDrive, GitHub, or Netlify.</p>
+            <h2 class="panel-title">Kaixu Gate + Release Controls</h2>
+            <p class="panel-subtitle">Run prompts through the server-side 0mega gate lane, then sync the same saved snapshot into SkyeDrive, GitHub, or Netlify.</p>
           </div>
           <div class="drawer-header-actions">
             <button class="ghost drawer-close" type="button" id="closeControlDrawerBtn">Close</button>
@@ -2894,7 +2894,7 @@
       if (paths.some((path) => path.startsWith("netlify/functions/")) || paths.includes("netlify.toml")) stack.push("Netlify Functions");
       if (paths.some((path) => path.startsWith("worker/"))) stack.push("Cloudflare Worker");
       if (state.integrationStatus.skyedrive?.connected) stack.push("SkyeDrive source attached");
-      const aiTouchpoints = state.files.filter((file) => /\/api\/kaixu-generate|api\.openai\.com|generativelanguage\.googleapis\.com|anthropic/i.test(file.content)).length;
+      const aiTouchpoints = state.files.filter((file) => /\/api\/kaixu-generate|\/api\/ai-agent|0megaskyegate|OMEGA_GATE_URL|api\.openai\.com|generativelanguage\.googleapis\.com|anthropic/i.test(file.content)).length;
       const docCount = paths.filter((path) => path.startsWith("docs/") || /\.md$/.test(path)).length;
       const testCount = paths.filter((path) => /(^|\/)(test|tests|spec|scripts)\//.test(path) || /(\.test|\.spec)\./.test(path)).length;
       const diff = computeSnapshotDiff(activeSourceBaselineFiles());
@@ -3296,7 +3296,7 @@
       if (cleanUrl === '/api/netlify-deploy' && method === 'POST') return { ok: true, deploy_id: `local-${Date.now().toString(36)}`, site_name: integrations.netlify?.site_name || String(body?.site_name || '').trim(), warning: 'Standalone fallback recorded a local deploy event only. Configure live deploy credentials for real publishing.', fallback: true };
       if (cleanUrl === '/api/skychat-notify' && method === 'POST') { const records = localRead('notifications', []); records.unshift({ id: `notify_${Date.now().toString(36)}`, created_at: now, payload: body || {} }); localWrite('notifications', records.slice(0, 40)); return { ok: true, queued: true, fallback: true }; }
       if (cleanUrl === '/api/skymail-send' && method === 'POST') throw new Error('Live email is not available in browser fallback mode. Deploy with RESEND_API_KEY (or SMTP envs) so /api/skymail-send can send for real.');
-      if (cleanUrl === '/api/ai-agent' && method === 'POST') throw new Error('AI agent server lane is unavailable. Deploy with OPENAI_API_KEY so /api/ai-agent can call OpenAI directly from server-side secrets.');
+      if (cleanUrl === '/api/ai-agent' && method === 'POST') throw new Error('AI agent server lane is unavailable. Deploy with KAIXU_APP_TOKEN and an optional OMEGA_GATE_URL so /api/ai-agent can route through 0megaSkyeGate.');
       throw new Error(`No local fallback exists for ${method} ${cleanUrl}.`);
     }
 

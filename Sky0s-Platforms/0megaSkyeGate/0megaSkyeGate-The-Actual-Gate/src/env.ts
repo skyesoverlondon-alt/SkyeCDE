@@ -35,6 +35,18 @@ export function getAdminToken(env: Env): string {
   return getEnvString(env, 'KAIXU_ADMIN_TOKEN', getEnvString(env, 'ADMIN_MASTER_TOKEN'))
 }
 
+export function getFounderGatewayKey(env: Env): string {
+  return getEnvString(env, 'Founders_GateWay_Key', getEnvString(env, 'FOUNDERS_GATEWAY_KEY'))
+}
+
+export function getBackupBrainBaseUrl(env: Env): string {
+  return getEnvString(env, 'KAIXU_BRAIN_BASE_BACKUP')
+}
+
+export function getBackupBrainToken(env: Env): string {
+  return getEnvString(env, 'KAIXU_BACKUP_TOKEN', getEnvString(env, 'KAIXU_APP_TOKEN'))
+}
+
 export function isLaneEnabled(env: Env, lane: KaixuLane): boolean {
   switch (lane) {
     case 'chat':

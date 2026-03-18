@@ -92,7 +92,7 @@ const workflowCards: StudioCard[] = [
 export function renderProductName(): React.ReactNode {
     const variant = getBrandingVariant();
     const suffix = variant !== 'stable' ? ` ${variant.charAt(0).toUpperCase() + variant.slice(1)}` : '';
-    return <h1>Skyes <span className="gs-blue-header">Over London</span>{suffix}</h1>;
+    return <h1>s0l26-0s <span className="gs-blue-header">Skyes Over London</span>{suffix}</h1>;
 }
 
 export function renderProductTagline(): React.ReactNode {
@@ -108,7 +108,7 @@ export function renderStudioBrandStrip(): React.ReactNode {
         <div className='theia-icon skye-brand-strip-mark' aria-hidden='true'></div>
         <div className='skye-brand-strip-copy'>
             <span className='skye-card-eyebrow'>0s shell truth</span>
-            <strong>Skyes Over London{suffix}</strong>
+            <strong>s0l26-0s · Skyes Over London{suffix}</strong>
             <p>The 0s platform is the product surface. Theia is the shell upgrade that hosts the launcher, editors, and extension plumbing.</p>
         </div>
     </section>;
@@ -398,7 +398,7 @@ export function renderRegistryCatalog(_windowService: WindowService, registry?: 
 export function renderStudioHero(): React.ReactNode {
     return <section className='skye-hero-panel'>
         <div className='skye-hero-copy'>
-            <span className='skye-badge'>Royal neon studio shell</span>
+            <span className='skye-badge'>s0l26-0s studio shell</span>
             {renderProductName()}
             {renderProductTagline()}
             <div className='skye-hero-metrics'>

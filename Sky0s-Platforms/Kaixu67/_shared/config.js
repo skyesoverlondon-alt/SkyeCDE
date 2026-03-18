@@ -25,9 +25,26 @@
     } catch (_) {}
   }
 
+  function inferSameOriginGate() {
+    try {
+      const protocol = String(location.protocol || '');
+      const hostname = String(location.hostname || '').trim();
+      const meta = document.querySelector('meta[name="omega-gate-same-origin"]');
+      if (!/^https?:$/.test(protocol) || !hostname) return '';
+      if (/^(localhost|127(?:\.\d+){3}|0\.0\.0\.0)$/i.test(hostname)) return '';
+      if (meta && String(meta.content || '').trim().toLowerCase() === 'true') return location.origin;
+      return '';
+    } catch (_) {
+      return '';
+    }
+  }
+
   function resolveApiBase(fallback) {
+    if (typeof window.resolveOmegaGateUrl === 'function') {
+      return normalizeBaseUrl(window.resolveOmegaGateUrl(fallback || inferSameOriginGate() || DEFAULT_API_BASE));
+    }
     return normalizeBaseUrl(
-      window.OMEGA_GATE_URL || getStoredValue('OMEGA_GATE_URL') || fallback || DEFAULT_API_BASE
+      window.OMEGA_GATE_URL || getStoredValue('OMEGA_GATE_URL') || fallback || inferSameOriginGate() || DEFAULT_API_BASE
     );
   }
 
@@ -78,6 +95,7 @@
   window.Kaixu67SharedConfig = {
     DEFAULT_API_BASE,
     normalizeBaseUrl,
+    inferSameOriginGate,
     resolveApiBase,
     getStoredValue,
     setStoredValue,

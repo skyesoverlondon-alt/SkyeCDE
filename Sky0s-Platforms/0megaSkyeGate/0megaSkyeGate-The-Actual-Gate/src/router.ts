@@ -24,7 +24,7 @@ import { handleAdminAliases } from './routes/admin-aliases'
 import { handleAdminRouting } from './routes/admin-routing'
 import { handleErrorsIngest, handleErrorsList, handleErrorsGet } from './routes/errors-ingest'
 import { handleErrorsAdminList, handleErrorsAdminCleanup } from './routes/errors-admin'
-import { handleSmokeRun, handleSmokeLog, handleSmokeAudit, handleSmokeEndpoints, handleSmokehouse } from './routes/smoke'
+import { handleSmokeRun, handleSmokeLog, handleSmokeAudit, handleSmokeEndpoints, handleSmokeFounderFallback, handleSmokehouse } from './routes/smoke'
 import { handleBrainsList, handleBrainsResolve } from './routes/brains'
 import { handleKeysIssue } from './routes/keys-issue'
 import { handleKeysList } from './routes/keys-list'
@@ -108,6 +108,7 @@ export async function routeRequest(request: Request, env: Env): Promise<Response
     if (path === '/admin/smoke/audit' && method === 'GET') return await handleSmokeAudit(request, env)
     if (path === '/admin/smoke/log' && method === 'GET') return await handleSmokeLog(request, env)
     if (path === '/admin/smoke/run' && method === 'POST') return await handleSmokeRun(request, env)
+    if (path === '/admin/smoke/founder-fallback' && method === 'POST') return await handleSmokeFounderFallback(request, env)
     if (path === '/admin/smoke/endpoints' && method === 'GET') return await handleSmokeEndpoints(request, env)
     if (path === '/smokehouse') return await handleSmokehouse(request, env)
 

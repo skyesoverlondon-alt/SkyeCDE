@@ -217,6 +217,8 @@ export type AuthContext = {
   walletId: string
   allowedAliases: string[]
   rateLimitRpm?: number | null
+  authMode?: 'app-token' | 'founder-gateway'
+  founderGateway?: boolean
 }
 
 export type TraceUsageRecord = {
@@ -330,6 +332,11 @@ export type Env = {
   SKYE_ERRORS_RAW?: R2Bucket
   OMEGA_GATE_URL?: string
   KAIXU_BRAIN_BASE_FLOW32?: string
+  KAIXU_BRAIN_BASE_BACKUP?: string
+  KAIXU_APP_TOKEN?: string
+  KAIXU_BACKUP_TOKEN?: string
+  Founders_GateWay_Key?: string
+  FOUNDERS_GATEWAY_KEY?: string
   SKYE_ERRORS_ADMIN_SECRET?: string
   SKYE_ERRORS_ENABLED?: string
   SKYE_ERRORS_RETENTION_DAYS?: string

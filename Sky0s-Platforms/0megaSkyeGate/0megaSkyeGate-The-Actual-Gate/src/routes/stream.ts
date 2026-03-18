@@ -2,7 +2,7 @@ import { assertAliasAllowed } from '../auth/policyGuard'
 import { verifyAppToken } from '../auth/verifyAppToken'
 import { callOpenAIStream } from '../adapters/openaiStream'
 import { insertKaixuTrace } from '../db/queries'
-import { isLaneEnabled } from '../env'
+import { getBackupBrainBaseUrl, getBackupBrainToken, isLaneEnabled } from '../env'
 import { normalizeAlias, resolveUpstreamTarget } from '../routing/kaixu-engines'
 import type { Env, SkyChatRequest } from '../types'
 import { publicEngineName } from '../utils/branding'
@@ -12,11 +12,165 @@ import { estimateSize } from '../utils/openai-response'
 import { parseSse, encodeSse } from '../utils/sse'
 import { createTraceId } from '../utils/trace'
 
+function normalizeBaseUrl(value: string): string {
+  return String(value || '').trim().replace(/\/+$/, '')
+}
+
+function summarizePrompt(request: SkyChatRequest): string {
+  return request.messages
+    .map((message) => {
+      if (Array.isArray(message.content)) {
+        const text = message.content
+          .filter((part): part is { type: 'text'; text: string } => part?.type === 'text' && typeof part.text === 'string')
+          .map((part) => part.text)
+          .join('\n')
+          .trim()
+        return `${message.role}: ${text}`.trim()
+      }
+      return `${message.role}: ${String(message.content || '')}`.trim()
+    })
+    .filter(Boolean)
+    .join('\n\n')
+}
+
 function extractDelta(payload: any): string {
   if (typeof payload?.delta === 'string') return payload.delta
   if (typeof payload?.text === 'string') return payload.text
   if (typeof payload?.output_text === 'string') return payload.output_text
   return ''
+}
+
+function extractBackupText(payload: any): string {
+  return String(
+    payload?.text
+      || payload?.output?.text
+      || payload?.output
+      || payload?.choices?.[0]?.message?.content
+      || '',
+  ).trim()
+}
+
+async function callBackupBrainText(alias: string, request: SkyChatRequest, env: Env): Promise<{
+  text: string
+  usage: Record<string, unknown>
+  route: string
+  model: string | null
+}> {
+  const baseUrl = normalizeBaseUrl(getBackupBrainBaseUrl(env))
+  if (!baseUrl) {
+    throw new KaixuError(503, 'BACKUP_BRAIN_UNAVAILABLE', 'The backup brain is not configured for this gate runtime.')
+  }
+
+  const serviceToken = getBackupBrainToken(env)
+  if (!serviceToken) {
+    throw new KaixuError(503, 'BACKUP_BRAIN_TOKEN_MISSING', 'The backup brain token is not configured for this gate runtime.')
+  }
+
+  const response = await fetch(`${baseUrl}/v1/brain/backup/generate`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${serviceToken}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      alias,
+      engine: alias,
+      model: alias,
+      prompt: summarizePrompt(request),
+      messages: request.messages,
+      metadata: request.metadata,
+      brain_policy: {
+        allow_backup: false,
+        allow_user_direct: false,
+      },
+    }),
+  })
+
+  const payload = await response.json().catch(() => null)
+  if (!response.ok) {
+    throw new KaixuError(
+      response.status,
+      'BACKUP_BRAIN_ERROR',
+      String(payload?.error || payload?.message || 'The backup brain request failed.').trim() || 'The backup brain request failed.',
+      { raw: payload },
+    )
+  }
+
+  const text = extractBackupText(payload)
+  if (!text) {
+    throw new KaixuError(502, 'BACKUP_BRAIN_INVALID_RESPONSE', 'The backup brain returned an empty response.', { raw: payload })
+  }
+
+  return {
+    text,
+    usage: {
+      estimated_cost_usd: Number(payload?.usage?.estimated_cost_usd ?? 0),
+      input_tokens: Number(payload?.usage?.prompt_tokens ?? payload?.usage?.input_tokens ?? 0),
+      output_tokens: Number(payload?.usage?.completion_tokens ?? payload?.usage?.output_tokens ?? 0),
+    },
+    route: String(payload?.brain?.route || 'backup'),
+    model: payload?.brain?.model ? String(payload.brain.model) : null,
+  }
+}
+
+async function callBackupBrainStream(alias: string, request: SkyChatRequest, env: Env): Promise<
+  | { mode: 'stream'; response: Response; route: string; model: string | null }
+  | { mode: 'text'; text: string; usage: Record<string, unknown>; route: string; model: string | null }
+> {
+  const baseUrl = normalizeBaseUrl(getBackupBrainBaseUrl(env))
+  if (!baseUrl) {
+    throw new KaixuError(503, 'BACKUP_BRAIN_UNAVAILABLE', 'The backup brain is not configured for this gate runtime.')
+  }
+
+  const serviceToken = getBackupBrainToken(env)
+  if (!serviceToken) {
+    throw new KaixuError(503, 'BACKUP_BRAIN_TOKEN_MISSING', 'The backup brain token is not configured for this gate runtime.')
+  }
+
+  try {
+    const response = await fetch(`${baseUrl}/v1/brain/backup/generate-stream`, {
+      method: 'POST',
+      headers: {
+        accept: 'text/event-stream',
+        authorization: `Bearer ${serviceToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        alias,
+        engine: alias,
+        model: alias,
+        prompt: summarizePrompt(request),
+        messages: request.messages,
+        metadata: request.metadata,
+        stream: true,
+        brain_policy: {
+          allow_backup: false,
+          allow_user_direct: false,
+        },
+      }),
+    })
+
+    const contentType = String(response.headers.get('content-type') || '').toLowerCase()
+    if (response.ok && contentType.includes('text/event-stream') && response.body) {
+      return {
+        mode: 'stream',
+        response,
+        route: 'backup',
+        model: alias,
+      }
+    }
+  } catch {
+    // Fall back to the non-stream backup route below.
+  }
+
+  const fallback = await callBackupBrainText(alias, request, env)
+  return {
+    mode: 'text',
+    text: fallback.text,
+    usage: fallback.usage,
+    route: fallback.route,
+    model: fallback.model,
+  }
 }
 
 export async function handleStream(request: Request, env: Env): Promise<Response> {
@@ -32,10 +186,30 @@ export async function handleStream(request: Request, env: Env): Promise<Response
     return json({ ok: false, trace_id: traceId, error: { code: err.code, message: err.message } }, err.status)
   }
 
-  const upstream = await resolveUpstreamTarget(alias, env)
+  let upstreamVendor: string | null = null
+  let upstreamModel: string | null = null
 
   try {
-    const upstreamResponse = await callOpenAIStream(upstream.model, { ...body, alias, stream: true }, env, alias)
+    const normalizedRequest = { ...body, alias, stream: true }
+    let upstreamResponse: Response | null = null
+    let backupTextResponse: { text: string; usage: Record<string, unknown> } | null = null
+
+    if (auth.founderGateway) {
+      const backup = await callBackupBrainStream(alias, normalizedRequest, env)
+      upstreamVendor = 'backup-brain'
+      upstreamModel = backup.model ?? alias
+      if (backup.mode === 'stream') {
+        upstreamResponse = backup.response
+      } else {
+        backupTextResponse = { text: backup.text, usage: backup.usage }
+      }
+    } else {
+      const upstream = await resolveUpstreamTarget(alias, env)
+      upstreamVendor = upstream.provider
+      upstreamModel = upstream.model
+      upstreamResponse = await callOpenAIStream(upstream.model, normalizedRequest, env, alias)
+    }
+
     let outputChars = 0
     let usage: Record<string, unknown> = {}
     let finished = false
@@ -44,35 +218,45 @@ export async function handleStream(request: Request, env: Env): Promise<Response
       async start(controller) {
         controller.enqueue(encodeSse('meta', { trace_id: traceId, engine: publicEngineName(alias), ok: true }))
         try {
-          for await (const event of parseSse(upstreamResponse.body!)) {
-            if (event.data === '[DONE]') break
-            let payload: any = null
-            try {
-              payload = event.data ? JSON.parse(event.data) : null
-            } catch {
-              payload = { raw: event.data }
-            }
-
-            const eventType = String(payload?.type || event.event)
-            if (eventType.includes('error')) {
-              controller.enqueue(encodeSse('error', { code: 'KAIXU_ENGINE_UNAVAILABLE', message: 'The requested Kaixu engine is unavailable right now.' }))
-              continue
-            }
-
-            if (eventType.includes('delta')) {
-              const delta = extractDelta(payload)
-              if (delta) {
-                outputChars += delta.length
-                controller.enqueue(encodeSse('delta', { text: delta }))
+          if (backupTextResponse) {
+            outputChars += backupTextResponse.text.length
+            controller.enqueue(encodeSse('delta', { text: backupTextResponse.text }))
+            usage = backupTextResponse.usage
+            controller.enqueue(encodeSse('done', { usage }))
+            finished = true
+          } else if (upstreamResponse?.body) {
+            for await (const event of parseSse(upstreamResponse.body)) {
+              if (event.data === '[DONE]') break
+              let payload: any = null
+              try {
+                payload = event.data ? JSON.parse(event.data) : null
+              } catch {
+                payload = { raw: event.data }
               }
-              continue
-            }
 
-            if (eventType.includes('completed') || eventType.includes('done')) {
-              usage = payload?.response?.usage || payload?.usage || {}
-              controller.enqueue(encodeSse('done', { usage }))
-              finished = true
+              const eventType = String(payload?.type || event.event)
+              if (eventType.includes('error')) {
+                controller.enqueue(encodeSse('error', { code: 'KAIXU_ENGINE_UNAVAILABLE', message: 'The requested Kaixu engine is unavailable right now.' }))
+                continue
+              }
+
+              if (eventType.includes('delta')) {
+                const delta = extractDelta(payload)
+                if (delta) {
+                  outputChars += delta.length
+                  controller.enqueue(encodeSse('delta', { text: delta }))
+                }
+                continue
+              }
+
+              if (eventType.includes('completed') || eventType.includes('done')) {
+                usage = payload?.response?.usage || payload?.usage || {}
+                controller.enqueue(encodeSse('done', { usage }))
+                finished = true
+              }
             }
+          } else {
+            throw new KaixuError(502, 'KAIXU_ENGINE_UNAVAILABLE', 'The requested Kaixu engine is unavailable right now.')
           }
 
           if (!finished) controller.enqueue(encodeSse('done', { usage }))
@@ -84,8 +268,8 @@ export async function handleStream(request: Request, env: Env): Promise<Response
             lane: 'stream',
             engineAlias: alias,
             publicStatus: 'success',
-            upstreamVendor: upstream.provider,
-            upstreamModel: upstream.model,
+            upstreamVendor,
+            upstreamModel,
             inputSizeEstimate: estimateSize(body),
             outputSizeEstimate: outputChars,
             usageJson: usage,
@@ -105,8 +289,8 @@ export async function handleStream(request: Request, env: Env): Promise<Response
             lane: 'stream',
             engineAlias: alias,
             publicStatus: 'error',
-            upstreamVendor: upstream.provider,
-            upstreamModel: upstream.model,
+            upstreamVendor,
+            upstreamModel,
             inputSizeEstimate: estimateSize(body),
             latencyMs: Date.now() - started,
             publicErrorCode: httpError.code,
@@ -132,8 +316,8 @@ export async function handleStream(request: Request, env: Env): Promise<Response
       lane: 'stream',
       engineAlias: alias,
       publicStatus: 'error',
-      upstreamVendor: upstream.provider,
-      upstreamModel: upstream.model,
+      upstreamVendor,
+      upstreamModel,
       inputSizeEstimate: estimateSize(body),
       latencyMs: Date.now() - started,
       publicErrorCode: httpError.code,

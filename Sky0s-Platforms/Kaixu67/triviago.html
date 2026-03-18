@@ -308,7 +308,7 @@
 })();
 
 /* GAME */
-const GATE = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev');
+const GATE = ((window.Kaixu67SharedConfig && window.Kaixu67SharedConfig.resolveApiBase ? window.Kaixu67SharedConfig.resolveApiBase() : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || ''))).replace(/\/+$/, '');
 const LS_TOKEN='triviago_token';
 const DIFF={easy:{time:20,mult:1},medium:{time:15,mult:1.5},hard:{time:10,mult:2},nightmare:{time:7,mult:3}};
 let questions=[],qIdx=0,score=0,streak=0,bestStreak=0,correctCount=0,timerInterval=null;

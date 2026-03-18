@@ -8,8 +8,14 @@ exports.handler = async (event) => {
   };
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
-  if (!process.env.OPENAI_API_KEY) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'OPENAI_API_KEY is not configured on the server.' }) };
+
+  const gateBaseUrl = String(process.env.OMEGA_GATE_URL || '').trim().replace(/\/+$/, '');
+  const gateToken = String(process.env.KAIXU_APP_TOKEN || '').trim();
+  if (!gateBaseUrl) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'OMEGA_GATE_URL is not configured on the server. This is expected until the internal 0megaSkyeGate deployment has its env vars installed.' }) };
+  }
+  if (!gateToken) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'KAIXU_APP_TOKEN is not configured on the server. This is expected until the internal 0megaSkyeGate deployment has its env vars installed.' }) };
   }
 
   let input;
@@ -21,7 +27,7 @@ exports.handler = async (event) => {
 
   const files = Array.isArray(input.files) ? input.files : [];
   const activePath = String(input.activePath || '').trim();
-  const model = String(input.model || process.env.OPENAI_AGENT_MODEL || 'gpt-5.3-codex').trim();
+  const model = String(input.model || process.env.KAIXU_AGENT_MODEL || process.env.OPENAI_AGENT_MODEL || 'kaixu/deep').trim();
   const prompt = String(input.prompt || '').trim();
   const mode = String(input.mode || 'plan').trim();
   const autonomy = String(input.autonomy || 'controlled').trim();
@@ -29,7 +35,7 @@ exports.handler = async (event) => {
   const maxIterations = Math.max(1, Math.min(6, Number(input.max_iterations || 1) || 1));
   const contextDepth = String(input.contextDepth || 'balanced').trim();
   const operationBudget = Math.max(4, Math.min(96, Number(input.operationBudget || 32) || 32));
-  const reasoningEffort = String(input.reasoningEffort || process.env.OPENAI_REASONING_EFFORT || 'high').trim().toLowerCase();
+  const reasoningEffort = String(input.reasoningEffort || process.env.KAIXU_REASONING_EFFORT || process.env.OPENAI_REASONING_EFFORT || 'high').trim().toLowerCase();
   const allowedReasoningEffort = ['medium', 'high', 'xhigh'].includes(reasoningEffort) ? reasoningEffort : 'high';
 
   if (!prompt) {
@@ -131,7 +137,27 @@ exports.handler = async (event) => {
     'Respect the operation budget and prefer focused changes over sprawling rewrites.',
     'Use the requested reasoning effort aggressively but stay grounded in the provided workspace context.',
     'Do not invent binary assets, secrets, API keys, or fake external success.',
+    'Return ONLY valid JSON that matches the requested schema.',
   ].join(' ');
+
+  function safeJsonParse(text) {
+    const source = String(text || '').trim();
+    if (!source) return null;
+    try {
+      return JSON.parse(source);
+    } catch {
+      const start = source.indexOf('{');
+      const end = source.lastIndexOf('}');
+      if (start >= 0 && end > start) {
+        try {
+          return JSON.parse(source.slice(start, end + 1));
+        } catch {
+          return null;
+        }
+      }
+      return null;
+    }
+  }
 
   const userPayload = {
     prompt,
@@ -148,43 +174,56 @@ exports.handler = async (event) => {
   };
 
   try {
-    const response = await fetch('https://api.openai.com/v1/responses', {
+    const response = await fetch(`${gateBaseUrl}/v1/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${gateToken}`,
       },
       body: JSON.stringify({
+        provider: process.env.KAIXU_AGENT_PROVIDER || 'openai',
         model,
-        input: JSON.stringify(userPayload, null, 2),
-        instructions,
-        store: false,
-        reasoning: { effort: allowedReasoningEffort },
-        text: {
-          format: {
-            type: 'json_schema',
-            name: 'skydex_agent_result',
-            strict: true,
-            schema,
-          }
-        }
+        messages: [
+          {
+            role: 'system',
+            content: `${instructions}\n\nReturn only JSON matching this schema exactly:\n${JSON.stringify(schema, null, 2)}`,
+          },
+          {
+            role: 'user',
+            content: JSON.stringify(userPayload, null, 2),
+          },
+        ],
+        max_tokens: 12000,
+        temperature: 0,
+        metadata: {
+          app_id: 'skydex-agent',
+          mode,
+          autonomy,
+          context_depth: contextDepth,
+          reasoning_effort: allowedReasoningEffort,
+          files_considered: workspace.selected.length,
+        },
       })
     });
 
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       const providerMessage = response.status === 401
-        ? 'OpenAI rejected the server key. Check OPENAI_API_KEY for an invalid, expired, wrong-project, or wrong-environment secret.'
-        : (payload?.error?.message || 'OpenAI request failed.');
-      return { statusCode: response.status || 500, headers, body: JSON.stringify({ error: providerMessage, provider_payload: payload, provider_status: response.status || 500, provider_endpoint: 'responses' }) };
+        ? '0megaSkyeGate rejected the configured app token. Check KAIXU_APP_TOKEN for an invalid or expired secret.'
+        : (payload?.error?.message || payload?.error || '0megaSkyeGate request failed. If the internal gate is not deployed yet, this failure is expected until deployment and env setup are complete.');
+      return { statusCode: response.status || 500, headers, body: JSON.stringify({ error: providerMessage, provider_payload: payload, provider_status: response.status || 500, provider_endpoint: '/v1/chat' }) };
     }
 
     let parsed;
     try {
-      parsed = typeof payload.output_text === 'string' ? JSON.parse(payload.output_text) : null;
+      parsed = safeJsonParse(payload?.output_text || payload?.output?.text || payload?.text || '');
       if (parsed && parsed.report && !parsed.report.reasoningEffort) parsed.report.reasoningEffort = allowedReasoningEffort;
     } catch (error) {
-      return { statusCode: 502, headers, body: JSON.stringify({ error: 'OpenAI returned non-JSON output for the structured agent response.', raw_output: payload.output_text || null }) };
+      return { statusCode: 502, headers, body: JSON.stringify({ error: '0megaSkyeGate returned non-JSON output for the structured agent response.', raw_output: payload?.output_text || payload?.output?.text || null }) };
+    }
+
+    if (!parsed) {
+      return { statusCode: 502, headers, body: JSON.stringify({ error: '0megaSkyeGate returned an empty or non-JSON agent response.', raw_output: payload?.output_text || payload?.output?.text || null }) };
     }
 
     return {
@@ -192,11 +231,11 @@ exports.handler = async (event) => {
       headers,
       body: JSON.stringify({
         ok: true,
-        provider: 'openai',
-        provider_endpoint: 'responses',
+        provider: 'kaixu-gate',
+        provider_endpoint: '/v1/chat',
         result: parsed,
         usage: payload.usage || null,
-        response_id: payload.id || null,
+        response_id: payload.trace_id || payload.id || null,
       })
     };
   } catch (error) {

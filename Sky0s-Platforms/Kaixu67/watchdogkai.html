@@ -68,9 +68,13 @@
   </div>
 
 <script>
+  const resolvedGateBase = (typeof window.resolveOmegaGateUrl === 'function'
+    ? window.resolveOmegaGateUrl()
+    : (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || '')
+  ).replace(/\/+$/, '');
   const ENVS = {
-    prod: 'https://0megaskyegate.skyesoverlondon.workers.dev',
-    stage: 'https://0megaskyegate.skyesoverlondon.workers.dev'
+    prod: resolvedGateBase,
+    stage: resolvedGateBase
   };
   const envSel = document.getElementById('env');
   const pill = document.getElementById('pill');

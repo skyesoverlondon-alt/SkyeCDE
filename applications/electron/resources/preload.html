@@ -11,6 +11,7 @@
             --skye-gold: #ffd660;
             --skye-purple: #a243ff;
             --skye-cyan: #27f2ff;
+            --skye-neon: #7ed9a7;
             --skye-text: #f7f2ff;
             --skye-muted: #c9bedf;
             --skye-shadow: 0 24px 80px rgba(0, 0, 0, .45);
@@ -79,6 +80,49 @@
 
         .custom-spinner::before { content: none; }
 
+        .splash-cine-grid {
+            position: absolute;
+            inset: -45% -20%;
+            background-image:
+                linear-gradient(rgba(126, 217, 167, .12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 214, 96, .08) 1px, transparent 1px);
+            background-size: 52px 52px;
+            transform: perspective(760px) rotateX(75deg) translateY(-180px);
+            opacity: .35;
+            pointer-events: none;
+        }
+
+        .splash-cine-scan {
+            position: absolute;
+            left: 0;
+            top: -10%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(126, 217, 167, 0), var(--skye-neon), rgba(255, 214, 96, 0));
+            box-shadow: 0 0 28px rgba(126, 217, 167, .42);
+            animation: splash-scan 2.6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .splash-terminal {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(92vw, 760px);
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(126, 217, 167, .24);
+            background: rgba(4, 10, 16, .76);
+            color: rgba(183, 255, 208, .88);
+            box-shadow: 0 0 34px rgba(126, 217, 167, .16);
+            font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: .75rem;
+            line-height: 1.5;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
         .splash-copy,
         .splash-visual {
             position: relative;
@@ -89,9 +133,9 @@
             display: inline-flex;
             padding: 8px 12px;
             border-radius: 999px;
-            border: 1px solid rgba(255, 214, 96, .28);
-            background: rgba(255, 214, 96, .08);
-            color: var(--skye-gold);
+            border: 1px solid rgba(126, 217, 167, .28);
+            background: rgba(126, 217, 167, .08);
+            color: var(--skye-neon);
             text-transform: uppercase;
             letter-spacing: .08em;
             font-size: .76rem;
@@ -107,6 +151,24 @@
 
         .splash-copy h1 span {
             color: var(--skye-gold);
+        }
+
+        .splash-wordmark {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            color: var(--skye-neon);
+            font-size: .88rem;
+            letter-spacing: .26em;
+            text-transform: uppercase;
+        }
+
+        .splash-wordmark::before {
+            content: "";
+            width: 48px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(126, 217, 167, 0), rgba(126, 217, 167, .92));
         }
 
         .splash-copy p {
@@ -214,16 +276,31 @@
             50% { transform: translateX(130%); }
             100% { transform: translateX(-10%); }
         }
+
+        @keyframes splash-scan {
+            0% { top: -10%; opacity: 0; }
+            16% { opacity: 1; }
+            84% { opacity: 1; }
+            100% { top: 112%; opacity: 0; }
+        }
     </style>
 </head>
 
 <body>
     <div class='spinner-container'>
         <div class='custom-spinner'>
+            <div class="splash-cine-grid" aria-hidden="true"></div>
+            <div class="splash-cine-scan" aria-hidden="true"></div>
+            <div class="splash-terminal" aria-hidden="true">
+                &gt; booting s0l26-0s launch gate<br />
+                &gt; mounting skyes over london shell<br />
+                &gt; handing off into workspace intro sequence
+            </div>
             <div class="splash-copy">
-                <div class="splash-badge">Royal neon command deck</div>
-                <h1>Skyes <span>Over London</span></h1>
-                <p>Loading a floating royal neon workspace for design systems, media operations, automation and AI-assisted production.</p>
+                <div class="splash-badge">s0l26-0s launch gate</div>
+                <h1>s0l26-0s <span>Skyes Over London</span></h1>
+                <p>Launching the 0s startup deck first, then handing off into the Skyes Over London intro flow for design systems, media operations, automation and AI-assisted production.</p>
+                <div class="splash-wordmark">Primary workspace online</div>
                 <div class="splash-status">
                     <div class="splash-status-card">
                         <strong>Design</strong>

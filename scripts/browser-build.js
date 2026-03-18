@@ -11,6 +11,7 @@ const webpackCli = path.join(workspaceRoot, 'node_modules', '.bin', 'webpack');
 const mode = process.argv[2] === 'production' ? 'production' : 'development';
 const generatedFrontendRoot = path.join(browserRoot, 'src-gen', 'frontend');
 const builtFrontendRoot = path.join(browserRoot, 'lib', 'frontend');
+const preloadAssets = ['SKYESOVERLONDONDIETYLOGO.png'];
 
 function run(command, args, cwd) {
     const result = childProcess.spawnSync(command, args, {
@@ -40,6 +41,22 @@ function copyFrontendShell(fileName) {
     fs.copyFileSync(source, target);
 }
 
+function stagePreloadAssets(appRoot, frontendRoots) {
+    const resourcesRoot = path.join(appRoot, 'resources');
+    for (const assetName of preloadAssets) {
+        const source = path.join(resourcesRoot, assetName);
+        if (!fs.existsSync(source)) {
+            continue;
+        }
+
+        for (const frontendRoot of frontendRoots) {
+            fs.mkdirSync(frontendRoot, { recursive: true });
+            fs.copyFileSync(source, path.join(frontendRoot, assetName));
+        }
+    }
+}
+
 run(webpackCli, ['--config', 'webpack.config.js', '--config-name', 'browser-main', '--mode', mode], browserRoot);
 run(webpackCli, ['--config', 'webpack.config.js', '--config-name', 'browser-secondary-window', '--mode', mode], browserRoot);
+stagePreloadAssets(browserRoot, [generatedFrontendRoot, builtFrontendRoot]);
 copyFrontendShell('index.html');
