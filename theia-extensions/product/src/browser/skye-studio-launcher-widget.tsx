@@ -201,7 +201,10 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     }
 
     protected renderFeaturedApps(): React.ReactNode {
-        const featuredApps = (this.registry?.apps ?? []).filter(app => app.featured && app.launchable).slice(0, 6);
+        const featuredApps = (this.registry?.apps ?? [])
+            .filter(app => app.featured && app.launchable)
+            .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label))
+            .slice(0, 6);
         if (!featuredApps.length) {
             return <section className='skye-launcher-section'>
                 <div className='skye-launcher-section-header'>

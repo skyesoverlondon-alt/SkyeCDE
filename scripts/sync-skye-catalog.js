@@ -21,6 +21,7 @@ const preferredLaunchFiles = ['index.html', 'Index.html', 'index.htm', 'portal.h
 const launchMap = buildLaunchMap(appRegistry, hubRegistry);
 const generated = buildCatalog(rawCatalog, launchMap);
 mergeSkyeCdeBuilds(generated, skyeCdeManifest);
+promoteSkyeCdeAsPrimary(generated);
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, renderCatalogModule(generated));
@@ -66,6 +67,9 @@ function buildCatalog(text, launchMap) {
         let order = 1;
         for (const bullet of bulletMatches) {
             const rawName = bullet[1].trim();
+            if (shouldSkipCatalogBullet(groupId, rawName)) {
+                continue;
+            }
             const label = humanize(rawName);
             const inventoryPath = joinInventoryPath(platformPath, rawName);
             const launch = resolveLocalLaunch({ inventoryPath, rawName, platformPath })
@@ -85,6 +89,17 @@ function buildCatalog(text, launchMap) {
     }
 
     return { groups, apps };
+}
+
+function shouldSkipCatalogBullet(groupId, rawName) {
+    if (groupId !== 'skyecde') {
+        return false;
+    }
+
+    return rawName === 'index.html'
+        || rawName === 'skyecde-manifest.json'
+        || rawName === '_shared/'
+        || rawName === '_shared';
 }
 
 function mergeSkyeCdeBuilds(generated, manifest) {
@@ -147,6 +162,41 @@ function mergeSkyeCdeBuilds(generated, manifest) {
         });
         existingIds.add(id);
     });
+}
+
+function promoteSkyeCdeAsPrimary(generated) {
+    const groupIndex = generated.groups.findIndex(group => group.id === 'skyecde');
+    if (groupIndex > 0) {
+        const [group] = generated.groups.splice(groupIndex, 1);
+        generated.groups.unshift(group);
+    }
+
+    const skyecdeApps = generated.apps
+        .filter(app => app.groupId === 'skyecde')
+        .sort((left, right) => {
+            if (left.platform !== right.platform) {
+                return left.platform ? -1 : 1;
+            }
+            return left.order - right.order || left.label.localeCompare(right.label);
+        });
+
+    if (!skyecdeApps.length) {
+        return;
+    }
+
+    skyecdeApps.forEach((app, index) => {
+        app.order = -10000 + index;
+        if (app.platform) {
+            app.featured = true;
+        }
+        if (app.id === 'skyecde-skydexia') {
+            app.featured = true;
+        }
+    });
+
+    const orderedSkyecdeIds = new Set(skyecdeApps.map(app => `${app.id}:${app.href || ''}`));
+    const remainingApps = generated.apps.filter(app => !orderedSkyecdeIds.has(`${app.id}:${app.href || ''}`));
+    generated.apps.splice(0, generated.apps.length, ...skyecdeApps, ...remainingApps);
 }
 
 function makeEntry({ id, label, groupId, summary, inventoryPath, rawName, launch, platform = false, order }) {

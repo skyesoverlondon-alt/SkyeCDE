@@ -6,6 +6,11 @@
 export const skyeGeneratedCatalog = {
   "groups": [
     {
+      "id": "skyecde",
+      "label": "SkyeCDE",
+      "description": "The active cloud development environment hub for the IDEia upgrade lanes. This is now a real platform root that holds the shared bridge shell, the SkyeCDE hub page, and the upgraded IDE build lanes that preserve the original platform identities."
+    },
+    {
       "id": "0megaskyegate",
       "label": "0megaSkyeGate",
       "description": "The sovereign AI gateway for the ecosystem. This is the central provider-key boundary and the place where downstream apps should route AI traffic."
@@ -46,11 +51,6 @@ export const skyeGeneratedCatalog = {
       "description": "A bundle of fifteen discrete business micro-apps. Each folder is its own app rather than a subpage inside one larger platform."
     },
     {
-      "id": "skyecde",
-      "label": "SkyeCDE",
-      "description": "A marker directory for the broader cloud development environment."
-    },
-    {
       "id": "skyehubs",
       "label": "SkyeHubs",
       "description": "A shared service-booking and commerce platform with branded variants."
@@ -82,6 +82,100 @@ export const skyeGeneratedCatalog = {
     }
   ],
   "apps": [
+    {
+      "id": "skyecde-platform-root",
+      "label": "SkyeCDE",
+      "summary": "The active cloud development environment hub for the IDEia upgrade lanes. This is now a real platform root that holds the shared bridge shell, the SkyeCDE hub page, and the upgraded IDE build lanes that preserve the original platform identities.",
+      "groupId": "skyecde",
+      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/index.html",
+      "launchable": true,
+      "external": false,
+      "featured": true,
+      "order": -10000,
+      "keywords": [
+        "SkyeCDE",
+        "skyecde"
+      ],
+      "inventoryPath": "Sky0s-Platforms/SkyeCDE/",
+      "platform": true,
+      "source": "catalog"
+    },
+    {
+      "id": "skyecde-skydexia",
+      "label": "SkyDexia",
+      "summary": "upgraded SkyDex build lane under SkyeCDE.",
+      "groupId": "skyecde",
+      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/index.html",
+      "launchable": true,
+      "external": false,
+      "featured": true,
+      "order": -9999,
+      "keywords": [
+        "SkyDexia",
+        "SkyDexia/",
+        "skyecde"
+      ],
+      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SkyDexia/",
+      "platform": false,
+      "source": "catalog"
+    },
+    {
+      "id": "skyecde-superideia",
+      "label": "SuperIDEia",
+      "summary": "upgraded SuperIDE build lane under SkyeCDE.",
+      "groupId": "skyecde",
+      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/index.html",
+      "launchable": true,
+      "external": false,
+      "featured": false,
+      "order": -9998,
+      "keywords": [
+        "SuperIDEia",
+        "SuperIDEia/",
+        "skyecde"
+      ],
+      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SuperIDEia/",
+      "platform": false,
+      "source": "catalog"
+    },
+    {
+      "id": "skyecde-skaixuproideia",
+      "label": "SkaixuProIDEia",
+      "summary": "upgraded SkaixuPro-IDE build lane under SkyeCDE.",
+      "groupId": "skyecde",
+      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/index.html",
+      "launchable": true,
+      "external": false,
+      "featured": false,
+      "order": -9997,
+      "keywords": [
+        "SkaixuProIDEia",
+        "SkaixuProIDEia/",
+        "skyecde"
+      ],
+      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/",
+      "platform": false,
+      "source": "catalog"
+    },
+    {
+      "id": "skyecde-kaixusuperideia",
+      "label": "KaixuSuperIDEia",
+      "summary": "upgraded KaixuSuper-IDE build lane under SkyeCDE.",
+      "groupId": "skyecde",
+      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/index.html",
+      "launchable": true,
+      "external": false,
+      "featured": false,
+      "order": -9996,
+      "keywords": [
+        "KaixuSuperIDEia",
+        "KaixuSuperIDEia/",
+        "skyecde"
+      ],
+      "inventoryPath": "Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/",
+      "platform": false,
+      "source": "catalog"
+    },
     {
       "id": "0megaskyegate-platform-root",
       "label": "0megaSkyeGate",
@@ -3956,24 +4050,6 @@ export const skyeGeneratedCatalog = {
       "source": "catalog"
     },
     {
-      "id": "skyecde-platform-root",
-      "label": "SkyeCDE",
-      "summary": "A marker directory for the broader cloud development environment.",
-      "groupId": "skyecde",
-      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/index.html",
-      "launchable": true,
-      "external": false,
-      "featured": false,
-      "order": 8000,
-      "keywords": [
-        "SkyeCDE",
-        "skyecde"
-      ],
-      "inventoryPath": "Sky0s-Platforms/SkyeCDE/",
-      "platform": true,
-      "source": "catalog"
-    },
-    {
       "id": "skyehubs-platform-root",
       "label": "SkyeHubs",
       "summary": "A shared service-booking and commerce platform with branded variants.",
@@ -6673,86 +6749,6 @@ export const skyeGeneratedCatalog = {
       "inventoryPath": "Sky0s-Platforms/SuperIDE/public/contractor income verification drop in/",
       "platform": false,
       "source": "catalog"
-    },
-    {
-      "id": "skyecde-skydexia",
-      "label": "SkyDexia",
-      "summary": "SkyDex upgraded under SkyeCDE with Theia-backed workspace, terminal, and full-launch support. Status: in-progress. Source platform: ../SkyDex/SkyDex4_fixed/index.html.",
-      "groupId": "skyecde",
-      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/index.html",
-      "launchable": true,
-      "external": false,
-      "featured": true,
-      "order": 8001,
-      "keywords": [
-        "SkyDexia",
-        "skydexia",
-        "in-progress",
-        "SkyeCDE"
-      ],
-      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SkyDexia/index.html",
-      "platform": false,
-      "source": "skycde-manifest"
-    },
-    {
-      "id": "skyecde-superideia",
-      "label": "SuperIDEia",
-      "summary": "SuperIDE upgraded build lane under SkyeCDE, preserving SuperIDE as the core platform. Status: scaffolded. Source platform: ../SuperIDE/index.html.",
-      "groupId": "skyecde",
-      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/index.html",
-      "launchable": true,
-      "external": false,
-      "featured": false,
-      "order": 8002,
-      "keywords": [
-        "SuperIDEia",
-        "superideia",
-        "scaffolded",
-        "SkyeCDE"
-      ],
-      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SuperIDEia/index.html",
-      "platform": false,
-      "source": "skycde-manifest"
-    },
-    {
-      "id": "skyecde-skaixuproideia",
-      "label": "SkaixuProIDEia",
-      "summary": "SkaixuPro-IDE upgraded build lane under SkyeCDE with room for unified coding workflows. Status: scaffolded. Source platform: ../SkaixuPro-IDE/SkaixuPro-IDE-Platform/index.html.",
-      "groupId": "skyecde",
-      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/index.html",
-      "launchable": true,
-      "external": false,
-      "featured": false,
-      "order": 8003,
-      "keywords": [
-        "SkaixuProIDEia",
-        "skaixuproideia",
-        "scaffolded",
-        "SkyeCDE"
-      ],
-      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/index.html",
-      "platform": false,
-      "source": "skycde-manifest"
-    },
-    {
-      "id": "skyecde-kaixusuperideia",
-      "label": "KaixuSuperIDEia",
-      "summary": "KaixuSuper-IDE upgraded build lane under SkyeCDE with support-layer launcher and process controls. Status: scaffolded. Source platform: ../KaixuSuper-IDE-(Internal Gate)/index.html.",
-      "groupId": "skyecde",
-      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/index.html",
-      "launchable": true,
-      "external": false,
-      "featured": false,
-      "order": 8004,
-      "keywords": [
-        "KaixuSuperIDEia",
-        "kaixusuperideia",
-        "scaffolded",
-        "SkyeCDE"
-      ],
-      "inventoryPath": "Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/index.html",
-      "platform": false,
-      "source": "skycde-manifest"
     }
   ]
 } as const;

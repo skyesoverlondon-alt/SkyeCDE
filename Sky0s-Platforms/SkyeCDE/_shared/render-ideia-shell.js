@@ -16,15 +16,15 @@ import {
 import { buildSkyeHawkRoutes, installSkyeHawkMenu } from './skyehawk-menu.js';
 
 export function renderIdeiaShell(root, config) {
-  const enterpriseWorkbench = config.enterprise
-    ? renderEnterpriseWorkbench(config.enterprise, { releaseHandoffPath })
-    : '';
   const enterprisePacks = config.enterprise?.workspacePacks || [];
   const enterpriseArtifacts = config.enterprise?.artifactTemplates || [];
   const workflowActions = config.enterprise?.workflowActions || [];
   const missionConsole = config.enterprise?.missionConsole || {};
   const validationChecks = config.enterprise?.validationChecks || [];
   const releaseHandoffPath = resolveReleaseHandoffPath(enterpriseArtifacts, enterprisePacks, storageKeyFallback(config));
+  const enterpriseWorkbench = config.enterprise
+    ? renderEnterpriseWorkbench(config.enterprise, { releaseHandoffPath })
+    : '';
 
   root.innerHTML = `
     <main class="shell">

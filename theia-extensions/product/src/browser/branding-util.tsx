@@ -33,6 +33,7 @@ interface StudioCard {
 }
 
 const CORE_PLATFORM_LABELS = [
+    'SkyeCDE',
     'SuperIDE',
     'Neural Space Pro',
     'kAIxU Platform',
