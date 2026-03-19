@@ -1,9 +1,12 @@
 import { renderIdeiaShell } from '../../_shared/render-ideia-shell.js';
-import { getSkyDexiaFileDefaults, describeSkyDexiaFileActions } from './skydexia-file-actions.js';
+import { getSharedSkyeHawkRoutes } from '../../_shared/skyehawk-routes.js';
+import { getSkyDexiaFileDefaults, getSkyDexiaFileHints, describeSkyDexiaFileActions } from './skydexia-file-actions.js';
+import { getSkyDexiaEnterpriseProfile } from './skydexia-enterprise-profile.js';
 import { getSkyDexiaFullAppButtons } from './skydexia-launch-map.js';
 import { getSkyDexiaSessionState } from './skydexia-session-bridge.js';
 import { getSkyDexiaRuntimeRecipes, describeSkyDexiaRuntimeActions } from './skydexia-terminal-actions.js';
 import { getSkyDexiaWorkspaceDefaults, getSkyDexiaWorkspaceStatusItems } from './skydexia-workspace-bridge.js';
+import { openSkyDexiaLaunchTarget } from './skydexia-preview-actions.js';
 
 const workspaceDefaults = getSkyDexiaWorkspaceDefaults();
 const fileDefaults = getSkyDexiaFileDefaults();
@@ -30,11 +33,16 @@ renderIdeiaShell(document.querySelector('#app'), {
     { tag: 'Files', title: 'Lane-owned file workflows', description: describeSkyDexiaFileActions().join(' ') },
     { tag: 'Launch', title: 'Full app routing', description: 'Buttons route users into full app surfaces and built projects, never preview widgets.' }
   ],
+  enterprise: getSkyDexiaEnterpriseProfile(),
   workspaceRoot: workspaceDefaults.workspaceRoot,
   filePath: fileDefaults.filePath,
+  saveAsPath: fileDefaults.saveAsPath,
   fileSeed: fileDefaults.fileSeed,
+  fileHints: getSkyDexiaFileHints(),
   runtimeRecipes: getSkyDexiaRuntimeRecipes(),
   fullAppButtons: getSkyDexiaFullAppButtons(),
+  skyehawkRoutes: getSharedSkyeHawkRoutes('skydexia'),
+  openFullAppTarget: openSkyDexiaLaunchTarget,
   statusTitle: 'Live SkyDexia bridge state',
   statusItems: [
     `Session bridge source: ${sessionState.source}.`,

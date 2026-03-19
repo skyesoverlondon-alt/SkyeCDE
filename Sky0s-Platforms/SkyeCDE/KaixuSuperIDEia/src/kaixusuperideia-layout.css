@@ -1,0 +1,13 @@
+body .hero {
+  background:
+    linear-gradient(135deg, rgba(203, 96, 41, 0.16), rgba(20, 79, 129, 0.08)),
+    var(--panel);
+}
+
+body .metric strong {
+  color: var(--brick);
+}
+
+body .recent-actions-panel {
+  border-style: dashed;
+}

@@ -7,5 +7,14 @@ export function openFullApp(target) {
 }
 
 export function openSkyDexiaLaunchTarget(key) {
-  return openFullApp(resolveLaunchTarget(key));
+  if (!key || key === 'self') {
+    return openFullApp('./index.html');
+  }
+
+  const mappedTarget = resolveLaunchTarget(key);
+  if (mappedTarget && mappedTarget !== resolveLaunchTarget('hub')) {
+    return openFullApp(mappedTarget);
+  }
+
+  return openFullApp(key);
 }

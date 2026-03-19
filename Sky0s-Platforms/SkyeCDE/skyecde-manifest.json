@@ -5,7 +5,7 @@
     {
       "id": "skydexia",
       "label": "SkyDexia",
-      "status": "in-progress",
+      "status": "verified",
       "href": "./SkyDexia/index.html",
       "source": "../SkyDex/SkyDex4_fixed/index.html",
       "summary": "SkyDex upgraded under SkyeCDE with Theia-backed workspace, terminal, and full-launch support."
@@ -13,26 +13,26 @@
     {
       "id": "superideia",
       "label": "SuperIDEia",
-      "status": "scaffolded",
+      "status": "verified",
       "href": "./SuperIDEia/index.html",
       "source": "../SuperIDE/index.html",
-      "summary": "SuperIDE upgraded build lane under SkyeCDE, preserving SuperIDE as the core platform."
+      "summary": "SuperIDE upgraded build lane under SkyeCDE with verified workspace, file, runtime, and full-launch support while preserving SuperIDE as the core platform."
     },
     {
       "id": "skaixuproideia",
       "label": "SkaixuProIDEia",
-      "status": "scaffolded",
+      "status": "verified",
       "href": "./SkaixuProIDEia/index.html",
       "source": "../SkaixuPro-IDE/SkaixuPro-IDE-Platform/index.html",
-      "summary": "SkaixuPro-IDE upgraded build lane under SkyeCDE with room for unified coding workflows."
+      "summary": "SkaixuPro-IDE upgraded build lane under SkyeCDE with verified workspace, file, runtime, and full-launch support."
     },
     {
       "id": "kaixusuperideia",
       "label": "KaixuSuperIDEia",
-      "status": "scaffolded",
+      "status": "verified",
       "href": "./KaixuSuperIDEia/index.html",
       "source": "../KaixuSuper-IDE-(Internal Gate)/index.html",
-      "summary": "KaixuSuper-IDE upgraded build lane under SkyeCDE with support-layer launcher and process controls."
+      "summary": "KaixuSuper-IDE upgraded build lane under SkyeCDE with verified workspace, file, runtime, and full-launch support while preserving its browser IDE flow."
     }
   ]
 }

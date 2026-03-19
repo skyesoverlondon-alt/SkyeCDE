@@ -14,10 +14,10 @@ export function resolveLaunchTarget(key) {
 
 export function getSkyDexiaFullAppButtons() {
   return [
-    { label: 'Open SkyDexia full app', href: './index.html' },
-    { label: 'Open current SkyDex full app', href: resolveLaunchTarget('currentSkyDex'), secondary: true },
-    { label: 'Open SuperIDEia full app', href: resolveLaunchTarget('superIDEia'), secondary: true },
-    { label: 'Open SkaixuProIDEia full app', href: resolveLaunchTarget('skaixuProIDEia'), secondary: true },
-    { label: 'Open KaixuSuperIDEia full app', href: resolveLaunchTarget('kaixuSuperIDEia'), secondary: true }
+    { label: 'Open SkyDexia full app', href: './index.html', openTargetKey: 'self' },
+    { label: 'Open current SkyDex full app', href: resolveLaunchTarget('currentSkyDex'), openTargetKey: 'currentSkyDex', secondary: true },
+    { label: 'Open SuperIDEia full app', href: resolveLaunchTarget('superIDEia'), openTargetKey: 'superIDEia', secondary: true },
+    { label: 'Open SkaixuProIDEia full app', href: resolveLaunchTarget('skaixuProIDEia'), openTargetKey: 'skaixuProIDEia', secondary: true },
+    { label: 'Open KaixuSuperIDEia full app', href: resolveLaunchTarget('kaixuSuperIDEia'), openTargetKey: 'kaixuSuperIDEia', secondary: true }
   ];
 }

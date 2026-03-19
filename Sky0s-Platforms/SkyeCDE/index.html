@@ -122,6 +122,11 @@
       color: var(--accent-2);
     }
 
+    .status.verified {
+      background: rgba(17, 126, 84, 0.14);
+      color: #117e54;
+    }
+
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -137,6 +142,12 @@
       font-weight: 700;
     }
 
+    button.button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
     a.button.secondary {
       background: var(--accent-3);
     }
@@ -144,6 +155,13 @@
     .section-title {
       margin: 24px 0 16px;
       font-size: 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
     }
 
     @media (max-width: 900px) {
@@ -160,6 +178,9 @@
         <div class="eyebrow">SkyeCDE hub truth</div>
         <h1>SkyeCDE holds the new IDE builds.</h1>
         <p>This hub is the control center for upgraded coding environments. The original platforms stay intact in their own roots. The new builds live here so users can switch between them cleanly.</p>
+        <div class="hero-actions">
+          <button class="button secondary" type="button" id="open-skyehawk">Open SkyeHawk</button>
+        </div>
       </div>
       <div class="metric-list">
         <div class="metric">
@@ -168,7 +189,7 @@
         </div>
         <div class="metric">
           <strong>4</strong>
-          <span>upgrade build scaffolds now live</span>
+          <span>verified upgrade lanes now live</span>
         </div>
         <div class="metric">
           <strong>0</strong>
@@ -180,36 +201,36 @@
     <h2 class="section-title">IDE Build Lanes</h2>
     <section class="grid">
       <article class="card">
-        <span class="status">In progress</span>
+        <span class="status verified">Verified</span>
         <h2>SkyDexia</h2>
-        <p>SkyDex upgraded with Theia support systems while SkyDex stays the product identity.</p>
+        <p>SkyDex upgraded with verified workspace, file, runtime, and full-launch controls while SkyDex stays the product identity.</p>
         <div class="actions">
           <a class="button" href="./SkyDexia/index.html">Open SkyDexia</a>
           <a class="button secondary" href="../SkyDex/SkyDex4_fixed/index.html">Open current SkyDex</a>
         </div>
       </article>
       <article class="card">
-        <span class="status">Scaffolded</span>
+        <span class="status verified">Verified</span>
         <h2>SuperIDEia</h2>
-        <p>SuperIDE remains the platform. The upgraded build will add support-layer coding power without replacing its governance and runtime model.</p>
+        <p>SuperIDE remains the platform. The upgraded build now has verified workspace, file, runtime, and full-app support without replacing its governance or runtime model.</p>
         <div class="actions">
           <a class="button" href="./SuperIDEia/index.html">Open SuperIDEia</a>
           <a class="button secondary" href="../SuperIDE/index.html">Open current SuperIDE</a>
         </div>
       </article>
       <article class="card">
-        <span class="status">Scaffolded</span>
+        <span class="status verified">Verified</span>
         <h2>SkaixuProIDEia</h2>
-        <p>SkaixuPro-IDE becomes a stronger coding environment while preserving its multi-tool product identity.</p>
+        <p>SkaixuPro-IDE now has verified workspace, file, runtime, and full-app support while preserving its multi-tool product identity.</p>
         <div class="actions">
           <a class="button" href="./SkaixuProIDEia/index.html">Open SkaixuProIDEia</a>
           <a class="button secondary" href="../SkaixuPro-IDE/SkaixuPro-IDE-Platform/index.html">Open current SkaixuPro-IDE</a>
         </div>
       </article>
       <article class="card">
-        <span class="status">Scaffolded</span>
+        <span class="status verified">Verified</span>
         <h2>KaixuSuperIDEia</h2>
-        <p>KaixuSuper-IDE keeps its browser IDE shell while the upgraded build adds support-layer process and coding infrastructure.</p>
+        <p>KaixuSuper-IDE keeps its browser IDE shell while the upgraded build now has verified workspace, file, runtime, and full-app support.</p>
         <div class="actions">
           <a class="button" href="./KaixuSuperIDEia/index.html">Open KaixuSuperIDEia</a>
           <a class="button secondary" href="../KaixuSuper-IDE-(Internal Gate)/index.html">Open current KaixuSuper-IDE</a>
@@ -217,5 +238,17 @@
       </article>
     </section>
   </main>
+  <script type="module">
+    import { installSkyeHawkMenu } from './_shared/skyehawk-menu.js';
+    import { getHubSkyeHawkRoutes } from './_shared/skyehawk-routes.js';
+
+    installSkyeHawkMenu({
+      triggerButton: document.querySelector('#open-skyehawk'),
+      storageKey: 'skycde:hub:skyehawk',
+      title: 'SkyeCDE SkyeHawk',
+      description: 'Open the SkyeCDE hub, verified IDEia lanes, and the preserved source platforms from one system menu.',
+      routes: getHubSkyeHawkRoutes()
+    });
+  </script>
 </body>
 </html>
