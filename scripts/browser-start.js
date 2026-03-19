@@ -9,14 +9,18 @@ const browserRoot = path.join(workspaceRoot, 'applications', 'browser');
 const theiaCli = path.join(workspaceRoot, 'node_modules', '.bin', 'theia');
 
 function run(command, args, cwd) {
+    const runtimeEnv = {
+        ...process.env,
+        NODE_NO_WARNINGS: '1',
+        NODE_OPTIONS: '--max-old-space-size=4096 --no-deprecation'
+    };
+    delete runtimeEnv.npm_config_prefix;
+    delete runtimeEnv.NPM_CONFIG_PREFIX;
+
     const result = childProcess.spawnSync(command, args, {
         cwd,
         stdio: 'inherit',
-        env: {
-            ...process.env,
-            NODE_NO_WARNINGS: '1',
-            NODE_OPTIONS: '--max-old-space-size=4096 --no-deprecation'
-        }
+        env: runtimeEnv
     });
 
     if (result.status !== 0) {

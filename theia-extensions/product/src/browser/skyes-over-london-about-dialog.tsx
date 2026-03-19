@@ -9,7 +9,9 @@
 
 import * as React from 'react';
 import { AboutDialog, AboutDialogProps, ABOUT_CONTENT_CLASS } from '@theia/core/lib/browser/about-dialog';
+import { OpenerService } from '@theia/core/lib/browser/opener-service';
 import { injectable, inject } from '@theia/core/shared/inversify';
+import { LocationMapperService } from '@theia/mini-browser/lib/browser/location-mapper-service';
 import {
     renderDocumentation,
     renderDownloads,
@@ -35,6 +37,12 @@ export class SkyesOverLondonAboutDialog extends AboutDialog {
 
     @inject(WindowService)
     protected readonly windowService: WindowService;
+
+    @inject(OpenerService)
+    protected readonly openerService: OpenerService;
+
+    @inject(LocationMapperService)
+    protected readonly locationMapperService: LocationMapperService;
 
     @inject(SkyeAppRegistryService)
     protected readonly registryService: SkyeAppRegistryService;
@@ -90,12 +98,12 @@ export class SkyesOverLondonAboutDialog extends AboutDialog {
             <hr className='gs-hr' />
             <div className='flex-grid'>
                 <div className='col'>
-                    {renderRegistryHighlights(this.windowService, this.registry)}
+                    {renderRegistryHighlights(this.openerService, this.locationMapperService, this.windowService, this.registry)}
                 </div>
             </div>
             <div className='flex-grid'>
                 <div className='col'>
-                    {renderRegistryCatalog(this.windowService, this.registry)}
+                    {renderRegistryCatalog(this.openerService, this.locationMapperService, this.windowService, this.registry)}
                 </div>
             </div>
             <div className='flex-grid'>

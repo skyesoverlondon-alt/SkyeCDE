@@ -8,9 +8,12 @@
  ********************************************************************************/
 
 import { codicon, ReactWidget } from '@theia/core/lib/browser';
+import { OpenerService } from '@theia/core/lib/browser/opener-service';
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
+import { LocationMapperService } from '@theia/mini-browser/lib/browser/location-mapper-service';
 import { inject, injectable, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
+import { openSkyePlatformApp } from './skye-app-opener';
 import { SkyeAppRegistryService, SkyePlatformApp, SkyePlatformGroup, SkyePlatformRegistry } from './skye-app-registry';
 
 @injectable()
@@ -27,6 +30,12 @@ export class SkyeAppCatalogWidget extends ReactWidget {
 
     @inject(WindowService)
     protected readonly windowService: WindowService;
+
+    @inject(OpenerService)
+    protected readonly openerService: OpenerService;
+
+    @inject(LocationMapperService)
+    protected readonly locationMapperService: LocationMapperService;
 
     @postConstruct()
     protected init(): void {
@@ -50,11 +59,7 @@ export class SkyeAppCatalogWidget extends ReactWidget {
     }
 
     protected async launch(app: SkyePlatformApp): Promise<void> {
-        if (!app.href) {
-            return;
-        }
-        const href = app.external ? app.href : new URL(app.href, window.location.origin).toString();
-        await this.windowService.openNewWindow(href, { external: app.external });
+        await openSkyePlatformApp(this.openerService, this.locationMapperService, this.windowService, app);
     }
 
     protected renderGroup(group: SkyePlatformGroup, apps: SkyePlatformApp[]): React.ReactNode {
@@ -67,7 +72,7 @@ export class SkyeAppCatalogWidget extends ReactWidget {
                     <h3>{group.label}</h3>
                     {group.description && <p>{group.description}</p>}
                 </div>
-                <span className='skye-catalog-group-count'>{apps.length} entries</span>
+                <span className='skye-catalog-group-count'>{apps.length} launch paths</span>
             </div>
             <div className='skye-catalog-grid'>
                 {apps.map(app => <button
@@ -82,7 +87,7 @@ export class SkyeAppCatalogWidget extends ReactWidget {
                         <small>{app.summary}</small>
                     </span>
                     <span className='skye-catalog-card-meta'>
-                        <span>{app.launchable ? (app.external ? 'External' : 'Launchable') : 'Inventory only'}</span>
+                        <span>{app.external ? 'External app' : 'Open app'}</span>
                         <i className={codicon('arrow-up-right')}></i>
                     </span>
                 </button>)}
@@ -101,22 +106,28 @@ export class SkyeAppCatalogWidget extends ReactWidget {
         }
 
         const groups = this.registry?.groups ?? [];
-        const apps = this.registry?.apps ?? [];
-        const launchableCount = apps.filter(app => app.launchable).length;
+        const apps = (this.registry?.apps ?? []).filter(app => app.launchable && app.href);
+        const launchableCount = apps.length;
+        const inventoryOnlyCount = (this.registry?.apps ?? []).length - apps.length;
 
         return <div className='skye-catalog-shell'>
             <section className='skye-catalog-hero'>
                 <span className='skye-badge'>Built-in 0s registry</span>
                 <h2>Launch platform apps from the Extensions surface.</h2>
                 <p>This section exposes the first-party 0s catalog inside Extensions so users can launch real product surfaces without treating OpenVSX as the product identity.</p>
+                {inventoryOnlyCount > 0 && <p>{inventoryOnlyCount} inventory-only registry entries are hidden here so this surface stays launch-focused.</p>}
                 <div className='skye-catalog-hero-stats'>
                     <div>
                         <strong>{apps.length}</strong>
-                        <span>Catalog entries</span>
+                        <span>Launchable entries</span>
                     </div>
                     <div>
                         <strong>{launchableCount}</strong>
                         <span>Launchable entries</span>
+                    </div>
+                    <div>
+                        <strong>{inventoryOnlyCount}</strong>
+                        <span>Hidden inventory entries</span>
                     </div>
                     <div>
                         <strong>{groups.length}</strong>

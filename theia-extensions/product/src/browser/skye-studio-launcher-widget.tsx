@@ -9,11 +9,14 @@
 
 import { CommandRegistry } from '@theia/core/lib/common/command';
 import { codicon, CommonCommands, ReactWidget } from '@theia/core/lib/browser';
+import { OpenerService } from '@theia/core/lib/browser/opener-service';
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
+import { LocationMapperService } from '@theia/mini-browser/lib/browser/location-mapper-service';
 import { injectable, inject, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { GettingStartedWidget } from '@theia/getting-started/lib/browser/getting-started-widget';
 import { FILE_NAVIGATOR_TOGGLE_COMMAND_ID } from '@theia/navigator/lib/browser/navigator-contribution';
+import { openSkyePlatformApp } from './skye-app-opener';
 import { SkyeAppRegistryService, SkyePlatformApp, SkyePlatformRegistry } from './skye-app-registry';
 import { SkyesOverLondonCommands } from './skyes-over-london-contribution';
 
@@ -113,6 +116,12 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     @inject(WindowService)
     protected readonly windowService: WindowService;
 
+    @inject(OpenerService)
+    protected readonly openerService: OpenerService;
+
+    @inject(LocationMapperService)
+    protected readonly locationMapperService: LocationMapperService;
+
     @inject(SkyeAppRegistryService)
     protected readonly registryService: SkyeAppRegistryService;
 
@@ -147,11 +156,7 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
     }
 
     protected async launchApp(app: SkyePlatformApp): Promise<void> {
-        if (!app.href) {
-            return;
-        }
-        const href = app.external ? app.href : new URL(app.href, window.location.origin).toString();
-        await this.windowService.openNewWindow(href, { external: app.external });
+        await openSkyePlatformApp(this.openerService, this.locationMapperService, this.windowService, app);
     }
 
     protected renderActionGroup(title: string, intro: string, actions: StudioAction[]): React.ReactNode {

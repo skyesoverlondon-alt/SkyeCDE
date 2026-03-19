@@ -64,6 +64,7 @@
     "lint:fix": "eslint --ext js,jsx,ts,tsx scripts --fix && npm exec -- lerna run lint:fix",
     "license:check": "npm exec -- dash-licenses-wrapper --configFile=./configs/license-check-config.json",
     "license:check:review": "npm exec -- dash-licenses-wrapper --configFile=./configs/license-check-config.json --review",
+    "policy:check:ai-providers": "node scripts/check-disallowed-ai-providers.js",
     "postinstall": "theia-patch"
   },
   "theiaPluginsDir": "plugins",

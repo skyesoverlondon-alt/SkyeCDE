@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <style>
+<style>
         :root {
-            --skye-bg-0: #05060b;
-            --skye-bg-1: #120b1f;
-            --skye-bg-2: #221033;
+            --skye-bg-0: #06153f;
+            --skye-bg-1: #0b2a66;
+            --skye-bg-2: #153f87;
             --skye-panel: rgba(14, 10, 24, 0.84);
             --skye-border: rgba(168, 106, 255, 0.28);
             --skye-gold: #ffd660;
             --skye-purple: #a243ff;
             --skye-cyan: #27f2ff;
             --skye-neon: #7ed9a7;
+            --skye-deep-neon-blue: #0b2a66;
+            --skye-deep-neon-blue-2: #153f87;
             --skye-text: #f7f2ff;
             --skye-muted: #c9bedf;
             --skye-shadow: 0 24px 80px rgba(0, 0, 0, .45);
@@ -21,14 +19,26 @@
         html,
         body {
             margin: 0;
+            min-height: 100%;
             overflow: hidden;
+            background-color: var(--skye-bg-1);
             background:
-                radial-gradient(circle at 14% 12%, rgba(162, 67, 255, .22), transparent 28%),
-                radial-gradient(circle at 82% 18%, rgba(255, 214, 96, .16), transparent 28%),
-                radial-gradient(circle at 50% 90%, rgba(39, 242, 255, .09), transparent 24%),
-                linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 56%, #05070d);
+                radial-gradient(circle at 14% 12%, rgba(39, 242, 255, .18), transparent 28%),
+                radial-gradient(circle at 82% 18%, rgba(126, 217, 167, .14), transparent 28%),
+                radial-gradient(circle at 50% 90%, rgba(82, 157, 255, .16), transparent 24%),
+                linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 56%, #081b49);
             color: var(--skye-text);
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        #theia-app {
+            min-height: 100vh;
+            background-color: var(--skye-bg-1);
+            background:
+                radial-gradient(circle at 14% 12%, rgba(39, 242, 255, .18), transparent 28%),
+                radial-gradient(circle at 82% 18%, rgba(126, 217, 167, .14), transparent 28%),
+                radial-gradient(circle at 50% 90%, rgba(82, 157, 255, .16), transparent 24%),
+                linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 56%, #081b49);
         }
 
         .theia-preload {
@@ -41,6 +51,16 @@
             /* Otherwise, there is a flickering when the platform CSS loads. */
 
             background-image: none;
+            opacity: 1;
+            visibility: visible;
+            will-change: opacity;
+            transition: opacity .42s ease, visibility .42s ease;
+        }
+
+        .theia-preload.theia-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         body::before {
@@ -195,8 +215,8 @@
         .splash-status-card {
             padding: 14px 16px;
             border-radius: 18px;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(168, 106, 255, .22);
+            background: linear-gradient(180deg, rgba(11, 42, 102, .42), rgba(21, 63, 135, .34));
+            border: 1px solid rgba(82, 157, 255, .34);
         }
 
         .splash-status-card strong {
@@ -223,6 +243,19 @@
             transform: translate(-50%, -50%);
             animation: sol-logo-float 4.8s ease-in-out infinite, sol-logo-pulse 3.2s ease-in-out infinite;
             filter: drop-shadow(0 0 28px rgba(141, 61, 255, .34)) drop-shadow(0 0 38px rgba(255, 214, 96, .22));
+        }
+
+        .splash-founder {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            width: min(104px, 22vw);
+            height: min(104px, 22vw);
+            object-fit: cover;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 214, 96, .45);
+            box-shadow: 0 0 0 2px rgba(4, 8, 18, .72), 0 0 24px rgba(39, 242, 255, .32);
+            animation: sol-logo-pulse 3.2s ease-in-out infinite;
         }
 
         .splash-orb {
@@ -255,7 +288,7 @@
             height: 4px;
             overflow: hidden;
             border-radius: 999px;
-            background: rgba(255, 255, 255, .08);
+            background: linear-gradient(90deg, rgba(11, 42, 102, .68), rgba(21, 63, 135, .6));
         }
 
         .splash-loader::after {
@@ -310,9 +343,6 @@
             }
         }
     </style>
-</head>
-
-<body>
     <div class='spinner-container'>
         <div class='custom-spinner'>
             <div class="splash-cine-grid" aria-hidden="true"></div>
@@ -346,6 +376,7 @@
                 <div class="splash-orb splash-orb-primary"></div>
                 <div class="splash-orb splash-orb-secondary"></div>
                 <img class="splash-logo" src="./SKYESOVERLONDONDIETYLOGO.png" alt="Skyes Over London logo" />
+                <img class="splash-founder" src="./FoundersImage.png" alt="Skyes Over London founder" />
                 <div class="splash-loader"></div>
             </div>
         </div>
@@ -372,6 +403,3 @@
             document.head.appendChild(link);
         }
     </script>
-</body>
-
-</html>

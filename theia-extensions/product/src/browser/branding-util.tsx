@@ -7,8 +7,11 @@
  * SPDX-License-Identifier: MIT
  ********************************************************************************/
 
+import { OpenerService } from '@theia/core/lib/browser/opener-service';
 import { WindowService } from '@theia/core/lib/browser/window/window-service';
+import { LocationMapperService } from '@theia/mini-browser/lib/browser/location-mapper-service';
 import * as React from 'react';
+import { openSkyePlatformApp } from './skye-app-opener';
 import { getBrandingVariant } from './skyes-over-london-config';
 import { SkyePlatformApp, SkyePlatformRegistry } from './skye-app-registry';
 
@@ -258,35 +261,43 @@ function renderCardGrid(cards: StudioCard[], windowService: WindowService): Reac
     </div>;
 }
 
-function renderRegistryTileGrid(apps: SkyePlatformApp[]): React.ReactNode {
+async function openRegistryApp(openerService: OpenerService, locationMapperService: LocationMapperService, windowService: WindowService, app: SkyePlatformApp): Promise<void> {
+    await openSkyePlatformApp(openerService, locationMapperService, windowService, app);
+}
+
+function renderRegistryTileGrid(openerService: OpenerService, locationMapperService: LocationMapperService, windowService: WindowService, apps: SkyePlatformApp[]): React.ReactNode {
     return <div className='skye-launcher-card-grid'>
-        {apps.map(app => {
-            const content = <>
+        {apps.filter(app => app.launchable && app.href).map(app => <button
+            key={`${app.id}:${app.href}`}
+            className='skye-launcher-card'
+            onClick={() => void openRegistryApp(openerService, locationMapperService, windowService, app)}
+        >
             <span className='skye-launcher-card-badge'>{badgeText(app.label)}</span>
             <span className='skye-launcher-card-copy'>
                 <strong>{app.label}</strong>
                 <small>{app.summary}</small>
             </span>
-            <span className='skye-launcher-card-cta'>{app.launchable ? (app.external ? 'External' : 'Launch') : 'Inventory'}</span>
-        </>;
-
-            if (!app.launchable || !app.href) {
-                return <div key={`${app.id}:${app.inventoryPath ?? app.label}`} className='skye-launcher-card skye-launcher-card-static'>
-                    {content}
-                </div>;
-            }
-
-            return <a
-                key={`${app.id}:${app.href}`}
-                className='skye-launcher-card'
-                href={app.href}
-                target={app.external ? '_blank' : undefined}
-                rel={app.external ? 'noreferrer' : undefined}
-            >
-                {content}
-            </a>;
-        })}
+            <span className='skye-launcher-card-cta'>{app.external ? 'External' : 'Launch'}</span>
+        </button>)}
     </div>;
+}
+
+function normalizeRegistryLabel(label: string): string {
+    return label.toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function findPreferredApp(registry: SkyePlatformRegistry, label: string): SkyePlatformApp | undefined {
+    const normalizedLabel = normalizeRegistryLabel(label);
+    const launchableApps = registry.apps.filter(app => app.launchable && app.href);
+    const directMatches = launchableApps.filter(app => normalizeRegistryLabel(app.label) === normalizedLabel);
+    const candidates = directMatches.length ? directMatches : launchableApps.filter(app => {
+        const normalizedAppLabel = normalizeRegistryLabel(app.label);
+        return normalizedAppLabel.includes(normalizedLabel) || normalizedLabel.includes(normalizedAppLabel);
+    });
+    if (!candidates.length) {
+        return undefined;
+    }
+    return candidates.find(app => app.platform) ?? candidates.find(app => app.featured) ?? candidates[0];
 }
 
 function findCorePlatforms(registry?: SkyePlatformRegistry): SkyePlatformApp[] {
@@ -294,13 +305,68 @@ function findCorePlatforms(registry?: SkyePlatformRegistry): SkyePlatformApp[] {
         return [];
     }
     const selected = CORE_PLATFORM_LABELS
-        .map(label => registry.apps.find(app => app.label === label && app.launchable))
+        .map(label => findPreferredApp(registry, label))
         .filter((app): app is SkyePlatformApp => !!app);
+
+    if (!selected.length) {
+        return registry.apps
+            .filter(app => app.launchable && app.href && (app.featured || app.platform))
+            .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label))
+            .slice(0, 8);
+    }
 
     return Array.from(new Map(selected.map(app => [`${app.id}:${app.href}`, app])).values());
 }
 
-export function renderRegistryHighlights(_windowService: WindowService, registry?: SkyePlatformRegistry): React.ReactNode {
+function launchableRegistryApps(registry?: SkyePlatformRegistry): SkyePlatformApp[] {
+    return (registry?.apps ?? [])
+        .filter(app => app.launchable && app.href)
+        .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label));
+}
+
+function renderLaunchCatalog(openerService: OpenerService, locationMapperService: LocationMapperService, windowService: WindowService, groups: SkyePlatformRegistry['groups'], apps: SkyePlatformApp[]): React.ReactNode {
+    return <div className='skye-registry-group-list'>
+        {groups.map(group => {
+            const groupApps = apps.filter(app => app.groupId === group.id);
+            if (!groupApps.length) {
+                return undefined;
+            }
+
+            return <section key={group.id} className='skye-catalog-group'>
+                <div className='skye-catalog-group-header'>
+                    <div>
+                        <h3>{group.label}</h3>
+                        {group.description && <p>{group.description}</p>}
+                    </div>
+                    <span className='skye-catalog-group-count'>{groupApps.length} launch paths</span>
+                </div>
+                <div className='skye-catalog-grid'>
+                    {groupApps.map(app => <button
+                        key={`${app.id}:${app.href}`}
+                        className='skye-catalog-card'
+                        onClick={() => void openRegistryApp(openerService, locationMapperService, windowService, app)}
+                    >
+                        <span className='skye-catalog-card-badge'>{badgeText(app.label)}</span>
+                        <span className='skye-catalog-card-copy'>
+                            <strong>{app.label}</strong>
+                            <small>{app.summary}</small>
+                        </span>
+                        <span className='skye-catalog-card-meta'>
+                            <span>{app.external ? 'External app' : 'Open app'}</span>
+                            <span>{app.external ? '↗' : '→'}</span>
+                        </span>
+                    </button>)}
+                </div>
+            </section>;
+        })}
+    </div>;
+}
+
+function countInventoryOnlyApps(registry: SkyePlatformRegistry): number {
+    return registry.apps.filter(app => !app.launchable || !app.href).length;
+}
+
+export function renderRegistryHighlights(openerService: OpenerService, locationMapperService: LocationMapperService, windowService: WindowService, registry?: SkyePlatformRegistry): React.ReactNode {
     if (!registry) {
         return <div className='gs-section'>
             <h3 className='gs-section-header'>0s launch deck</h3>
@@ -311,8 +377,8 @@ export function renderRegistryHighlights(_windowService: WindowService, registry
     const coreApps = findCorePlatforms(registry);
     return <div className='gs-section'>
         <h3 className='gs-section-header'>0s launch deck</h3>
-        <div className='skye-section-intro'>Core platforms and major launch surfaces that should define the shell story before marketplace extensions do.</div>
-        {renderRegistryTileGrid(coreApps)}
+        <div className='skye-section-intro'>Use these buttons as the real launch deck for the core 0s app surfaces, not as passive inventory cards.</div>
+        {renderRegistryTileGrid(openerService, locationMapperService, windowService, coreApps)}
     </div>;
 }
 
@@ -340,7 +406,7 @@ export function renderRegistryStatus(registry?: SkyePlatformRegistry): React.Rea
     </div>;
 }
 
-export function renderRegistryCatalog(_windowService: WindowService, registry?: SkyePlatformRegistry): React.ReactNode {
+export function renderRegistryCatalog(openerService: OpenerService, locationMapperService: LocationMapperService, windowService: WindowService, registry?: SkyePlatformRegistry): React.ReactNode {
     if (!registry) {
         return <div className='gs-section'>
             <h3 className='gs-section-header'>Full app catalog</h3>
@@ -348,50 +414,15 @@ export function renderRegistryCatalog(_windowService: WindowService, registry?: 
         </div>;
     }
 
+    const launchableApps = launchableRegistryApps(registry);
+    const launchableGroups = registry.groups.filter(group => launchableApps.some(app => app.groupId === group.id));
+    const inventoryOnlyCount = countInventoryOnlyApps(registry);
+
     return <div className='gs-section'>
         <h3 className='gs-section-header'>Full app catalog</h3>
-        <div className='skye-section-intro'>The shell now reads from the aggregated registry instead of only showing generic studio placeholders.</div>
-        <div className='skye-registry-group-list'>
-            {registry.groups.map(group => {
-                const apps = registry.apps.filter(app => app.groupId === group.id);
-                if (!apps.length) {
-                    return undefined;
-                }
-                return <section key={group.id} className='skye-registry-group'>
-                    <div className='skye-registry-group-header'>
-                        <div>
-                            <h4>{group.label}</h4>
-                            {group.description && <p>{group.description}</p>}
-                        </div>
-                        <span className='skye-catalog-group-count'>{apps.length} entries</span>
-                    </div>
-                    <div className='skye-registry-chip-list'>
-                        {apps.map(app => {
-                            const content = <>
-                                <strong>{app.label}</strong>
-                                <small>{app.launchable ? (app.external ? 'External property' : 'Launch surface') : `Inventory: ${app.inventoryPath ?? 'No launch path yet'}`}</small>
-                            </>;
-
-                            if (!app.launchable || !app.href) {
-                                return <div key={`${app.id}:${app.inventoryPath ?? app.label}`} className='skye-registry-chip skye-registry-chip-static'>
-                                    {content}
-                                </div>;
-                            }
-
-                            return <a
-                                key={`${app.id}:${app.href}`}
-                                className='skye-registry-chip'
-                                href={app.href}
-                                target={app.external ? '_blank' : undefined}
-                                rel={app.external ? 'noreferrer' : undefined}
-                            >
-                                {content}
-                            </a>;
-                        })}
-                    </div>
-                </section>;
-            })}
-        </div>
+        <div className='skye-section-intro'>This welcome-tab catalog now shows only launchable 0s app surfaces and renders them as actual buttons.</div>
+        {inventoryOnlyCount > 0 && <div className='skye-section-intro'>Inventory-only entries remain tracked in the registry, but {inventoryOnlyCount} non-launchable items are intentionally omitted from this launch page.</div>}
+        {renderLaunchCatalog(openerService, locationMapperService, windowService, launchableGroups, launchableApps)}
     </div>;
 }
 

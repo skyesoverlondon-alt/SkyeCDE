@@ -10,8 +10,10 @@
 import * as React from 'react';
 
 import { Message } from '@theia/core/lib/browser';
+import { OpenerService } from '@theia/core/lib/browser/opener-service';
 import { PreferenceService } from '@theia/core/lib/common';
 import { inject, injectable } from '@theia/core/shared/inversify';
+import { LocationMapperService } from '@theia/mini-browser/lib/browser/location-mapper-service';
 import {
     renderCollaboration,
     renderDocumentation,
@@ -41,6 +43,12 @@ export class SkyesOverLondonGettingStartedWidget extends GettingStartedWidget {
 
     @inject(WindowService)
     protected readonly windowService: WindowService;
+
+    @inject(OpenerService)
+    protected readonly openerService: OpenerService;
+
+    @inject(LocationMapperService)
+    protected readonly locationMapperService: LocationMapperService;
 
     @inject(PreferenceService)
     protected readonly preferenceService: PreferenceService;
@@ -83,12 +91,12 @@ export class SkyesOverLondonGettingStartedWidget extends GettingStartedWidget {
                 <hr className='gs-hr' />
                 <div className='flex-grid'>
                     <div className='col'>
-                        {renderRegistryHighlights(this.windowService, this.registry)}
+                        {renderRegistryHighlights(this.openerService, this.locationMapperService, this.windowService, this.registry)}
                     </div>
                 </div>
                 <div className='flex-grid'>
                     <div className='col'>
-                        {renderRegistryCatalog(this.windowService, this.registry)}
+                        {renderRegistryCatalog(this.openerService, this.locationMapperService, this.windowService, this.registry)}
                     </div>
                 </div>
                 <div className='flex-grid'>

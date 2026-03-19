@@ -60,6 +60,16 @@
             filter: drop-shadow(0 0 28px rgba(141, 61, 255, .34)) drop-shadow(0 0 38px rgba(255, 216, 107, .22));
         }
 
+        .custom-spinner .founder {
+            width: min(104px, 24vw);
+            height: min(104px, 24vw);
+            object-fit: cover;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 214, 96, .45);
+            box-shadow: 0 0 0 2px rgba(4, 8, 18, .72), 0 0 24px rgba(39, 242, 255, .32);
+            animation: sol-logo-pulse 3.2s ease-in-out infinite;
+        }
+
         .caption {
             color: rgba(251, 245, 255, .88);
             font-size: 1rem;
@@ -83,6 +93,7 @@
     <div class='spinner-container'>
         <div class='custom-spinner'>
             <img src="./SKYESOVERLONDONDIETYLOGO.png" alt="Skyes Over London logo" />
+            <img class="founder" src="./FoundersImage.png" alt="Skyes Over London founder" />
             <div class="caption">Skyes Over London Next</div>
         </div>
     </div>

@@ -6,8 +6,8 @@
     {
       "layers" : [
         {
-          "image-name" : "icon.png",
-          "name" : "icon",
+          "image-name" : "SKYESOVERLONDONDIETYLOGO.png",
+          "name" : "Skyes Over London Logo",
           "position" : {
             "scale" : 1.67,
             "translation-in-points" : [
@@ -32,8 +32,8 @@
       "hidden" : false,
       "layers" : [
         {
-          "image-name" : "Skyes Over London Light BG.jpg",
-          "name" : "Skyes Over London Light BG"
+          "image-name" : "SKYESOVERLONDONDIETYLOGO.png",
+          "name" : "Skyes Over London Logo"
         }
       ],
       "lighting" : "combined",
@@ -57,8 +57,8 @@
       "hidden" : false,
       "layers" : [
         {
-          "image-name" : "Skyes Over London Dark BG.jpg",
-          "name" : "Skyes Over London Dark BG"
+          "image-name" : "SKYESOVERLONDONDIETYLOGO.png",
+          "name" : "Skyes Over London Logo"
         }
       ],
       "lighting" : "combined",

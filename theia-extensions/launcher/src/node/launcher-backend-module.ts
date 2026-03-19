@@ -11,6 +11,7 @@ import { ContainerModule } from '@theia/core/shared/inversify';
 import { TheiaLauncherServiceEndpoint } from './launcher-endpoint';
 import { BackendApplicationContribution } from '@theia/core/lib/node/backend-application';
 import { TheiaDesktopFileServiceEndpoint } from './desktopfile-endpoint';
+import { SkyeCDEBridgeEndpoint } from './skycde-bridge-endpoint';
 
 export default new ContainerModule(bind => {
     bind(TheiaLauncherServiceEndpoint).toSelf().inSingletonScope();
@@ -18,4 +19,7 @@ export default new ContainerModule(bind => {
 
     bind(TheiaDesktopFileServiceEndpoint).toSelf().inSingletonScope();
     bind(BackendApplicationContribution).toService(TheiaDesktopFileServiceEndpoint);
+
+    bind(SkyeCDEBridgeEndpoint).toSelf().inSingletonScope();
+    bind(BackendApplicationContribution).toService(SkyeCDEBridgeEndpoint);
 });

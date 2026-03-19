@@ -47,6 +47,10 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Policy Gate - Disallowed AI Provider Signatures
+        shell: bash
+        run: node scripts/check-disallowed-ai-providers.js
+
       - name: Install dependencies
         shell: bash
         run: yarn --skip-integrity-check --network-timeout 100000
