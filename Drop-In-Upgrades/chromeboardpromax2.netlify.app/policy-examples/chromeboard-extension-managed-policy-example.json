@@ -1,0 +1,49 @@
+{
+  "chromeboardUrl": "https://your-chromeboard-site.example",
+  "autoBootstrapOnStartup": true,
+  "forceReimportOnStartup": false,
+  "seedFromInstalledApps": true,
+  "seedFromBookmarkBar": true,
+  "seedFromOpenTabs": false,
+  "seedPinned": true,
+  "seedDesktopId": "desk-main",
+  "seedTags": [
+    "managed",
+    "workspace"
+  ],
+  "seedItems": [
+    {
+      "name": "Gmail",
+      "url": "https://mail.google.com/",
+      "icon": "\u2709\ufe0f",
+      "description": "Managed seed app",
+      "tags": [
+        "email",
+        "google"
+      ],
+      "pinned": true
+    },
+    {
+      "name": "Drive",
+      "url": "https://drive.google.com/",
+      "icon": "\ud83d\uddc2\ufe0f",
+      "description": "Managed seed app",
+      "tags": [
+        "docs",
+        "storage"
+      ],
+      "pinned": true
+    },
+    {
+      "name": "ChromeBoard",
+      "url": "https://your-chromeboard-site.example",
+      "icon": "\ud83e\udde0",
+      "description": "ChromeBoard home",
+      "tags": [
+        "launcher",
+        "home"
+      ],
+      "pinned": true
+    }
+  ]
+}

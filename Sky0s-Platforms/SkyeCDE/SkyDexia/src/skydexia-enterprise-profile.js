@@ -31,6 +31,14 @@ export function getSkyDexiaEnterpriseProfile() {
         recursive: false,
         limit: 120,
         description: 'Compare the upgrade lane against the preserved SkyDex product source.'
+      },
+      {
+        id: 'skydexia-release-ops',
+        label: 'SkyDexia release and ops',
+        root: 'Sky0s-Platforms/SkyeCDE/SkyDexia',
+        recursive: true,
+        limit: 120,
+        description: 'Open the deployment, operations, and delivery assets that govern SkyDexia rollout and recovery.'
       }
     ],
     missionConsole: {
@@ -67,6 +75,16 @@ export function getSkyDexiaEnterpriseProfile() {
           label: 'Runtime recipes',
           path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-terminal-actions.js',
           description: 'Lane runtime definitions for SkyDexia and comparison environments.'
+        },
+        {
+          label: 'Deployment systems guide',
+          path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/deployment/SKYDEXIA_DEPLOYMENT_SYSTEMS.md',
+          description: 'Lane-owned deployment contract for local serving, launcher integration, bridge endpoints, ports, and evidence expectations.'
+        },
+        {
+          label: 'Runtime runbook',
+          path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/ops/SKYDEXIA_RUNTIME_RUNBOOK.md',
+          description: 'Operator runbook for runtime triage, restart, evidence capture, and rollback discipline.'
         }
       ],
       runtimeDeck: [
@@ -128,6 +146,48 @@ export function getSkyDexiaEnterpriseProfile() {
         steps: [
           { type: 'runtime-recipe', recipeId: 'skydexia' }
         ]
+      },
+      {
+        id: 'skydexia-deployment-guide-check',
+        title: 'Deployment systems guide check',
+        owner: 'Release desk',
+        description: 'Load the lane-owned deployment systems guide so deployment rules and integration requirements are visible in the lane.',
+        successDetail: 'SkyDexia deployment systems guide loaded successfully.',
+        summarySteps: [
+          'Open the SkyDexia deployment systems guide.',
+          'Confirm deployment and bridge rules are visible in the lane.'
+        ],
+        steps: [
+          { type: 'file-hint', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/deployment/SKYDEXIA_DEPLOYMENT_SYSTEMS.md' }
+        ]
+      },
+      {
+        id: 'skydexia-release-ops-pack-check',
+        title: 'Release and ops pack check',
+        owner: 'Release desk',
+        description: 'Open the SkyDexia release and operations scope to verify the lane owns its rollout and recovery artifacts.',
+        successDetail: 'SkyDexia release and operations pack opened successfully.',
+        summarySteps: [
+          'Open the SkyDexia release and ops workspace pack.',
+          'Confirm deployment, delivery, and operations files are in scope.'
+        ],
+        steps: [
+          { type: 'workspace-pack', packId: 'skydexia-release-ops' }
+        ]
+      },
+      {
+        id: 'skydexia-rollout-plan-check',
+        title: 'Rollout artifact check',
+        owner: 'Release desk',
+        description: 'Generate the rollout plan artifact from inside the lane to prove that release documentation is lane-owned and executable.',
+        successDetail: 'SkyDexia rollout plan artifact generated successfully.',
+        summarySteps: [
+          'Generate the rollout plan artifact.',
+          'Confirm the dated artifact path is returned into the lane.'
+        ],
+        steps: [
+          { type: 'artifact-template', templateId: 'skydexia-rollout-plan' }
+        ]
       }
     ],
     workflowActions: [
@@ -160,6 +220,40 @@ export function getSkyDexiaEnterpriseProfile() {
           { type: 'artifact-template', templateId: 'skydexia-smoke-report' },
           { type: 'runtime-recipe', recipeId: 'skydexia' }
         ]
+      },
+      {
+        id: 'skydexia-release-operations-bridge',
+        label: 'Release operations bridge',
+        description: 'Open the SkyDexia release and operations scope, load the deployment guide, generate the rollout plan, and start the lane runtime.',
+        outcome: 'Operators enter rollout work with the deployment contract, rollout artifact, and runtime already in the lane.',
+        summarySteps: [
+          'Open the SkyDexia release and operations scope.',
+          'Load the deployment systems guide.',
+          'Generate the rollout plan.',
+          'Start the SkyDexia runtime.'
+        ],
+        steps: [
+          { type: 'workspace-pack', packId: 'skydexia-release-ops' },
+          { type: 'file-hint', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/deployment/SKYDEXIA_DEPLOYMENT_SYSTEMS.md' },
+          { type: 'artifact-template', templateId: 'skydexia-rollout-plan' },
+          { type: 'runtime-recipe', recipeId: 'skydexia' }
+        ]
+      },
+      {
+        id: 'skydexia-runtime-incident-desk',
+        label: 'Runtime incident desk',
+        description: 'Load the runtime runbook, generate the incident log, and reopen the preserved SkyDex product as the comparison surface during triage.',
+        outcome: 'Incident handling starts with the exact runbook, evidence file, and preserved product surface ready.',
+        summarySteps: [
+          'Load the runtime runbook.',
+          'Generate the incident log artifact.',
+          'Open current SkyDex for continuity comparison.'
+        ],
+        steps: [
+          { type: 'file-hint', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/ops/SKYDEXIA_RUNTIME_RUNBOOK.md' },
+          { type: 'artifact-template', templateId: 'skydexia-incident-log' },
+          { type: 'launch-target', targetKey: 'currentSkyDex' }
+        ]
       }
     ],
     artifactTemplates: [
@@ -183,6 +277,20 @@ export function getSkyDexiaEnterpriseProfile() {
         path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/delivery/{{TODAY}}-incident-log.md',
         description: 'Create an operator incident log for runtime or lane-shell failures.',
         content: '# {{LANE_TITLE}} Incident Log\n\nDate: {{TODAY}}\nGenerated: {{TIMESTAMP}}\n\n## Incident summary\n-\n\n## Runtime id\n-\n\n## Evidence\n- stdout:\n- stderr:\n- reproduction path:\n\n## Recovery action\n-\n'
+      },
+      {
+        id: 'skydexia-rollout-plan',
+        label: 'Rollout plan',
+        path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/delivery/{{TODAY}}-rollout-plan.md',
+        description: 'Generate a rollout plan for deployment sequence, rollback conditions, and evidence capture.',
+        content: '# {{LANE_TITLE}} Rollout Plan\n\nDate: {{TODAY}}\nGenerated: {{TIMESTAMP}}\n\n## Rollout sequence\n1.\n2.\n3.\n\n## Required evidence\n- Release brief\n- Smoke report\n- Runtime logs\n- Preserved product continuity proof\n\n## Rollback conditions\n-\n\n## Rollback owner\n-\n'
+      },
+      {
+        id: 'skydexia-environment-audit',
+        label: 'Environment audit',
+        path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/delivery/{{TODAY}}-environment-audit.md',
+        description: 'Generate an environment audit sheet for local ports, bridge requirements, and deployment assumptions.',
+        content: '# {{LANE_TITLE}} Environment Audit\n\nDate: {{TODAY}}\nGenerated: {{TIMESTAMP}}\n\n## Runtime contract\n- Port:\n- Launch URL:\n- Workspace root:\n\n## Bridge dependencies\n- /launcher/skycde/workspace\n- /launcher/skycde/file\n- /launcher/skycde/terminal/*\n\n## Review notes\n-\n'
       }
     ],
     preflightChecks: [
@@ -205,6 +313,16 @@ export function getSkyDexiaEnterpriseProfile() {
           'Follow live logs until the service is ready.',
           'Attach the runtime URL and log summary to the smoke report.'
         ]
+      },
+      {
+        title: 'Deployment systems review',
+        owner: 'Release desk',
+        outcome: 'Operators know which runtime, bridge endpoints, local ports, and evidence files are required before rollout.',
+        steps: [
+          'Load the lane-owned deployment systems guide from SkyDexia quick files.',
+          'Confirm local serving, launcher bridge, and evidence expectations are still accurate.',
+          'Generate the environment audit before promotion if anything changed.'
+        ]
       }
     ],
     deliveryStreams: [
@@ -222,9 +340,15 @@ export function getSkyDexiaEnterpriseProfile() {
       },
       {
         name: 'Evidence-backed delivery',
-        status: 'next',
+        status: 'active',
         owner: 'Release desk',
-        outcome: 'Capture smoke, build, and file-change proof for each lane release instead of relying on memory.'
+        outcome: 'Capture smoke, rollout, environment, and file-change proof for every SkyDexia release instead of relying on memory.'
+      },
+      {
+        name: 'Deployment command center',
+        status: 'active',
+        owner: 'Release desk',
+        outcome: 'Keep deployment contract, rollback planning, and incident handling inside SkyDexia instead of external notes.'
       }
     ],
     releaseGates: [
@@ -248,9 +372,15 @@ export function getSkyDexiaEnterpriseProfile() {
       },
       {
         gate: 'Release governance',
-        status: 'in-progress',
-        evidence: 'Program board, runbooks, and verification matrix are now visible inside the lane.',
-        nextAction: 'Wire release evidence artifacts into a dedicated handoff file set.'
+        status: 'ready',
+        evidence: 'Program board, runbooks, deployment guide, release artifacts, and handoff generation now live inside the lane.',
+        nextAction: 'Keep deployment contract current as launcher or runtime assumptions change.'
+      },
+      {
+        gate: 'Deployment discipline',
+        status: 'ready',
+        evidence: 'SkyDexia owns a deployment systems guide, rollout plan template, environment audit, and runtime incident runbook.',
+        nextAction: 'Validate the guide against the real launcher backend during promotion windows.'
       }
     ],
     riskRegister: [
@@ -268,6 +398,11 @@ export function getSkyDexiaEnterpriseProfile() {
         severity: 'medium',
         title: 'Upgrade work loses auditability',
         mitigation: 'Recent action history and verification matrix define the minimum delivery evidence set.'
+      },
+      {
+        severity: 'medium',
+        title: 'Deployment assumptions drift from the lane implementation',
+        mitigation: 'SkyDexia now carries a lane-owned deployment systems guide and environment audit template for every release cycle.'
       }
     ],
     runbooks: [
@@ -279,6 +414,16 @@ export function getSkyDexiaEnterpriseProfile() {
           'Open the lane-owned source files from quick hints and inspect the exact modified modules.',
           'Refresh runtimes, start the target runtime recipe, and verify the live launch URL resolves.',
           'Capture file save paths and runtime logs as the evidence pack for the release note.'
+        ]
+      },
+      {
+        title: 'Deployment command review',
+        trigger: 'Before publishing SkyDexia as a release-ready lane',
+        owner: 'Release desk',
+        steps: [
+          'Load the SkyDexia deployment systems guide and confirm launcher bridge assumptions still match the lane.',
+          'Generate the rollout plan and environment audit so the promotion packet is lane-owned.',
+          'Store the release handoff after validation and runtime proof are complete.'
         ]
       },
       {
@@ -307,6 +452,11 @@ export function getSkyDexiaEnterpriseProfile() {
         name: 'Product preservation proof',
         command: 'Open current SkyDex from primary action',
         evidence: 'Original product remains the reference surface, with SkyDexia acting as the governed upgrade lane.'
+      },
+      {
+        name: 'Deployment contract proof',
+        command: 'Load SKYDEXIA_DEPLOYMENT_SYSTEMS.md and generate rollout/environment artifacts',
+        evidence: 'Deployment assumptions, release sequence, and audit expectations are controlled from inside SkyDexia.'
       }
     ]
   };

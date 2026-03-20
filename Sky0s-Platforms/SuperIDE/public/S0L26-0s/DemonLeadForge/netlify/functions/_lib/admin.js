@@ -1,5 +1,17 @@
 import crypto from 'node:crypto';
 
+const GATE_URL = process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+
+export async function requireGateSession(event) {
+  const token = String(event?.headers?.authorization || '').replace(/^Bearer\s+/i, '').trim();
+  if (!token) return null;
+  try {
+    const res = await fetch(`${GATE_URL}/v1/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+    const body = await res.json().catch(() => ({}));
+    return (res.ok && body.ok) ? body.session : null;
+  } catch { return null; }
+}
+
 function base64url(input) {
   return Buffer.from(input)
     .toString('base64')

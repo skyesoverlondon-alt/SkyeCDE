@@ -8,7 +8,7 @@
   <title>Skyes Over London LC • Contractor Network Console (Neon + Blobs)</title>
 
   <!-- Netlify Identity widget (optional owner login lane) -->
-  <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="/0s-auth-sdk/index.js"></script>
 
   <style>
     :root{
@@ -931,32 +931,25 @@
       function wireIdentity(){
         const btn = el("btnIdentity");
         btn.addEventListener("click", ()=>{
-          if (!window.netlifyIdentity){
-            setToast("opsToast", "<b>Identity widget not loaded</b>", false);
-            return;
-          }
-          window.netlifyIdentity.open();
-        });
-
-        if (window.netlifyIdentity){
-          window.netlifyIdentity.on("login", async (user)=>{
-            postNetlifyForm("admin-login", { mode:"identity", ts:new Date().toISOString(), ua:navigator.userAgent });
-            try{
-              const token = await user.jwt();
-              state.identityToken = token;
-              authMode.textContent = "identity";
-              setToast("adminToast", "<b>Identity login</b>", true);
-              window.netlifyIdentity.close();
-              await adminRefresh();
-            }catch(e){
-              setToast("adminToast", "<b>Identity login failed</b>", false);
+          OmegaAuth.getSession().then(session => {
+            if(session){
+              state.identityToken = OmegaAuth.getToken();
+              authMode.textContent = "0s-gate";
+              setToast("adminToast", "<b>Gate session active</b>", true);
+              adminRefresh();
+            } else {
+              window.location.replace("/0s-auth-sdk/0s-login.html?return_to=" + encodeURIComponent(window.location.href));
             }
           });
-          window.netlifyIdentity.on("logout", ()=>{
-            state.identityToken = "";
-            if (!state.adminToken) authMode.textContent = "none";
-          });
-        }
+        });
+
+        // Auto-wire if a gate session is already present
+        OmegaAuth.getSession().then(session => {
+          if(session && !state.identityToken){
+            state.identityToken = OmegaAuth.getToken();
+            authMode.textContent = "0s-gate";
+          }
+        });
       }
 
       el("intakeForm").addEventListener("submit", submitIntake);

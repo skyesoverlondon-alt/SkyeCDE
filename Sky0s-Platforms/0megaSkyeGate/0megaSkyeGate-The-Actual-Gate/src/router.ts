@@ -29,6 +29,7 @@ import { handleBrainsList, handleBrainsResolve } from './routes/brains'
 import { handleKeysIssue } from './routes/keys-issue'
 import { handleKeysList } from './routes/keys-list'
 import { handleKeysRevoke } from './routes/keys-revoke'
+import { handleAuthLogin, handleAuthLogout, handleAuthMe } from './routes/auth'
 
 export async function routeRequest(request: Request, env: Env): Promise<Response> {
   try {
@@ -38,6 +39,11 @@ export async function routeRequest(request: Request, env: Env): Promise<Response
 
     // ── Inference lanes ────────────────────────────────────────────────────────
     if (path === '/v1/health' && method === 'GET') return await handleHealth(request, env)
+
+    // ── Unified session auth ───────────────────────────────────────────────────────────
+    if (path === '/v1/auth/login'  && method === 'POST') return await handleAuthLogin(request, env)
+    if (path === '/v1/auth/logout' && method === 'POST') return await handleAuthLogout(request, env)
+    if (path === '/v1/auth/me'     && method === 'GET')  return await handleAuthMe(request, env)
     if (path === '/v1/models' && method === 'GET') return await handleModels(request, env)
     if (path === '/v1/chat' && method === 'POST') return await handleChat(request, env)
     if (path === '/v1/stream' && method === 'POST') return await handleStream(request, env)

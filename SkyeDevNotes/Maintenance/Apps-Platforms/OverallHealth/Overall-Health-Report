@@ -1,0 +1,703 @@
+SKY0S PLATFORMS — END-TO-END HEALTH REPORT
+Generated: SkyeCDE Platform Scan | All 15 platforms under /Skye0s-s0l26/Sky0s-Platforms/
+Companion File: /SkyeDevNotes/Maintenance/Apps-Platforms/Catalog
+================================================================================
+
+LEGEND
+  ✅ PASS       — Fully compliant / no issues found
+  ⚠️  WARN       — Issue present but not blocking / minor degradation
+  ❌ FAIL       — Broken, non-compliant, or security risk requiring action
+  🔒 SECURITY   — Security-specific finding requiring immediate priority
+  🔄 MIGRATE    — Requires migration effort to reach full compliance
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+Total platforms scanned:         15
+Gateway compliant:                6  (0megaSkyeGate endpoint present)
+Gateway non-compliant:            7  (no 0megaSkyeGate reference)
+Partially compliant:              2  (mixed old + new endpoints)
+Security criticals:               1  (live key committed to git)
+Legacy endpoint files remaining: 16+ files across 2 platforms
+Platforms with no AI (exempt):    8  (static/commerce only)
+
+================================================================================
+GATEWAY COMPLIANCE MATRIX
+================================================================================
+
+  Platform                        | Gateway Compliant | Notes
+  --------------------------------|-------------------|---------------------------
+  0megaSkyeGate                   | ✅ IS the gate    | Source of truth
+  Kaixu67                         | ⚠️  MOSTLY        | 3 legacy HTML files remain
+  KaixuSuper-IDE                  | ❌ NON-COMPLIANT   | All calls via kaixusi legacy worker
+  SkaixuPro-IDE                   | ✅ YES            | 🔒 LIVE KEY in .env
+  SkyDex                          | ⚠️  MOSTLY        | ai-agent.js updated; 1 URL in allowlist
+  SkyErrors / kAIxU-Brain         | ⚠️  MOSTLY        | Core updated; templates have legacy refs
+  SkyeBundle                      | ✅ USER-CONFIG    | Endpoint set by user per tool
+  SkyeCDE                         | ✅ N/A            | CDE placeholder; not an app
+  SkyeHubs                        | ✅ N/A (no AI)    | Commerce only; no AI calls
+  SkyeMail2.0                     | ⚠️  VERIFY        | AI assist endpoint not confirmed in scan
+  SkyeSpace                       | ✅ N/A (no AI)    | Static community UI
+  Skye_platform_foundry_pack      | ✅ N/A (no AI)    | Template library; no AI
+  SovereignPrimitives             | ✅ N/A (no AI)    | Design system; no AI
+  SuperIDE                        | ❌ PARTIAL        | kaixu_brain.ts env-var dep + 14+ legacy files
+  ChromeBoards                    | ✅ N/A (no AI)    | Launcher PWA; no AI
+
+================================================================================
+PLATFORM 1: 0megaSkyeGate / 0megaSkyeGate-The-Actual-Gate
+================================================================================
+Path: Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate/
+
+GATEWAY COMPLIANCE: ✅ IS THE GATEWAY
+
+FUNCTIONALITY SCAN:
+  ✅ Router (src/router.ts) — routes defined for all major AI modalities
+  ✅ Auth guard (src/auth/verifyAppToken.ts + verifyAdminToken.ts) — dual-layer auth
+  ✅ Policy guard (src/auth/policyGuard.ts) — per-token policy enforcement
+  ✅ Provider adapters — openai, anthropic, gemini adapters present
+  ✅ Ledger system — creditWallet, debitWallet, finalizeUsage, reserveBudget, refundUsage
+  ✅ DB schema (src/db/schema.sql) — D1 tables for tokens, wallets, usage
+  ✅ Error pipeline — utils/errors.ts + skye-errors-sdk.mjs hooked in
+  ✅ Smoke test entry in wrangler.toml
+
+CODE/BUG SCAN:
+  ⚠️  GatewayUpgrades/sky-currency-additive-pack/ — older scaffold copy still present
+       in the repo alongside the live gate. Confirm this is intentionally archived
+       and not accidentally deployed (wrangler.jsonc vs wrangler.toml).
+  ✅ No hardcoded provider secrets found in source (uses env bindings)
+  ✅ src/db/seed.sql exists — manual seeding step documented
+  ⚠️  No automated migration runner — schema.sql must be applied manually via
+       wrangler d1 execute on deploy; no CI step guards this
+
+UI/BUTTON ISSUES:
+  N/A — This is a Cloudflare Worker (no UI). Smokehouse HTML panel (smoke
+  tests) is in adjacent SkyErrors platform.
+
+ACTION ITEMS:
+  [ ] Confirm GatewayUpgrades pack is archived, not a live deployment target
+  [ ] Add wrangler d1 execute to CI/CD pipeline so schema is always applied
+
+================================================================================
+PLATFORM 2: ChromeBoards-ChromeBook-Launchers
+================================================================================
+Path: Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/
+
+GATEWAY COMPLIANCE: ✅ N/A — No AI calls; static PWA launcher
+
+FUNCTIONALITY SCAN:
+  ChromeBoard-MVP:
+    ✅ index.html + manifest.webmanifest + sw.js — complete PWA structure
+    ✅ icons/ present (icon-192.png, icon-512.png)
+    ⚠️  No backend — fully client-side; no auth, no data persistence beyond localStorage
+
+  ChromeBoard-Pro:
+    ✅ index.html + manifest.webmanifest + sw.js
+    ✅ chromeboard-import-helper-extension/ — Chrome extension (background.js,
+         popup.html, popup.js, options.html, options.js, manifest.json)
+    ✅ Extension manifest.json present
+
+  ChromeBoard-MaxPro:
+    ✅ Same structure as Pro + chromeboard-easy-import/ added
+    ✅ app.js (main app logic) present
+    ✅ Extension folder mirrors Pro
+
+CODE/BUG SCAN:
+  ⚠️  sw.js service workers across all three variants — confirm cache version
+       strings are updated on release (stale cache is the #1 PWA regression)
+  ⚠️  No version control within Chrome extension manifest — extension updates
+       require manual version bump in manifest.json before Chrome Web Store submission
+  ✅ No sensitive keys found in any file
+
+UI/BUTTON ISSUES:
+  ⚠️  Static scan cannot confirm button behavior — functional browser test
+       required to verify all click handlers in index.html / app.js fire correctly
+  ⚠️  ChromeBoard-Pro has no app.js (only index.html) — all logic must be
+       inline in HTML; confirm no broken onclick handlers
+
+ACTION ITEMS:
+  [ ] Verify sw.js cache VERSION constant is incremented on build
+  [ ] Manual browser test: ChromeBoard-Pro button events (no external JS)
+  [ ] Bump extension manifest.json version before any app store publish
+
+================================================================================
+PLATFORM 3: Kaixu67
+================================================================================
+Path: Sky0s-Platforms/Kaixu67/
+
+GATEWAY COMPLIANCE: ⚠️ MOSTLY COMPLIANT — 3 legacy files remain
+
+FUNCTIONALITY SCAN:
+  ✅ 70/73 HTML tool pages updated to use OMEGA_GATE_URL pattern:
+       window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL')
+       || 'https://0megaskyegate.skyesoverlondon.workers.dev'
+  ❌ Legacy files still using old endpoints:
+       - gateway.html       → references skyesol.netlify or kaixu67.skyesoverlondon directly
+       - smokekai.html      → legacy smoke test pointing to old gateway
+       - smokecoveragekai.html → legacy smoke test
+  ✅ _headers file present — Netlify security headers applied
+
+CODE/BUG SCAN:
+  ⚠️  No shared utility JS — each HTML file is self-contained and duplicates
+       the OMEGA_GATE_URL detection pattern. If URL changes again, all 73 files
+       need updating. Recommend extracting to shared config snippet.
+  ✅ No hardcoded API keys found in scan
+  ⚠️  token passed from localStorage — if user never sets token, all AI calls
+       fail silently. Tools should show visible "no token configured" error state.
+
+UI/BUTTON ISSUES:
+  ⚠️  Each tool page is self-contained — UI button behavior cannot be
+       verified without browser rendering. Primary risk: "Generate" button
+       fires silently if endpoint/token not set (silent failure, no user feedback)
+  ⚠️  gateway.html "Test Connection" button likely fails (points to legacy endpoint)
+  ⚠️  smokekai.html smoke buttons will fail against old URL
+
+ACTION ITEMS:
+  ❌ MIGRATE: gateway.html, smokekai.html, smokecoveragekai.html → update to OMEGA_GATE_URL
+  [ ] Add visible empty-state UI when OMEGA_GATE_URL or token not set
+  [ ] Extract OMEGA_GATE_URL pattern into shared _shared/config.js
+
+================================================================================
+PLATFORM 4: KaixuSuper-IDE-(Internal Gate)
+================================================================================
+Path: Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/
+
+GATEWAY COMPLIANCE: ❌ NON-COMPLIANT — all AI routes through kaixusi legacy worker
+
+FUNCTIONALITY SCAN:
+  ✅ Core IDE HTML pages present: ide.html, index.html, homelanding.html,
+       kaixu-admin.html, dpa.html, investor-trust.html
+  ✅ JS modules present: app.js, admin.js, editor.js, explorer.js, github.js,
+       commands.js, collab.js, diff.js, db.js, demo.js, ui.js, snippets.js
+  ✅ Service worker (sw.js) present for offline support
+  ✅ Security and legal pages: security.html, security.md, sla.html,
+       terms.html, privacy.html, subprocessors.html
+  ✅ Status page (status.html) + smoke tests (smoke-live.html, smoketest.html)
+
+CODE/BUG SCAN:
+  ❌ app.js and AI functions call through /.netlify/functions/ layer, which
+       routes to kaixusi Cloudflare Worker — the old, pre-unification gateway
+  ❌ xnthgateway/ folder contains old gateway spec/smoke tests pointing to legacy URLs
+  ❌ worker/wrangler.toml deploys kaixusi worker — this worker was not migrated
+       and still makes direct provider calls (OpenAI/Anthropic/Gemini API)
+  ⚠️  About 2,500+ lines in app.js — monolithic; tight coupling between
+       IDE panels, AI calls, and workspace state makes gateway migration risky
+       without full integration testing
+  ⚠️  homelanding.html — has hard-coded nav links to legacy platform URLs
+  ⚠️  jszip.min.js — third-party library bundled directly in root; no SRI hash
+  ⚠️  outline.js, problems.js — loaded globally; verify these are used (possible
+       dead code from earlier IDE iterations)
+  ✅ manifest.json PWA config present
+  ✅ No committed secrets found (Netlify env vars used for tokens)
+
+UI/BUTTON ISSUES:
+  ⚠️  "AI Edit" functions in IDE depend on /.netlify/functions/ai-edit-run-background
+       — if this function is not deployed, the AI edit button silently fails
+  ⚠️  "Deploy" button calls Netlify webhook — webhook URL must be set in env;
+       if absent, button fires but nothing deploys (no visible error state)
+  ⚠️  Smoke test buttons in smoketest.html and smoke-live.html point to
+       kaixusi worker directly; they will fail if kaixusi is deprecated
+
+ACTION ITEMS:
+  ❌ MIGRATE (HIGH PRIORITY): Replace kaixusi calls in app.js and Netlify
+       functions with 0megaSkyeGate endpoint
+  ❌ MIGRATE: worker/wrangler.toml → deploy kaixusi worker updated to proxy
+       through 0megaSkyeGate (or retire kaixusi entirely)
+  [ ] Migrate smoke test pages to point at 0megaSkyeGate smokehouse
+  [ ] Add error UI feedback when AI or deploy webhook is unavailable
+  [ ] Add SRI hash to jszip.min.js
+
+================================================================================
+PLATFORM 5: SkaixuPro-IDE
+================================================================================
+Path: Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/
+
+GATEWAY COMPLIANCE: ✅ COMPLIANT (env-var based) | 🔒 CRITICAL SECURITY ISSUE
+
+FUNCTIONALITY SCAN:
+  ✅ 30+ sub-tool modules present (GodCode, GodKode, DevProof Lab, KaiPrompt,
+       SkyeVault, PlanItPro, Nexus Forge Studio, GodNodes, Neural-Space-Pro,
+       SkyeDocx, SkyeBox, SkyeKnife, NexusDBExplorer, PWA Factory, etc.)
+  ✅ DevProof Lab has Netlify Functions for diagnostic logging
+  ✅ SkyeVault has Netlify Functions for vault operations
+  ✅ Nexus Forge Studio has dist/ build output
+
+CODE/BUG SCAN:
+  🔒 CRITICAL: Live API key committed in .env file:
+       KAIXU_VIRTUAL_KEY=sk_live_REDACTED_ROTATE_THIS_KEY
+       → ROTATE IMMEDIATELY. Remove from git history with git filter-repo.
+  ❌ LOCALHOST HARDCODES found across production files:
+       skAIxuide/diagnostics.html, SmartIDE.html, index.html
+       skriptx/index.html, skyeuipro/index.html
+       GodCode/GodCode.html, GodCode/index.html
+       KaiPrompt/index.html, PlanItPro/PlanItPro.html
+       SkyeVault/index.html, skyeportal/index.html
+       GodKode/index.html, Webby/Webby.html
+       skriptxdataalchemist/index.html, PWA Factory/index.html
+       kaixumagic/index.html, SkyeView-Red/index.html
+       These files reference http://localhost:* API endpoints that will fail in production
+  ⚠️  THE SOLE NETWORK/Editorials/Elite/FounderOpx1.html → legacy gateway URL present
+  ⚠️  Some modules appear duplicated (GodNodes has G0dN0de2.4 and GodN0dePro2)
+       — unclear which version is canonical
+
+UI/BUTTON ISSUES:
+  ❌ Any AI-powered button in files with localhost:* hardcodes will fail in production
+       — user will see network errors or no response when submitting prompts
+  ⚠️  Modules that lack README or deploy config may not be deployed or may be
+       orphaned dev artifacts
+
+ACTION ITEMS:
+  🔒 IMMEDIATE: Rotate KAIXU_VIRTUAL_KEY (invalidate sk_live_xfs4f5...)
+  🔒 IMMEDIATE: Remove .env from git history (git filter-repo --path .env --invert-paths)
+  ❌ Replace all localhost:* hardcodes with env-var-based BASE_URL
+  [ ] Audit G0dN0de2.4 vs GodN0dePro2 — retire the deprecated version
+  [ ] Update THE SOLE NETWORK legacy gateway ref
+
+================================================================================
+PLATFORM 6: SkyDex
+================================================================================
+Path: Sky0s-Platforms/SkyDex/SkyDex4_fixed/
+
+GATEWAY COMPLIANCE: ⚠️ MOSTLY COMPLIANT
+
+FUNCTIONALITY SCAN:
+  ✅ index.html — main DEX UI
+  ✅ netlify/functions/ai-agent.js — AI agent updated to use 0megaSkyeGate:
+       kaixu67Base = "https://0megaskyegate.skyesoverlondon.workers.dev"
+  ✅ netlify/functions/skymail-send.js — email function
+  ✅ _shared/auth-unlock.js + standalone-session.js — auth helpers
+  ⚠️  "needed upgrades" file present — upgrade backlog documented in-repo
+  ⚠️  .patch-backups/ folder with patched versions of index.html and ai-agent.js
+       → backup from patch on 2026-03-16; confirm the live files are the correct
+       current version and backups can be archived
+
+CODE/BUG SCAN:
+  ⚠️  ai-agent.js retains kaixu67.skyesoverlondon.netlify.app in a verify
+       allowlist — this is a legacy URL and should be removed from the allowlist
+       to prevent fallback to the old endpoint
+  ⚠️  skymail-send.js — relies on SMTP/email env vars not visible in this repo;
+       if env vars not set in Netlify, all email sends will fail silently
+  ✅ No committed secrets found
+
+UI/BUTTON ISSUES:
+  ⚠️  DEX trade/list UI in index.html is static-scan only; cannot confirm
+       whether "List Asset" and "Execute Trade" buttons call functions correctly
+  ⚠️  AI Assistant panel (if present in index.html) will be non-functional if
+       ai-agent.js Netlify function is not deployed
+
+ACTION ITEMS:
+  [ ] Remove kaixu67.skyesoverlondon.netlify.app from ai-agent.js allowlist
+  [ ] Archive .patch-backups/ folder (move to artifacts or delete)
+  [ ] Confirm SMTP env vars are set in Netlify for skymail-send.js
+
+================================================================================
+PLATFORM 7: SkyErrors / kAIxU-Brain
+================================================================================
+Path: Sky0s-Platforms/SkyErrors/kAIxU-Brain/
+
+GATEWAY COMPLIANCE: ⚠️ MOSTLY COMPLIANT (core updated; templates have legacy refs)
+
+FUNCTIONALITY SCAN:
+  ✅ src/index.js — Cloudflare Worker; brain routing updated to 0megaSkyeGate
+  ✅ scripts/ — build-evidence-bundle.mjs, contract-test.mjs, generate-sbom.mjs,
+       quality-gates.mjs, weekly-ops.mjs, setup-skye-errors.sh, verify-smoke.sh
+  ✅ skye-errors/schema.sql — D1 schema for error event tracking
+  ✅ smokehouse-standalone.html — smoke test HTML panel
+  ✅ Docs: CLIENT_HANDOFF_CHECKLIST.md, README.md, docs/skye-errors.md
+  ✅ CODEOWNERS, SECURITY.md, dependabot.yml — governance docs present
+
+CODE/BUG SCAN:
+  ⚠️  .dev.vars.template — contains kaixu67.skyesoverlondon.netlify.app as
+       legacy gateway URL; update to 0megaSkyeGate URL in template comment
+  ⚠️  ENV.template — same legacy URL; update comment/default
+  ⚠️  smokehouse-standalone.html — references localhost in smoke test panel;
+       update to point at live 0megaSkyeGate smokehouse endpoint
+  ✅ No committed secrets (uses .dev.vars pattern correctly)
+  ✅ .gitignore excludes .dev.vars
+  ⚠️  weekly-ops.mjs — cron-style ops script; verify it is triggered via CF Cron
+       Trigger and not expected to run as a Node cron (incompatible with Workers)
+
+UI/BUTTON ISSUES:
+  ⚠️  smokehouse-standalone.html "Run Smoke" button will fail if configured with
+       localhost URL; update target to 0megaSkyeGate /smokehouse route
+  ✅ No other UI panels detected
+
+ACTION ITEMS:
+  [ ] Update .dev.vars.template and ENV.template → replace legacy gateway URLs
+  [ ] Update smokehouse-standalone.html → point at live gate /smokehouse endpoint
+  [ ] Confirm weekly-ops.mjs is invoked via CF Cron Trigger, not standalone Node
+
+================================================================================
+PLATFORM 8: SkyeBundle
+================================================================================
+Path: Sky0s-Platforms/SkyeBundle/
+
+GATEWAY COMPLIANCE: ✅ USER-CONFIGURED (no hardcoded URL — by design)
+
+FUNCTIONALITY SCAN:
+  ✅ All 15 tools present with consistent structure:
+       index.html, app.js, style.css, manifest.webmanifest, sw.js, assets/
+  ✅ Each tool reads endpoint URL and bearer token from user-configured settings
+       stored in localStorage (no hardcoded gateway) — correct design pattern
+  ✅ PWA installable on all tools (manifest + service worker)
+
+CODE/BUG SCAN:
+  ⚠️  Endpoint is fully user-controlled — no default gateway URL provided. If a
+       user doesn't configure the endpoint, all AI calls fail silently.
+       Recommend pre-populating default to 0megaSkyeGate URL with a "try it out"
+       no-token mode or clear onboarding prompt.
+  ⚠️  No input sanitization visible in app.js fetch call (app.js line: const res
+       = await fetch(endpoint, {...}) — endpoint is raw user input). If a user
+       enters a malicious URL, it executes. Add URL validation before fetch.
+  ✅ No committed secrets
+  ✅ Service workers present (offline-capable)
+  ⚠️  15 separate sw.js files — cache version strings must be bumped per tool
+       per release to avoid stale cache regression
+
+UI/BUTTON ISSUES:
+  ⚠️  "Run" / "Generate" buttons will silently do nothing if endpoint field is blank
+  ⚠️  Settings UI to enter endpoint/token must be clearly labeled — verify it is
+       discoverable (not buried in a dropdown users will miss)
+  ✅ Each tool is single-purpose — button scope is narrow and easy to test
+
+ACTION ITEMS:
+  [ ] Pre-populate endpoint default to 0megaSkyeGate URL in each app.js
+  [ ] Add URL validation before fetch (reject non-https or localhost in prod)
+  [ ] Add visible "no endpoint configured" warning state on load
+  [ ] Bump sw.js cache version strings as part of release process
+
+================================================================================
+PLATFORM 9: SkyeCDE
+================================================================================
+Path: Sky0s-Platforms/SkyeCDE/
+
+GATEWAY COMPLIANCE: ✅ N/A (CDE placeholder)
+
+Note: This folder is intentionally empty. The CDE is the outer Theia/VS Code
+codespace workspace. No functionality to scan.
+
+================================================================================
+PLATFORM 10: SkyeHubs
+================================================================================
+Path: Sky0s-Platforms/SkyeHubs/
+
+GATEWAY COMPLIANCE: ✅ N/A — Commerce/booking platform; no AI calls
+
+FUNCTIONALITY SCAN:
+  Root SkyeHubs (main hub):
+    ✅ index.html, admin.html, host.html, cohost.html, portal.html, request.html
+    ✅ Netlify Functions: create-checkout.js, finalize-checkout.js, approve-cohost.js
+     ✅ Legacy client config file was removed during the server-session migration
+    ✅ PWA: manifest.webmanifest + sw.js
+
+  Mobile Detailing sub-hub:
+    ✅ index.html, admin.html, client.html, caregiver.html, portal.html, request.html
+    ✅ cancel.html, success.html — Stripe flow complete
+    ✅ Netlify Functions: approve-detailer.js, create-checkout.js, finalize-checkout.js
+    ✅ PWA: manifest.webmanifest + sw.js
+
+  NobleSoles sub-hub:
+    ✅ Same structure as Mobile Detailing (approve-caregiver instead of approve-detailer)
+    ✅ All pages and functions present
+
+CODE/BUG SCAN:
+  ⚠️  Across all three hubs, deployment now depends on backend env vars being
+       present for session auth, Neon/Postgres access, and Stripe finalization.
+       If those are absent, auth, approvals, and real-time-style state refresh
+       paths fail.
+  ⚠️  Stripe webhook secret (STRIPE_WEBHOOK_SECRET) must be set in Netlify env.
+       If absent, finalize-checkout.js will fail to verify webhook events —
+       payments may be processed but not finalized, leading to data inconsistencies.
+  ⚠️  No loading state or error message visible in static scan for the "Book Now"
+       / "Request Service" button paths — if Stripe checkout fails, user may see
+       a blank redirect or unhandled error
+  ✅ No committed secrets found
+
+UI/BUTTON ISSUES:
+  ⚠️  "Book Now" button → create-checkout.js → Stripe hosted checkout.
+       If STRIPE_SECRET_KEY not set, checkout creation returns 500 with no
+       user-facing error message
+  ⚠️  Admin approval buttons depend on the server auth and database lane being
+       configured correctly. If backend env is missing, approvals fail.
+  ⚠️  "Host a Hub" / "Become a Caregiver" flows need real-world end-to-end test
+       to verify full Stripe → session auth → database confirmation chain completes
+
+ACTION ITEMS:
+  [ ] Verify STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET are set in all Netlify envs
+     [ ] Verify required auth/database env vars are configured in Netlify settings
+  [ ] Add user-facing error state when checkout fails (Stripe redirect error page)
+  [ ] End-to-end test: full booking flow across all three hub variants
+
+================================================================================
+PLATFORM 11: SkyeMail2.0
+================================================================================
+Path: Sky0s-Platforms/SkyeMail2.0/
+
+GATEWAY COMPLIANCE: ⚠️ VERIFY — AI endpoint in ai.html not confirmed in static scan
+
+FUNCTIONALITY SCAN:
+  ✅ 20 HTML pages: index, login, signup, dashboard, message, thread, send, keys,
+       audit, siem, sessions, org, verify, forgot, reset, accept-invite,
+       sso, procurement, founder, ai
+  ✅ 40+ Netlify Functions covering: auth (login/signup/logout/reset/verify),
+       messages, threads, org management, SIEM, SSO (OIDC + SAML), audit,
+       key management, SMTP ingest, DLP, KMS, SCIM, RBAC
+  ✅ sql/ folder — Postgres schema present
+  ✅ .well-known/security.txt — security disclosure contact present
+  ✅ trust/ folder — compliance docs
+  ✅ tests/ + tests/fixtures/ — test infrastructure present
+
+CODE/BUG SCAN:
+  ⚠️  ai.html AI drafting function — static scan cannot confirm which AI endpoint
+       it calls. Must verify it routes to 0megaSkyeGate and not a legacy endpoint.
+  ✅ _db.js — database abstraction layer present
+  ✅ _kms.js — KMS layer present
+  ✅ _dlp.js — DLP layer present
+  ✅ _rbac.js — RBAC enforcement layer
+  ✅ _siem.js — SIEM event collection
+  ✅ _hybrid.js — hybrid encryption helper
+  ✅ _orgauth.js — org-level auth middleware
+  ⚠️  SAML/OIDC SSO functions (sso-saml-acs, sso-oidc-callback) require
+       SAML_SP_PRIVATE_KEY_PEM and OIDC secrets in env. If not set, SSO login
+       pages will render but form submissions fail with 500.
+  ⚠️  smtp-ingest.js — incoming SMTP ingest requires inbound email routing
+       configuration (Netlify does not handle this natively). Verify Resend
+       or Postmark webhook is configured to forward inbound mail.
+
+UI/BUTTON ISSUES:
+  ⚠️  SSO login button → if SSO env vars not configured, clicking SSO login
+       produces a server 500 with no user-facing error
+  ⚠️  "Send encrypted message" flow depends on cryptoVault.js browser-side
+       encryption. If recipient's key is not in keyring, send will likely fail
+       or send unencrypted — verify error handling
+  ⚠️  "Export vault" button in vault-export function — test that ZIP is
+       properly generated and downloaded (binary response from Netlify function)
+  ✅ Login and signup forms have standard server-side validation via Netlify functions
+
+ACTION ITEMS:
+  [ ] Inspect ai.html JS — confirm AI endpoint points to 0megaSkyeGate
+  [ ] Verify SSO env vars are set (SAML_SP_PRIVATE_KEY_PEM, OIDC secrets)
+  [ ] Verify inbound SMTP ingest routing is configured externally
+  [ ] Test vault-export binary download across browsers
+  [ ] Test "send encrypted" flow when recipient key not found
+
+================================================================================
+PLATFORM 12: SkyeSpace
+================================================================================
+Path: Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/
+
+GATEWAY COMPLIANCE: ✅ N/A — No AI calls; static community platform
+
+FUNCTIONALITY SCAN:
+  ✅ 12 community pages + index: academy, council, districts, forge, market,
+       messages, muse, profile, signal, stage, studio, vaults
+  ✅ Per-page JS modules: js/page-academy.js ... js/page-vaults.js
+  ✅ Shell navigation: js/shell.js
+  ✅ State management: js/state.js
+  ✅ Static data layer: js/data.js
+  ✅ Background effects: js/background-injector.js
+  ✅ CSS: css/base.css + css/pages.css
+
+CODE/BUG SCAN:
+  ⚠️  data.js is a static/mock data layer — community features (posts, listings,
+       votes) are not persisted. User actions reset on page reload.
+  ⚠️  js/state.js — if state is stored in memory only (no localStorage), all
+       user state is lost on navigation between pages (typical SPA problem in
+       static multi-page architecture)
+  ⚠️  messages.html + js/page-messages.js — messaging is likely mock/local only;
+       no backend detected for real message delivery
+  ✅ No hardcoded API keys or secrets
+  ⚠️  background-injector.js — canvas/CSS animation; on low-end devices this can
+       cause frame drops. Consider prefers-reduced-motion media query.
+
+UI/BUTTON ISSUES:
+  ⚠️  "Send Message" button — data.js is mock; messages don't persist or deliver
+  ⚠️  "Vote" / "Propose" in council.html — if action writes to state.js in memory,
+       votes are lost on page reload
+  ⚠️  "List in Market" / "Browse" in market.html — same static data issue
+  ⚠️  Navigation links in shell.js — verify all 12 page links resolve correctly
+       (no broken hrefs)
+
+ACTION ITEMS:
+  [ ] Wire messages, voting, and marketplace actions to a real backend (Netlify
+     Functions + Neon Postgres when leaving MVP
+  [ ] Add prefers-reduced-motion check to background-injector.js
+  [ ] Verify all nav shell links resolve to correct pages
+
+================================================================================
+PLATFORM 13: Skye_platform_foundry_pack
+================================================================================
+Path: Sky0s-Platforms/Skye_platform_foundry_pack/
+
+GATEWAY COMPLIANCE: ✅ N/A — Template library; no AI calls in base templates
+
+FUNCTIONALITY SCAN:
+  ✅ 6 template platforms: skyecircuit, skyeflux, skyemuse, skyescene, skyetown
+       + index.html hub
+  Each template has:
+    ✅ index.html
+    ✅ css/platform.css
+    ✅ js/platform.js
+    ✅ js/background-injector.js
+    ✅ Multiple content pages (guilds, labs, salons, etc. per template)
+
+CODE/BUG SCAN:
+  ⚠️  All templates use static/mock data — they are blueprint scaffolds.
+       No backend code exists in templates (by design)
+  ⚠️  background-injector.js appears in every template — verify it is a shared
+       include and not 6 slightly diverged copies. If copies exist, a bug fix
+       would need to be applied to all 6.
+  ✅ No secrets, no API keys, no gateway calls
+  ⚠️  index.html hub page links to sub-template pages — verify all links are
+       relative and resolve correctly when serving from any subdomain
+
+UI/BUTTON ISSUES:
+  ⚠️  All CTA buttons in templates (Join Guild, Browse Lab, etc.) lead to
+       placeholder states — no real action wired. By design for templates,
+       but must wire up before deploying as live platforms.
+
+ACTION ITEMS:
+  [ ] Audit background-injector.js — if 6 diverged copies exist, consolidate
+       into one shared file and symlink or CDN reference
+  [ ] Document which template links still need wiring in each platform before live deploy
+
+================================================================================
+PLATFORM 14: SovereignPrimitives
+================================================================================
+Path: Sky0s-Platforms/SovereignPrimitives/
+
+GATEWAY COMPLIANCE: ✅ N/A — Design system; no AI calls
+
+FUNCTIONALITY SCAN:
+  ✅ index.html — component showcase page
+  ✅ app.js — interactive component demo logic
+  ✅ styles.css — design tokens and base styles
+  ✅ README.md — usage documentation
+
+CODE/BUG SCAN:
+  ✅ Minimal surface area — 4 files only
+  ✅ No secrets or API calls
+  ⚠️  styles.css design tokens not validated against what other platforms
+       actually import. Run a grep of all platform CSS files for 'SovereignPrimitives'
+       to confirm adoption. If no platforms import it, it may be unused.
+
+UI/BUTTON ISSUES:
+  ⚠️  Component interactions in index.html/app.js — behavior is demo-only;
+       not wired to real platform logic
+
+ACTION ITEMS:
+  [ ] Verify at least one downstream platform imports SovereignPrimitives styles
+  [ ] Update README.md with integration instructions if not present
+
+================================================================================
+PLATFORM 15: SuperIDE
+================================================================================
+Path: Sky0s-Platforms/SuperIDE/
+
+GATEWAY COMPLIANCE: ❌ PARTIALLY NON-COMPLIANT
+
+FUNCTIONALITY SCAN:
+  ✅ Netlify Functions (20+): generation, streaming, chat, auth, deploy, export,
+       billing, events, health, IDE file ops — comprehensive backend
+  ✅ 50+ public sub-platform apps (kAIxU-*, SkyeDrive, Neural-Space-Pro, etc.)
+  ✅ DB schema: Neon Postgres (orgs, users, sessions, workspaces, audit_events,
+       integrations, org_memberships, org_invites)
+  ✅ Worker: kaixu-superide-runner (Cloudflare Worker)
+  ✅ Docker folder for local Postgres proxy
+
+CODE/BUG SCAN:
+  ❌ kaixu-generate-stream.ts — normalizeKaixuGatewayEndpoint() fallback chain:
+       if KAIXU_GATEWAY_ENDPOINT is not set, returns:
+       "https://skyesol.netlify.app/.netlify/functions/gateway-chat"
+       This is a BROKEN FALLBACK. skyesol.netlify.app is a decommissioned domain.
+       All streaming AI calls fail if env var is absent.
+  ❌ netlify/functions/_shared/kaixu_brain.ts — same broken fallback (two
+       occurrences). Any AI generation that falls through to default BREAKS silently.
+  ❌ DEVV ONLY NO GIT/SuperIDEv2 ENV LAUNCH CHECKLIST.md — references
+       KAIXU_GATEWAY_ENDPOINT=https://skyesol.netlify.app/... — dev checklist
+       is actively misleading, pointing to wrong endpoint
+  ⚠️  14+ sub-platform HTML files in /public/ still contain skyesol.netlify.app
+       as a navigation link (not an API call, but brand/link integrity issue):
+       kAIxU-Quest, kAIxu-Nexus, kAIxu-Forge, kAIxu-Cinematic, Skye-ID,
+       kAIxU-PrimeCommand, kAIxU-Codex, kAIxu-Atmos, kAIxU-Matrix, kAIxu-Chronos
+  ⚠️  worker/src/index.ts — legacy refs; confirm this runner still provides
+       KX_SECRETS_KV and KX_EVIDENCE_R2 access and is not redundant after
+       0megaSkyeGate launch
+  ⚠️  src/App.tsx — legacy URL refs; verify these are nav links only, not API endpoints
+  ⚠️  SkyDex4.6 embedded in /public/ — appears to be a copy of the SkyDex platform;
+       confirm it receives the same gateway updates as standalone SkyDex
+
+UI/BUTTON ISSUES:
+  ❌ "AI Generate" and "AI Stream" buttons → if KAIXU_GATEWAY_ENDPOINT env var
+       is not set in Netlify, all AI generation silently fails (broken fallback URL)
+  ⚠️  "Deploy to Netlify" button → depends on Netlify API key in env;
+       if absent, deploy fires but 401s with no user feedback
+  ⚠️  "SkyesOL" navigation links in 10+ sub-platform files → link is dead
+       (skyesol.netlify.app is decommissioned)
+  ⚠️  "Recover Account" page at /public/recover-account/ — verify auth flow
+       is fully wired through the Netlify function layer
+
+ACTION ITEMS:
+  ❌ CRITICAL: Update kaixu_brain.ts and kaixu-generate-stream.ts default
+       fallback to 0megaSkyeGate URL (not skyesol.netlify.app)
+  ❌ Update SuperIDEv2 ENV LAUNCH CHECKLIST.md → correct gateway URL
+  [ ] Remove/update dead skyesol.netlify.app links in 10+ sub-platform pages
+  [ ] Confirm KAIXU_GATEWAY_ENDPOINT is set in Netlify environment settings
+  [ ] Audit worker/src/index.ts — determine if kaixu-superide-runner is still
+       needed or if 0megaSkyeGate handles its now-retired functions
+  [ ] Verify recover-account auth function is deployed and functional
+
+================================================================================
+CRITICAL ACTIONS — PRIORITIZED
+================================================================================
+
+🔒 P0 — SECURITY (Do THIS NOW):
+  1. Rotate KAIXU_VIRTUAL_KEY (sk_live_REDACTED_ROTATE_THIS_KEY)
+     Platform: SkaixuPro-IDE
+     Action:   Invalidate the key in your LLM provider dashboard, issue a new key,
+               update Netlify env, and purge from git history:
+               git filter-repo --path .env --invert-paths
+
+❌ P1 — BROKEN DEFAULTS (AI calls silently fail in production):
+  2. SuperIDE: kaixu_brain.ts + kaixu-generate-stream.ts hardcoded fallback
+     points to decommissioned skyesol.netlify.app — AI generation is broken if
+     KAIXU_GATEWAY_ENDPOINT not set. Fix: change default to 0megaSkyeGate URL.
+  3. SkaixuPro-IDE localhost:* hardcodes in 15+ module files — all AI features
+     in those modules are broken in production.
+
+🔄 P2 — MIGRATION REQUIRED (gateway not updated):
+  4. KaixuSuper-IDE-(Internal Gate) — full migration of kaixusi → 0megaSkyeGate
+  5. Kaixu67 — 3 legacy pages (gateway.html, smokekai.html, smokecoveragekai.html)
+
+⚠️  P3 — WARN / NON-BLOCKING (technical debt):
+  6. SkyeBundle — no default gateway URL; users must self-configure
+     7. SkyeHubs — backend env + Stripe vars required; no user-facing error states
+  8. SkyeMail2.0 — AI endpoint in ai.html not confirmed; SSO env vars required
+  9. SkyeSpace — full mock data layer; no persistence backend yet
+  10. SkyErrors templates and smokehouse-standalone.html — minor legacy URLs
+
+================================================================================
+GATEWAY MIGRATION STATUS TRACKER
+================================================================================
+
+  Platform                   | Status        | Files to Update
+  ---------------------------|---------------|------------------------------------------
+  0megaSkyeGate              | ✅ DONE       | N/A
+  Kaixu67                    | 🔄 3 REMAIN   | gateway.html, smokekai.html, smokecoveragekai.html
+  KaixuSuper-IDE             | ❌ TODO       | app.js, all netlify functions, worker/wrangler.toml
+  SkaixuPro-IDE              | ✅ ENV-BASED  | Remove localhost:* refs in 15+ modules
+  SkyDex                     | ✅ DONE       | Remove legacy URL from allowlist
+  SkyErrors/kAIxU-Brain      | ✅ CORE DONE  | Update .dev.vars.template, ENV.template
+  SkyeBundle                 | ✅ BY DESIGN  | Add default URL pre-population
+  SkyeHubs                   | ✅ N/A        | No AI
+  SkyeMail2.0                | ⚠️  VERIFY    | Confirm ai.html endpoint
+  SkyeSpace                  | ✅ N/A        | No AI
+  Skye_foundry_pack          | ✅ N/A        | No AI
+  SovereignPrimitives        | ✅ N/A        | No AI
+  SuperIDE                   | ❌ TODO       | kaixu_brain.ts (2 files), 10+ legacy nav links
+  ChromeBoards               | ✅ N/A        | No AI
+
+================================================================================
+END OF HEALTH REPORT
+Last Updated: 2026 | SkyeCDE Platform Scan
+================================================================================

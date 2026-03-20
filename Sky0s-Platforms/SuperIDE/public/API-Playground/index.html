@@ -49,6 +49,8 @@
     .proof-links a { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; border-radius:10px; border:1px solid #2c4b69; background:#0d2032; color:var(--ink); padding:10px 12px; font-weight:700; }
     @media (max-width: 900px) { .row, .truthbar, .auth-grid, .auth-actions { grid-template-columns: 1fr; } .btns { grid-template-columns: repeat(2, 1fr); } }
   </style>
+  <script src="/0s-auth-sdk/index.js"></script>
+  <script>OmegaAuth.requireSession();</script>
 </head>
 <body>
   <div class="shell">

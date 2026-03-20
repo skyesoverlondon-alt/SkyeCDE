@@ -1,4 +1,4 @@
-name: Build Theia IDE Next Release (Linux)
+name: Build Skyes Over London Next Release (Linux)
 
 on:
   workflow_dispatch:
@@ -59,9 +59,9 @@ jobs:
       - name: Upload Linux Dist Files
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: theia-ide-next-linux
+          name: skyes-over-london-next-linux
           path: |
-            applications/electron-next/dist/TheiaIDENext.AppImage
+            applications/electron-next/dist/skyes-over-london-next.AppImage
           retention-days: 7
 
       - name: Publish to rolling next release
@@ -71,11 +71,11 @@ jobs:
           gh release delete next --yes --cleanup-tag 2>/dev/null || true
           # Create a new pre-release with the next tag
           gh release create next \
-            --title "Next Build - Ubuntu AppImage (${{ env.THEIA_IDE_VERSION }})" \
-            --notes "Automated next build of the Ubuntu AppImage from \`master\` ($(date -u '+%Y-%m-%d %H:%M UTC'))." \
+            --title "Skyes Over London Next Build - Ubuntu AppImage (${{ env.THEIA_IDE_VERSION }})" \
+            --notes "Automated next build of the Skyes Over London Ubuntu AppImage from \`master\` ($(date -u '+%Y-%m-%d %H:%M UTC'))." \
             --prerelease \
             --target ${{ github.sha }} \
-            applications/electron-next/dist/TheiaIDENext.AppImage \
+            applications/electron-next/dist/skyes-over-london-next.AppImage \
             applications/electron-next/dist/latest-linux.yml
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

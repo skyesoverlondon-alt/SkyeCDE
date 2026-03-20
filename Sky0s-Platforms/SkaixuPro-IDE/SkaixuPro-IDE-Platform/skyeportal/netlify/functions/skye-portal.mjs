@@ -9,9 +9,11 @@ export const handler = async (event) => {
     return { statusCode: 204, headers: corsHeaders, body: "" };
   }
 
-  const keyRing = buildKeyRing(process.env);
-  const purposes = Object.keys(keyRing).sort((a, b) => a.localeCompare(b));
+  const aliasRing = buildAliasRing(process.env);
+  const purposes = Object.keys(aliasRing).sort((a, b) => a.localeCompare(b));
   const defaultPurpose = sanitizePurpose(process.env.SKYE_DEFAULT_PURPOSE || "default") || "default";
+  const gateUrl = String(process.env.OMEGA_GATE_URL || "https://0megaskyegate.skyesoverlondon.workers.dev").trim().replace(/\/+$/, "");
+  const gateToken = String(process.env.OMEGA_GATE_SERVICE_KEY || process.env.KAIXU_APP_TOKEN || "").trim();
 
   // GET meta (no secrets)
   if (event.httpMethod === "GET") {
@@ -29,11 +31,11 @@ export const handler = async (event) => {
     return json(405, corsHeaders, { error: { message: "Use POST." } });
   }
 
-  if (!purposes.length) {
+  if (!gateToken) {
     return json(500, corsHeaders, {
       error: {
         message:
-          "No keys found. Set env vars like SKYE_KEY_DEFAULT, SKYE_KEY_AUDIO, etc. (or OPENAI_API_KEY as fallback)."
+          "Gate token missing. Set OMEGA_GATE_SERVICE_KEY (or KAIXU_APP_TOKEN) so this function can call 0megaSkyeGate."
       }
     });
   }
@@ -53,28 +55,36 @@ export const handler = async (event) => {
     return json(413, corsHeaders, { error: { message: `Input too large. Max ${maxChars} chars.` } });
   }
 
-  // Purpose routing (client can request a purpose, server chooses key; server never returns the key)
+  // Purpose routing (client can request a purpose; server maps it to a gate alias)
   const requestedPurpose = sanitizePurpose(body.purpose || "") || "";
-  const purpose = pickPurpose(requestedPurpose, keyRing, defaultPurpose);
-  const apiKey = keyRing[purpose];
+  const purpose = pickPurpose(requestedPurpose, aliasRing, defaultPurpose);
 
-  const model = (body.model || "").toString().trim() || process.env.OPENAI_MODEL || "gpt-5.2";
+  const alias = (body.alias || aliasRing[purpose] || process.env.KAIXU_GATE_ALIAS || "kaixu/deep").toString().trim();
+  const system = (body.system || "You are Skye Portal's gate-routed AI lane.").toString().trim();
+  const temperature = Number(body.temperature ?? process.env.KAIXU_TEMPERATURE ?? 0.6);
 
-  const upstreamRes = await fetch("https://api.openai.com/v1/responses", {
+  const upstreamRes = await fetch(`${gateUrl}/v1/chat`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${gateToken}`,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ model, input })
+    body: JSON.stringify({
+      alias,
+      temperature,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: input }
+      ]
+    })
   });
 
   const upstreamJson = await upstreamRes.json().catch(() => ({}));
 
   if (!upstreamRes.ok) {
-    const msg = upstreamJson?.error?.message || `OpenAI request failed (${upstreamRes.status}).`;
+    const msg = upstreamJson?.error?.message || upstreamJson?.error?.code || `0megaSkyeGate request failed (${upstreamRes.status}).`;
     return json(upstreamRes.status, corsHeaders, {
-      error: { message: msg, purposeUsed: purpose }
+      error: { message: msg, purposeUsed: purpose, aliasUsed: alias }
     });
   }
 
@@ -82,7 +92,8 @@ export const handler = async (event) => {
 
   return json(200, corsHeaders, {
     text,
-    purposeUsed: purpose
+    purposeUsed: purpose,
+    aliasUsed: alias
   });
 };
 
@@ -103,23 +114,23 @@ function sanitizePurpose(p) {
     .replace(/[^a-z0-9_-]/g, "");
 }
 
-function buildKeyRing(env) {
+function buildAliasRing(env) {
   const ring = {};
 
-  // Primary pattern: SKYE_KEY_<PURPOSE>
+  // Primary pattern: SKYE_ALIAS_<PURPOSE>
   for (const [k, v] of Object.entries(env || {})) {
     if (!k || typeof v !== "string") continue;
-    if (!k.startsWith("SKYE_KEY_")) continue;
+    if (!k.startsWith("SKYE_ALIAS_")) continue;
 
-    const rawPurpose = k.slice("SKYE_KEY_".length);
+    const rawPurpose = k.slice("SKYE_ALIAS_".length);
     const purpose = sanitizePurpose(rawPurpose);
-    const key = v.trim();
-    if (purpose && key) ring[purpose] = key;
+    const alias = v.trim();
+    if (purpose && alias) ring[purpose] = alias;
   }
 
-  // Fallback: OPENAI_API_KEY becomes "default" if not already set
-  if (!ring.default && typeof env.OPENAI_API_KEY === "string" && env.OPENAI_API_KEY.trim()) {
-    ring.default = env.OPENAI_API_KEY.trim();
+  // Fallback alias
+  if (!ring.default) {
+    ring.default = String(env.KAIXU_GATE_ALIAS || "kaixu/deep").trim() || "kaixu/deep";
   }
 
   return ring;
@@ -134,6 +145,7 @@ function pickPurpose(requested, ring, defaultPurpose) {
 }
 
 function extractText(resp) {
+  if (typeof resp?.output?.text === "string" && resp.output.text.trim()) return resp.output.text;
   if (typeof resp?.output_text === "string" && resp.output_text.trim()) return resp.output_text;
 
   const chunks = [];

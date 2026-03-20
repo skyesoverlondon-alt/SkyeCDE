@@ -39,6 +39,10 @@ export function getFounderGatewayKey(env: Env): string {
   return getEnvString(env, 'Founders_GateWay_Key', getEnvString(env, 'FOUNDERS_GATEWAY_KEY'))
 }
 
+export function getSessionJwtSecret(env: Env): string {
+  return getEnvString(env, 'SESSION_JWT_SECRET')
+}
+
 export function getBackupBrainBaseUrl(env: Env): string {
   return getEnvString(env, 'KAIXU_BRAIN_BASE_BACKUP')
 }

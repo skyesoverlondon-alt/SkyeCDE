@@ -1,4 +1,4 @@
-name: Publish Theia IDE Docker Image
+name: Publish Skyes Over London Docker Image
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build and push Theia IDE image to Github Packages
+    name: Build and push Skyes Over London image to Github Packages
     runs-on: ubuntu-latest
 
     steps:
@@ -54,6 +54,6 @@ jobs:
           file: browser.Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/theia-ide:${{ github.event.inputs.tag }}
-            ghcr.io/${{ github.repository }}/theia-ide:latest
+            ghcr.io/${{ github.repository }}/skyes-over-london:${{ github.event.inputs.tag }}
+            ghcr.io/${{ github.repository }}/skyes-over-london:latest
           platforms: linux/amd64,linux/arm64

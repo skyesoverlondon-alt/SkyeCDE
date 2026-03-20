@@ -1,0 +1,666 @@
+Summary
+
+Current resolved listed surfaces audited: 338
+Current unresolved catalog surface labels: 0
+Current resolved listed surfaces with Firebase/Firestore present: 0
+Current live recursive Firebase/Firestore matches under Sky0s-Platforms: 0
+# Firebase Removal Audit
+
+Generated: 2026-03-18
+Catalog used: /workspaces/SkyeCDE/SkyeDevNotes/Maintenance/Apps-Platforms/Catalog
+Repo scanned: /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/
+
+This file treats each catalog-listed app, module, page, tool, or sub-platform surface as a unit and marks whether Firebase or Firestore text is currently present in that resolved path.
+
+Live status note: a fresh recursive scan found zero live Firebase or Firestore matches anywhere under /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/. The detailed per-surface entries below have been regenerated to reflect that current zero-match state.
+
+## 1. 0megaSkyeGate
+
+Platform root: Sky0s-Platforms/0megaSkyeGate
+
+### Apps and sub-platforms:
+
+- 0megaSkyeGate-The-Actual-Gate/ -> Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate :: not found
+- GatewayUpgrades/ -> Sky0s-Platforms/0megaSkyeGate/GatewayUpgrades :: not found
+
+## 2. ChromeBoards-ChromeBook-Launchers
+
+Platform root: Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers
+
+### Apps and sub-platforms:
+
+- ChromeBoard-MVP/ -> Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/ChromeBoard-MVP :: not found
+- ChromeBoard-Pro/ -> Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/ChromeBoard-Pro :: not found
+- ChromeBoard-MaxPro/ -> Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/ChromeBoard-MaxPro :: not found
+
+## 3. Kaixu67
+
+Platform root: Sky0s-Platforms/Kaixu67
+
+### Shared platform surfaces:
+
+- index.html -> Sky0s-Platforms/Kaixu67/index.html :: not found
+- intro.html -> Sky0s-Platforms/Kaixu67/intro.html :: not found
+- portal.html -> Sky0s-Platforms/Kaixu67/portal.html :: not found
+- gateway.html -> Sky0s-Platforms/Kaixu67/gateway.html :: not found
+- smokekai.html -> Sky0s-Platforms/Kaixu67/smokekai.html :: not found
+- smokecoveragekai.html -> Sky0s-Platforms/Kaixu67/smokecoveragekai.html :: not found
+- innersanctum.html -> Sky0s-Platforms/Kaixu67/innersanctum.html :: not found
+- livemodekai.html -> Sky0s-Platforms/Kaixu67/livemodekai.html :: not found
+- introskipkai.html -> Sky0s-Platforms/Kaixu67/introskipkai.html :: not found
+- changelogkai.html -> Sky0s-Platforms/Kaixu67/changelogkai.html :: not found
+- readmekai.html -> Sky0s-Platforms/Kaixu67/readmekai.html :: not found
+- background.html -> Sky0s-Platforms/Kaixu67/background.html :: not found
+- _shared/ -> Sky0s-Platforms/Kaixu67/_shared :: not found
+
+### Apps and what they do:
+
+- adkai.html -> Sky0s-Platforms/Kaixu67/adkai.html :: not found
+- adminkai.html -> Sky0s-Platforms/Kaixu67/adminkai.html :: not found
+- biokai.html -> Sky0s-Platforms/Kaixu67/biokai.html :: not found
+- briefkai.html -> Sky0s-Platforms/Kaixu67/briefkai.html :: not found
+- captionkai.html -> Sky0s-Platforms/Kaixu67/captionkai.html :: not found
+- casekai.html -> Sky0s-Platforms/Kaixu67/casekai.html :: not found
+- cheatkai.html -> Sky0s-Platforms/Kaixu67/cheatkai.html :: not found
+- codekai.html -> Sky0s-Platforms/Kaixu67/codekai.html :: not found
+- coldkai.html -> Sky0s-Platforms/Kaixu67/coldkai.html :: not found
+- contractkai.html -> Sky0s-Platforms/Kaixu67/contractkai.html :: not found
+- coverkai.html -> Sky0s-Platforms/Kaixu67/coverkai.html :: not found
+- debugkai.html -> Sky0s-Platforms/Kaixu67/debugkai.html :: not found
+- deckkai.html -> Sky0s-Platforms/Kaixu67/deckkai.html :: not found
+- diagramkai.html -> Sky0s-Platforms/Kaixu67/diagramkai.html :: not found
+- flashkai.html -> Sky0s-Platforms/Kaixu67/flashkai.html :: not found
+- goalkai.html -> Sky0s-Platforms/Kaixu67/goalkai.html :: not found
+- habitkai.html -> Sky0s-Platforms/Kaixu67/habitkai.html :: not found
+- invoicekai.html -> Sky0s-Platforms/Kaixu67/invoicekai.html :: not found
+- jobkai.html -> Sky0s-Platforms/Kaixu67/jobkai.html :: not found
+- journalkai.html -> Sky0s-Platforms/Kaixu67/journalkai.html :: not found
+- kaixuchat.html -> Sky0s-Platforms/Kaixu67/kaixuchat.html :: not found
+- landingkai.html -> Sky0s-Platforms/Kaixu67/landingkai.html :: not found
+- legalkai.html -> Sky0s-Platforms/Kaixu67/legalkai.html :: not found
+- mailkai.html -> Sky0s-Platforms/Kaixu67/mailkai.html :: not found
+- mapkai.html -> Sky0s-Platforms/Kaixu67/mapkai.html :: not found
+- mathkai.html -> Sky0s-Platforms/Kaixu67/mathkai.html :: not found
+- meetkai.html -> Sky0s-Platforms/Kaixu67/meetkai.html :: not found
+- namekai.html -> Sky0s-Platforms/Kaixu67/namekai.html :: not found
+- newsletterkai.html -> Sky0s-Platforms/Kaixu67/newsletterkai.html :: not found
+- offlinepackkai.html -> Sky0s-Platforms/Kaixu67/offlinepackkai.html :: not found
+- palettekai.html -> Sky0s-Platforms/Kaixu67/palettekai.html :: not found
+- personakai.html -> Sky0s-Platforms/Kaixu67/personakai.html :: not found
+- photokai.html -> Sky0s-Platforms/Kaixu67/photokai.html :: not found
+- pitchkai.html -> Sky0s-Platforms/Kaixu67/pitchkai.html :: not found
+- policykai.html -> Sky0s-Platforms/Kaixu67/policykai.html :: not found
+- prkai.html -> Sky0s-Platforms/Kaixu67/prkai.html :: not found
+- promptkai.html -> Sky0s-Platforms/Kaixu67/promptkai.html :: not found
+- proposalkai.html -> Sky0s-Platforms/Kaixu67/proposalkai.html :: not found
+- quickpalettekai.html -> Sky0s-Platforms/Kaixu67/quickpalettekai.html :: not found
+- quizkai.html -> Sky0s-Platforms/Kaixu67/quizkai.html :: not found
+- readkai.html -> Sky0s-Platforms/Kaixu67/readkai.html :: not found
+- recipekai.html -> Sky0s-Platforms/Kaixu67/recipekai.html :: not found
+- repkai.html -> Sky0s-Platforms/Kaixu67/repkai.html :: not found
+- resumekai.html -> Sky0s-Platforms/Kaixu67/resumekai.html :: not found
+- reviewkai.html -> Sky0s-Platforms/Kaixu67/reviewkai.html :: not found
+- roastkai.html -> Sky0s-Platforms/Kaixu67/roastkai.html :: not found
+- scriptkai.html -> Sky0s-Platforms/Kaixu67/scriptkai.html :: not found
+- searchboosterkai.html -> Sky0s-Platforms/Kaixu67/searchboosterkai.html :: not found
+- seokai.html -> Sky0s-Platforms/Kaixu67/seokai.html :: not found
+- skaixuide.html -> Sky0s-Platforms/Kaixu67/skaixuide.html :: not found
+- sqlkai.html -> Sky0s-Platforms/Kaixu67/sqlkai.html :: not found
+- storykai.html -> Sky0s-Platforms/Kaixu67/storykai.html :: not found
+- swotkai.html -> Sky0s-Platforms/Kaixu67/swotkai.html :: not found
+- telemetrylitekai.html -> Sky0s-Platforms/Kaixu67/telemetrylitekai.html :: not found
+- testkai.html -> Sky0s-Platforms/Kaixu67/testkai.html :: not found
+- themereactorkai.html -> Sky0s-Platforms/Kaixu67/themereactorkai.html :: not found
+- threadkai.html -> Sky0s-Platforms/Kaixu67/threadkai.html :: not found
+- translatekai.html -> Sky0s-Platforms/Kaixu67/translatekai.html :: not found
+- triviago.html -> Sky0s-Platforms/Kaixu67/triviago.html :: not found
+- voicekai.html -> Sky0s-Platforms/Kaixu67/voicekai.html :: not found
+- watchdogkai.html -> Sky0s-Platforms/Kaixu67/watchdogkai.html :: not found
+
+## 4. KaixuSuper-IDE-(Internal Gate)
+
+Platform root: Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)
+
+### Core IDE and governance surfaces:
+
+- index.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/index.html :: not found
+- ide.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/ide.html :: not found
+- homelanding.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/homelanding.html :: not found
+- kaixu-admin.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/kaixu-admin.html :: not found
+- aboutthecreator.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/aboutthecreator.html :: not found
+- investor-trust.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/investor-trust.html :: not found
+- privacy.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/privacy.html :: not found
+- security.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/security.html :: not found
+- dpa.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/dpa.html :: not found
+- sla.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/sla.html :: not found
+- subprocessors.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/subprocessors.html :: not found
+- terms.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/terms.html :: not found
+- status.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/status.html :: not found
+- smoke-live.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/smoke-live.html :: not found
+- smoketest.html -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/smoketest.html :: not found
+
+### Platform code layers:
+
+- app.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/app.js :: not found
+- admin.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/admin.js :: not found
+- editor.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/editor.js :: not found
+- explorer.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/explorer.js :: not found
+- commands.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/commands.js :: not found
+- collab.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/collab.js :: not found
+- github.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/github.js :: not found
+- scm.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/scm.js :: not found
+- search.js and search.worker.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/search.js :: not found
+- search.js and search.worker.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/search.worker.js :: not found
+- problems.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/problems.js :: not found
+- outline.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/outline.js :: not found
+- snippets.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/snippets.js :: not found
+- templates.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/templates.js :: not found
+- db.js -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/db.js :: not found
+
+### Platform subsystems:
+
+- netlify/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/netlify :: not found
+- sql/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/sql :: not found
+- worker/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/worker :: not found
+- xnthgateway/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/xnthgateway :: not found
+- docs/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/docs :: not found
+- tests/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/tests :: not found
+- scripts/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/scripts :: not found
+- tools/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/tools :: not found
+- dev notes/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/dev notes :: not found
+
+### Embedded app surfaces:
+
+- solesheetslogin/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/solesheetslogin :: not found
+- other apps/jwt secret gen/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/jwt secret gen :: not found
+- other apps/kaixucodepro/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/kaixucodepro :: not found
+- other apps/neuralspacepro/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/neuralspacepro :: not found
+- other apps/signinpro/ -> Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/signinpro :: not found
+
+## 5. SkaixuPro-IDE
+
+Platform root: Sky0s-Platforms/SkaixuPro-IDE
+
+### Top-level product surfaces:
+
+- SkaixuPro-IDE-Platform/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform :: not found
+- skaixuidepro-marketing-site/ -> Sky0s-Platforms/SkaixuPro-IDE/skaixuidepro-marketing-site :: not found
+- SkaixuPro-IDE-Website/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Website :: not found
+
+### Modules inside SkaixuPro-IDE-Platform and what they do:
+
+- ALLAI.html -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/ALLAI.html :: not found
+- AI-Directives/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/AI-Directives :: not found
+- AI-Visual-Guides/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/AI-Visual-Guides :: not found
+- Code Genie/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Code Genie :: not found
+- Data Forge/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Data Forge :: not found
+- DebugPro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DebugPro :: not found
+- DevProof Lab/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DevProof Lab :: not found
+- GodCode/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodCode :: not found
+- GodKode/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodKode :: not found
+- GodNodes/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodNodes :: not found
+- KaiPrompt/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/KaiPrompt :: not found
+- Neural-Space-Pro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Neural-Space-Pro :: not found
+- Nexus Forge Studio/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Nexus Forge Studio :: not found
+- Nexus-Pro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Nexus-Pro :: not found
+- NexusConnectHomepage/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/NexusConnectHomepage :: not found
+- NexusDBExplorer/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/NexusDBExplorer :: not found
+- PWA Factory/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/PWA Factory :: not found
+- PlanItPro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/PlanItPro :: not found
+- RegexGen/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/RegexGen :: not found
+- SkyeBox/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeBox :: not found
+- SkyeDocx/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeDocx :: not found
+- SkyeKnife/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeKnife :: not found
+- SkyeVault/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeVault :: not found
+- SkyeView-Red/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeView-Red :: not found
+- SovereignVariables/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SovereignVariables :: not found
+- THE SOLE NETWORK/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/THE SOLE NETWORK :: not found
+- WebPilePro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/WebPilePro :: not found
+- Webby/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Webby :: not found
+- kaixumagic/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/kaixumagic :: not found
+- projectaegis-skyex/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/projectaegis-skyex :: not found
+- reactforge/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/reactforge :: not found
+- skAIxuide/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide :: not found
+- skriptx/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skriptx :: not found
+- skriptxdataalchemist/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skriptxdataalchemist :: not found
+- skyeofferforge/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeofferforge :: not found
+- skyeportal/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeportal :: not found
+- skyeuipro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeuipro :: not found
+- intro/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/intro :: not found
+- new/ and NEWNEW/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/new :: not found
+- new/ and NEWNEW/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/NEWNEW :: not found
+- skAIxu Editorials/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxu Editorials :: not found
+- skAIxu 2 Editorials/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxu 2 Editorials :: not found
+- Images/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Images :: not found
+- netlify/ -> Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/netlify :: not found
+
+## 6. SkyDex
+
+Platform root: Sky0s-Platforms/SkyDex
+
+### Apps and sub-platforms:
+
+- SkyDex4_fixed/ -> Sky0s-Platforms/SkyDex/SkyDex4_fixed :: not found
+- SkyDex4_fixed/index.html -> Sky0s-Platforms/SkyDex/SkyDex4_fixed/index.html :: not found
+- SkyDex4_fixed/netlify/ -> Sky0s-Platforms/SkyDex/SkyDex4_fixed/netlify :: not found
+- SkyDex4_fixed/archive/ -> Sky0s-Platforms/SkyDex/SkyDex4_fixed/archive :: not found
+- SkyDex4_fixed/_shared/ -> Sky0s-Platforms/SkyDex/SkyDex4_fixed/_shared :: not found
+
+## 7. SkyErrors
+
+Platform root: Sky0s-Platforms/SkyErrors
+
+### Apps and sub-platforms:
+
+- kAIxU-Brain/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain :: not found
+- kAIxU-Brain/skye-errors/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/skye-errors :: not found
+- kAIxU-Brain/smokehouse-standalone.html -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/smokehouse-standalone.html :: not found
+- kAIxU-Brain/docs/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/docs :: not found
+- kAIxU-Brain/ops/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/ops :: not found
+- kAIxU-Brain/observability/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/observability :: not found
+- kAIxU-Brain/scripts/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/scripts :: not found
+- kAIxU-Brain/src/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/src :: not found
+- kAIxU-Brain/artifacts/ -> Sky0s-Platforms/SkyErrors/kAIxU-Brain/artifacts :: not found
+
+## 8. SkyeBundle
+
+Platform root: Sky0s-Platforms/SkyeBundle
+
+### Apps and what they do:
+
+- 01-scriptdrop-ai-runner/ -> Sky0s-Platforms/SkyeBundle/01-scriptdrop-ai-runner :: not found
+- 02-offerforge-proposal-builder/ -> Sky0s-Platforms/SkyeBundle/02-offerforge-proposal-builder :: not found
+- 03-objection-crusher-studio/ -> Sky0s-Platforms/SkyeBundle/03-objection-crusher-studio :: not found
+- 04-follow-up-cadence-machine/ -> Sky0s-Platforms/SkyeBundle/04-follow-up-cadence-machine :: not found
+- 05-local-lead-scrubber/ -> Sky0s-Platforms/SkyeBundle/05-local-lead-scrubber :: not found
+- 06-service-page-generator-x/ -> Sky0s-Platforms/SkyeBundle/06-service-page-generator-x :: not found
+- 07-review-rocket-writer/ -> Sky0s-Platforms/SkyeBundle/07-review-rocket-writer :: not found
+- 08-case-study-builder/ -> Sky0s-Platforms/SkyeBundle/08-case-study-builder :: not found
+- 09-pricestack-architect/ -> Sky0s-Platforms/SkyeBundle/09-pricestack-architect :: not found
+- 10-contract-pack-generator/ -> Sky0s-Platforms/SkyeBundle/10-contract-pack-generator :: not found
+- 11-cohort-command/ -> Sky0s-Platforms/SkyeBundle/11-cohort-command :: not found
+- 12-video-idea-engine/ -> Sky0s-Platforms/SkyeBundle/12-video-idea-engine :: not found
+- 13-intakevault-lite/ -> Sky0s-Platforms/SkyeBundle/13-intakevault-lite :: not found
+- 14-authority-binder-generator/ -> Sky0s-Platforms/SkyeBundle/14-authority-binder-generator :: not found
+- 15-ae-route-planner-pro/ -> Sky0s-Platforms/SkyeBundle/15-ae-route-planner-pro :: not found
+
+## 9. SkyeCDE
+
+Platform root: Sky0s-Platforms/SkyeCDE
+
+### Apps and sub-platforms:
+
+- No files or app folders were present during this scan. :: not applicable
+
+## 10. SkyeHubs
+
+Platform root: Sky0s-Platforms/SkyeHubs
+
+### Core platform surfaces:
+
+- index.html -> Sky0s-Platforms/SkyeHubs/index.html :: not found
+- host.html -> Sky0s-Platforms/SkyeHubs/host.html :: not found
+- cohost.html -> Sky0s-Platforms/SkyeHubs/cohost.html :: not found
+- admin.html -> Sky0s-Platforms/SkyeHubs/admin.html :: not found
+- portal.html -> Sky0s-Platforms/SkyeHubs/portal.html :: not found
+- request.html -> Sky0s-Platforms/SkyeHubs/request.html :: not found
+- success.html -> Sky0s-Platforms/SkyeHubs/success.html :: not found
+- cancel.html -> Sky0s-Platforms/SkyeHubs/cancel.html :: not found
+- README_SETUP.html -> Sky0s-Platforms/SkyeHubs/README_SETUP.html :: not found
+- hub-api.js -> Sky0s-Platforms/SkyeHubs/hub-api.js :: not found
+- app.js -> Sky0s-Platforms/SkyeHubs/app.js :: not found
+- host.js -> Sky0s-Platforms/SkyeHubs/host.js :: not found
+- cohost.js -> Sky0s-Platforms/SkyeHubs/cohost.js :: not found
+- admin.js -> Sky0s-Platforms/SkyeHubs/admin.js :: not found
+- request.js -> Sky0s-Platforms/SkyeHubs/request.js :: not found
+- portal.js -> Sky0s-Platforms/SkyeHubs/portal.js :: not found
+- netlify/ -> Sky0s-Platforms/SkyeHubs/netlify :: not found
+
+### Branded variants:
+
+- Mobile Detailing/ -> Sky0s-Platforms/SkyeHubs/Mobile Detailing :: not found
+- NobleSoles/ -> Sky0s-Platforms/SkyeHubs/NobleSoles :: not found
+
+## 11. SkyeMail2.0
+
+Platform root: Sky0s-Platforms/SkyeMail2.0
+
+### Page surfaces and what they do:
+
+- index.html -> Sky0s-Platforms/SkyeMail2.0/index.html :: not found
+- signup.html -> Sky0s-Platforms/SkyeMail2.0/signup.html :: not found
+- login.html -> Sky0s-Platforms/SkyeMail2.0/login.html :: not found
+- forgot.html -> Sky0s-Platforms/SkyeMail2.0/forgot.html :: not found
+- reset.html -> Sky0s-Platforms/SkyeMail2.0/reset.html :: not found
+- verify.html -> Sky0s-Platforms/SkyeMail2.0/verify.html :: not found
+- dashboard.html -> Sky0s-Platforms/SkyeMail2.0/dashboard.html :: not found
+- message.html -> Sky0s-Platforms/SkyeMail2.0/message.html :: not found
+- thread.html -> Sky0s-Platforms/SkyeMail2.0/thread.html :: not found
+- send.html -> Sky0s-Platforms/SkyeMail2.0/send.html :: not found
+- sessions.html -> Sky0s-Platforms/SkyeMail2.0/sessions.html :: not found
+- keys.html -> Sky0s-Platforms/SkyeMail2.0/keys.html :: not found
+- org.html -> Sky0s-Platforms/SkyeMail2.0/org.html :: not found
+- accept-invite.html -> Sky0s-Platforms/SkyeMail2.0/accept-invite.html :: not found
+- audit.html -> Sky0s-Platforms/SkyeMail2.0/audit.html :: not found
+- procurement.html -> Sky0s-Platforms/SkyeMail2.0/procurement.html :: not found
+- founder.html -> Sky0s-Platforms/SkyeMail2.0/founder.html :: not found
+- ai.html -> Sky0s-Platforms/SkyeMail2.0/ai.html :: not found
+- siem.html -> Sky0s-Platforms/SkyeMail2.0/siem.html :: not found
+- sso.html -> Sky0s-Platforms/SkyeMail2.0/sso.html :: not found
+- due_diligence_room/ -> Sky0s-Platforms/SkyeMail2.0/due_diligence_room :: not found
+- trust/ -> Sky0s-Platforms/SkyeMail2.0/trust :: not found
+- netlify/ -> Sky0s-Platforms/SkyeMail2.0/netlify :: not found
+- sql/ -> Sky0s-Platforms/SkyeMail2.0/sql :: not found
+- tests/ -> Sky0s-Platforms/SkyeMail2.0/tests :: not found
+- tools/ -> Sky0s-Platforms/SkyeMail2.0/tools :: not found
+
+## 12. SkyeSpace
+
+Platform root: Sky0s-Platforms/SkyeSpace
+
+### Pages and what they do:
+
+- index.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/index.html :: not found
+- academy.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/academy.html :: not found
+- council.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/council.html :: not found
+- districts.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/districts.html :: not found
+- forge.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/forge.html :: not found
+- market.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/market.html :: not found
+- messages.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/messages.html :: not found
+- muse.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/muse.html :: not found
+- profile.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/profile.html :: not found
+- signal.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/signal.html :: not found
+- stage.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/stage.html :: not found
+- studio.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/studio.html :: not found
+- vaults.html -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/vaults.html :: not found
+- assets/, css/, js/ -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/assets :: not found
+- assets/, css/, js/ -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/css :: not found
+- assets/, css/, js/ -> Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/js :: not found
+
+## 13. Skye_platform_foundry_pack
+
+Platform root: Sky0s-Platforms/Skye_platform_foundry_pack
+
+### Apps and what they do:
+
+- index.html -> Sky0s-Platforms/Skye_platform_foundry_pack/index.html :: not found
+- skyecircuit/ -> Sky0s-Platforms/Skye_platform_foundry_pack/skyecircuit :: not found
+- skyeflux/ -> Sky0s-Platforms/Skye_platform_foundry_pack/skyeflux :: not found
+- skyemuse/ -> Sky0s-Platforms/Skye_platform_foundry_pack/skyemuse :: not found
+- skyescene/ -> Sky0s-Platforms/Skye_platform_foundry_pack/skyescene :: not found
+- skyetown/ -> Sky0s-Platforms/Skye_platform_foundry_pack/skyetown :: not found
+- _shared/ -> Sky0s-Platforms/Skye_platform_foundry_pack/_shared :: not found
+
+## 14. SovereignPrimitives
+
+Platform root: Sky0s-Platforms/SovereignPrimitives
+
+### Apps and sub-platforms:
+
+- index.html -> Sky0s-Platforms/SovereignPrimitives/index.html :: not found
+- app.js -> Sky0s-Platforms/SovereignPrimitives/app.js :: not found
+- styles.css -> Sky0s-Platforms/SovereignPrimitives/styles.css :: not found
+- README.md -> Sky0s-Platforms/SovereignPrimitives/README.md :: not found
+
+## 15. SuperIDE
+
+Platform root: Sky0s-Platforms/SuperIDE
+
+### Core platform layers:
+
+- apps/skye-ide/ -> Sky0s-Platforms/SuperIDE/apps/skye-ide :: not found
+- src/ -> Sky0s-Platforms/SuperIDE/src :: not found
+- netlify/ -> Sky0s-Platforms/SuperIDE/netlify :: not found
+- worker/ -> Sky0s-Platforms/SuperIDE/worker :: not found
+- db/ -> Sky0s-Platforms/SuperIDE/db :: not found
+- docker/ -> Sky0s-Platforms/SuperIDE/docker :: not found
+- docs/ -> Sky0s-Platforms/SuperIDE/docs :: not found
+- scripts/ -> Sky0s-Platforms/SuperIDE/scripts :: not found
+- Neural-Space-Pro/ -> Sky0s-Platforms/SuperIDE/Neural-Space-Pro :: not found
+- SkyDex4.6/ -> Sky0s-Platforms/SuperIDE/SkyDex4.6 :: not found
+- SUPERIDE-UI-Dropin/ -> Sky0s-Platforms/SuperIDE/SUPERIDE-UI-Dropin :: not found
+- SKNore/ -> Sky0s-Platforms/SuperIDE/SKNore :: not found
+- SkyeBlog/ -> Sky0s-Platforms/SuperIDE/SkyeBlog :: not found
+- SkyeDocxPro/ -> Sky0s-Platforms/SuperIDE/SkyeDocxPro :: not found
+- SovereignVariables/ -> Sky0s-Platforms/SuperIDE/SovereignVariables :: not found
+
+### Public app directory surfaces and what they do:
+
+- public/AE-Flow/ -> Sky0s-Platforms/SuperIDE/public/AE-Flow :: not found
+- public/API-Playground/ -> Sky0s-Platforms/SuperIDE/public/API-Playground :: not found
+- public/ContractorIncomeVerification/ -> Sky0s-Platforms/SuperIDE/public/ContractorIncomeVerification :: not found
+- public/ContractorNetwork/ -> Sky0s-Platforms/SuperIDE/public/ContractorNetwork :: not found
+- public/ContractorWorkflowSuite/ -> Sky0s-Platforms/SuperIDE/public/ContractorWorkflowSuite :: not found
+- public/GBPRescueSuite/ -> Sky0s-Platforms/SuperIDE/public/GBPRescueSuite :: not found
+- public/GoogleBusinessProfileRescuePlatform/ -> Sky0s-Platforms/SuperIDE/public/GoogleBusinessProfileRescuePlatform :: not found
+- public/Neural-Space-Pro/ -> Sky0s-Platforms/SuperIDE/public/Neural-Space-Pro :: not found
+- public/REACT2HTML/ -> Sky0s-Platforms/SuperIDE/public/REACT2HTML :: not found
+- public/S0L26-0s/ -> Sky0s-Platforms/SuperIDE/public/S0L26-0s :: not found
+- public/SKNore/ -> Sky0s-Platforms/SuperIDE/public/SKNore :: not found
+- public/SKYEMAIL-GEN/ -> Sky0s-Platforms/SuperIDE/public/SKYEMAIL-GEN :: not found
+- public/Skye-ID/ -> Sky0s-Platforms/SuperIDE/public/Skye-ID :: not found
+- public/SkyeAdmin/ -> Sky0s-Platforms/SuperIDE/public/SkyeAdmin :: not found
+- public/SkyeAnalytics/ -> Sky0s-Platforms/SuperIDE/public/SkyeAnalytics :: not found
+- public/SkyeBlog/ -> Sky0s-Platforms/SuperIDE/public/SkyeBlog :: not found
+- public/SkyeBookx/ -> Sky0s-Platforms/SuperIDE/public/SkyeBookx :: not found
+- public/SkyeCalendar/ -> Sky0s-Platforms/SuperIDE/public/SkyeCalendar :: not found
+- public/SkyeChat/ -> Sky0s-Platforms/SuperIDE/public/SkyeChat :: not found
+- public/SkyeDocs/ -> Sky0s-Platforms/SuperIDE/public/SkyeDocs :: not found
+- public/SkyeDocxPro/ -> Sky0s-Platforms/SuperIDE/public/SkyeDocxPro :: not found
+- public/SkyeDrive/ -> Sky0s-Platforms/SuperIDE/public/SkyeDrive :: not found
+- public/SkyeForms/ -> Sky0s-Platforms/SuperIDE/public/SkyeForms :: not found
+- public/SkyeMail/ -> Sky0s-Platforms/SuperIDE/public/SkyeMail :: not found
+- public/SkyeNotes/ -> Sky0s-Platforms/SuperIDE/public/SkyeNotes :: not found
+- public/SkyePlatinum/ -> Sky0s-Platforms/SuperIDE/public/SkyePlatinum :: not found
+- public/SkyeSheets/ -> Sky0s-Platforms/SuperIDE/public/SkyeSheets :: not found
+- public/SkyeSlides/ -> Sky0s-Platforms/SuperIDE/public/SkyeSlides :: not found
+- public/SkyeTasks/ -> Sky0s-Platforms/SuperIDE/public/SkyeTasks :: not found
+- public/SkyeVault/ -> Sky0s-Platforms/SuperIDE/public/SkyeVault :: not found
+- public/SkyeVault-Pro-v4.46/ -> Sky0s-Platforms/SuperIDE/public/SkyeVault-Pro-v4.46 :: not found
+- public/Smokehouse/ -> Sky0s-Platforms/SuperIDE/public/Smokehouse :: not found
+- public/SovereignVariables/ -> Sky0s-Platforms/SuperIDE/public/SovereignVariables :: not found
+- public/WebPilePro/ -> Sky0s-Platforms/SuperIDE/public/WebPilePro :: not found
+- public/kAIxU/ -> Sky0s-Platforms/SuperIDE/public/kAIxU :: not found
+- public/kAIxU-Codex/ -> Sky0s-Platforms/SuperIDE/public/kAIxU-Codex :: not found
+- public/kAIxU-Faction/ -> Sky0s-Platforms/SuperIDE/public/kAIxU-Faction :: not found
+- public/kAIxU-Matrix/ -> Sky0s-Platforms/SuperIDE/public/kAIxU-Matrix :: not found
+- public/kAIxU-PrimeCommand/ -> Sky0s-Platforms/SuperIDE/public/kAIxU-PrimeCommand :: not found
+- public/kAIxU-Vision/ -> Sky0s-Platforms/SuperIDE/public/kAIxU-Vision :: not found
+- public/kAIxUSuite/ -> Sky0s-Platforms/SuperIDE/public/kAIxUSuite :: not found
+- public/kAIxu-Atlas/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Atlas :: not found
+- public/kAIxu-Atmos/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Atmos :: not found
+- public/kAIxu-Bestiary/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Bestiary :: not found
+- public/kAIxu-Cinematic/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Cinematic :: not found
+- public/kAIxu-Forge/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Forge :: not found
+- public/kAIxu-Mythos/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Mythos :: not found
+- public/kAIxu-Persona/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Persona :: not found
+- public/kAIxu-Quest/ -> Sky0s-Platforms/SuperIDE/public/kAIxu-Quest :: not found
+- public/kAixU-Chronos/ -> Sky0s-Platforms/SuperIDE/public/kAixU-Chronos :: not found
+- public/kAixu-Nexus/ -> Sky0s-Platforms/SuperIDE/public/kAixu-Nexus :: not found
+- public/contractor income verification drop in/ -> Sky0s-Platforms/SuperIDE/public/contractor income verification drop in :: not found
+
+## Live Matched Paths
+
+- Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate
+- Sky0s-Platforms/0megaSkyeGate/GatewayUpgrades
+- Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/ChromeBoard-MVP
+- Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/ChromeBoard-MaxPro
+- Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/ChromeBoard-Pro
+- Sky0s-Platforms/Kaixu67/_shared
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/dev notes
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/docs
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/netlify
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/jwt secret gen
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/kaixucodepro
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/neuralspacepro
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/other apps/signinpro
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/scripts
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/solesheetslogin
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/sql
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/tests
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/tools
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/worker
+- Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/xnthgateway
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/AI-Directives
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/AI-Visual-Guides
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Code Genie
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Data Forge
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DebugPro
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DevProof Lab
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodCode
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodKode
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodNodes
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Images
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/KaiPrompt
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/NEWNEW
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Neural-Space-Pro
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Nexus Forge Studio
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Nexus-Pro
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/NexusConnectHomepage
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/NexusDBExplorer
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/PWA Factory
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/PlanItPro
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/RegexGen
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeBox
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeDocx
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeKnife
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeVault
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SkyeView-Red
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/SovereignVariables
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/THE SOLE NETWORK
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/WebPilePro
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Webby
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/kaixumagic
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/netlify
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/projectaegis-skyex
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/reactforge
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxu 2 Editorials
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxu Editorials
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skriptx
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skriptxdataalchemist
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeofferforge
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeportal
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeuipro
+- Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Website
+- Sky0s-Platforms/SkaixuPro-IDE/skaixuidepro-marketing-site
+- Sky0s-Platforms/SkyDex/SkyDex4_fixed
+- Sky0s-Platforms/SkyDex/SkyDex4_fixed/_shared
+- Sky0s-Platforms/SkyDex/SkyDex4_fixed/archive
+- Sky0s-Platforms/SkyDex/SkyDex4_fixed/netlify
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/artifacts
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/docs
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/observability
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/ops
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/scripts
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/skye-errors
+- Sky0s-Platforms/SkyErrors/kAIxU-Brain/src
+- Sky0s-Platforms/SkyeBundle/01-scriptdrop-ai-runner
+- Sky0s-Platforms/SkyeBundle/02-offerforge-proposal-builder
+- Sky0s-Platforms/SkyeBundle/03-objection-crusher-studio
+- Sky0s-Platforms/SkyeBundle/04-follow-up-cadence-machine
+- Sky0s-Platforms/SkyeBundle/05-local-lead-scrubber
+- Sky0s-Platforms/SkyeBundle/06-service-page-generator-x
+- Sky0s-Platforms/SkyeBundle/07-review-rocket-writer
+- Sky0s-Platforms/SkyeBundle/08-case-study-builder
+- Sky0s-Platforms/SkyeBundle/09-pricestack-architect
+- Sky0s-Platforms/SkyeBundle/10-contract-pack-generator
+- Sky0s-Platforms/SkyeBundle/11-cohort-command
+- Sky0s-Platforms/SkyeBundle/12-video-idea-engine
+- Sky0s-Platforms/SkyeBundle/13-intakevault-lite
+- Sky0s-Platforms/SkyeBundle/14-authority-binder-generator
+- Sky0s-Platforms/SkyeBundle/15-ae-route-planner-pro
+- Sky0s-Platforms/SkyeHubs/Mobile Detailing
+- Sky0s-Platforms/SkyeHubs/NobleSoles
+- Sky0s-Platforms/SkyeHubs/netlify
+- Sky0s-Platforms/SkyeMail2.0/due_diligence_room
+- Sky0s-Platforms/SkyeMail2.0/netlify
+- Sky0s-Platforms/SkyeMail2.0/sql
+- Sky0s-Platforms/SkyeMail2.0/tests
+- Sky0s-Platforms/SkyeMail2.0/tools
+- Sky0s-Platforms/SkyeMail2.0/trust
+- Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/assets
+- Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/css
+- Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/js
+- Sky0s-Platforms/Skye_platform_foundry_pack/_shared
+- Sky0s-Platforms/Skye_platform_foundry_pack/skyecircuit
+- Sky0s-Platforms/Skye_platform_foundry_pack/skyeflux
+- Sky0s-Platforms/Skye_platform_foundry_pack/skyemuse
+- Sky0s-Platforms/Skye_platform_foundry_pack/skyescene
+- Sky0s-Platforms/Skye_platform_foundry_pack/skyetown
+- Sky0s-Platforms/SuperIDE/Neural-Space-Pro
+- Sky0s-Platforms/SuperIDE/SKNore
+- Sky0s-Platforms/SuperIDE/SUPERIDE-UI-Dropin
+- Sky0s-Platforms/SuperIDE/SkyDex4.6
+- Sky0s-Platforms/SuperIDE/SkyeBlog
+- Sky0s-Platforms/SuperIDE/SkyeDocxPro
+- Sky0s-Platforms/SuperIDE/SovereignVariables
+- Sky0s-Platforms/SuperIDE/apps/skye-ide
+- Sky0s-Platforms/SuperIDE/db
+- Sky0s-Platforms/SuperIDE/docker
+- Sky0s-Platforms/SuperIDE/docs
+- Sky0s-Platforms/SuperIDE/netlify
+- Sky0s-Platforms/SuperIDE/public/AE-Flow
+- Sky0s-Platforms/SuperIDE/public/API-Playground
+- Sky0s-Platforms/SuperIDE/public/ContractorIncomeVerification
+- Sky0s-Platforms/SuperIDE/public/ContractorNetwork
+- Sky0s-Platforms/SuperIDE/public/ContractorWorkflowSuite
+- Sky0s-Platforms/SuperIDE/public/GBPRescueSuite
+- Sky0s-Platforms/SuperIDE/public/GoogleBusinessProfileRescuePlatform
+- Sky0s-Platforms/SuperIDE/public/Neural-Space-Pro
+- Sky0s-Platforms/SuperIDE/public/REACT2HTML
+- Sky0s-Platforms/SuperIDE/public/S0L26-0s
+- Sky0s-Platforms/SuperIDE/public/SKNore
+- Sky0s-Platforms/SuperIDE/public/SKYEMAIL-GEN
+- Sky0s-Platforms/SuperIDE/public/Skye-ID
+- Sky0s-Platforms/SuperIDE/public/SkyeAdmin
+- Sky0s-Platforms/SuperIDE/public/SkyeAnalytics
+- Sky0s-Platforms/SuperIDE/public/SkyeBlog
+- Sky0s-Platforms/SuperIDE/public/SkyeBookx
+- Sky0s-Platforms/SuperIDE/public/SkyeCalendar
+- Sky0s-Platforms/SuperIDE/public/SkyeChat
+- Sky0s-Platforms/SuperIDE/public/SkyeDocs
+- Sky0s-Platforms/SuperIDE/public/SkyeDocxPro
+- Sky0s-Platforms/SuperIDE/public/SkyeDrive
+- Sky0s-Platforms/SuperIDE/public/SkyeForms
+- Sky0s-Platforms/SuperIDE/public/SkyeMail
+- Sky0s-Platforms/SuperIDE/public/SkyeNotes
+- Sky0s-Platforms/SuperIDE/public/SkyePlatinum
+- Sky0s-Platforms/SuperIDE/public/SkyeSheets
+- Sky0s-Platforms/SuperIDE/public/SkyeSlides
+- Sky0s-Platforms/SuperIDE/public/SkyeTasks
+- Sky0s-Platforms/SuperIDE/public/SkyeVault
+- Sky0s-Platforms/SuperIDE/public/SkyeVault-Pro-v4.46
+- Sky0s-Platforms/SuperIDE/public/Smokehouse
+- Sky0s-Platforms/SuperIDE/public/SovereignVariables
+- Sky0s-Platforms/SuperIDE/public/WebPilePro
+- Sky0s-Platforms/SuperIDE/public/contractor income verification drop in
+- Sky0s-Platforms/SuperIDE/public/kAIxU
+- Sky0s-Platforms/SuperIDE/public/kAIxU-Codex
+- Sky0s-Platforms/SuperIDE/public/kAIxU-Faction
+- Sky0s-Platforms/SuperIDE/public/kAIxU-Matrix
+- Sky0s-Platforms/SuperIDE/public/kAIxU-PrimeCommand
+- Sky0s-Platforms/SuperIDE/public/kAIxU-Vision
+- Sky0s-Platforms/SuperIDE/public/kAIxUSuite
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Atlas
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Atmos
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Bestiary
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Cinematic
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Forge
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Mythos
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Persona
+- Sky0s-Platforms/SuperIDE/public/kAIxu-Quest
+- Sky0s-Platforms/SuperIDE/public/kAixU-Chronos
+- Sky0s-Platforms/SuperIDE/public/kAixu-Nexus
+- Sky0s-Platforms/SuperIDE/scripts
+- Sky0s-Platforms/SuperIDE/src
+- Sky0s-Platforms/SuperIDE/worker
+
+## Audit Rules
+
+- `present` means the resolved file or folder path currently contains at least one Firebase or Firestore text match.
+- `not found` means the resolved file or folder path had no Firebase or Firestore text match at audit time.
+- `unresolved` means the catalog label did not map cleanly to a live repo path and needs manual catalog cleanup or path clarification.
+- Folder surfaces are checked recursively, so a parent surface can be marked `present` if any file under that surface still contains a Firebase or Firestore match.

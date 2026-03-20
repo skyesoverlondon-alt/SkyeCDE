@@ -26,6 +26,16 @@ body[data-theia-branding="next"] {
     --theia-branding-mark: url(../icons/SKYESOVERLONDONDIETYLOGO.png);
 }
 
+body.skye-shell-layered {
+    background: var(--skye-ambient-bg, #1a2e1a);
+}
+
+body.skye-shell-layered .theia-ApplicationShell,
+body.skye-shell-layered .theia-app-shell,
+body.skye-shell-layered .monaco-workbench {
+    background: transparent;
+}
+
 .gs-blue-header {
     color: var(--skye-gold);
     text-transform: capitalize;

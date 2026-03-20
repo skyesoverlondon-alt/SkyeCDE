@@ -1,0 +1,417 @@
+my project here /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE is my most advanced project/platform within the entire 0s operating system. It has sevral platforms within it like my email generator, my email platform, some id generators etc etc etc. I need to make sure that the auth and login we are using for that project is what we are using for my entire  0s operating system. Meaning do a deep scan of this folder /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE we must promote the admin flow and founder flow of that folder and how it runs those and make that persist across the whole 0s operating system. Meaning that signup flow should be covering their keys and what not from the 0megagate and by this point every platform and app should be running its auth through the 0megaskyegate anyway. Meaning that it should be easy for us to run everything through the auth the folder here has /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE because  we can then use that data to persist and shit for signing users into every single app across the entire 0s system instead of them needing to signinto every single app independently. Does this make sense. We must plan this out accordingly
+
+---
+
+Status key: [✓] = done  [✗] = not done yet
+
+---
+
+# 0s Operating System — Unified Auth Implementation Plan
+
+## GATE COVERAGE AUDIT — Who Is & Isn't Wired In (March 20 2026)
+
+Scanned every non-vendor, non-legacy platform file in `Skye0s-s0l26/Sky0s-Platforms/` for gate references (`0megaSkyeGate`, `kaixu`, `omega-gate`) vs isolated auth (`jwt`, `JWT_SECRET`, standalone `admin.js`, local `login`, local `session`).
+
+### ✓ WIRED — Already calling through 0megaSkyeGate / Kaixu
+
+| Platform | Files | How |
+|----------|-------|-----|
+| **Kaixu67** | All `*.html` tools (briefkai, codekai, coverkai, etc.) | `_shared/config.js` → gate URL, all AI calls go through Kaixu |
+| **SkyeMail2.0** | `index.html`, `login.html`, `signup.html`, `dashboard.html`, `ai.html`, `founder.html` | `assets/kaixuGateway.js` — dedicated gate client |
+| **SkyDex (fixed)** | `SkyDex/SkyDex4_fixed/index.html`, `netlify/functions/ai-agent.js` | Direct gate calls |
+| **SkyDexia-2.6** | `index.html`, `netlify/functions/ai-agent.js` | Uses gate for AI routing |
+| **SkyErrors / kAIxU-Brain** | `src/index.js`, `smokehouse-standalone.html` | Gate-connected |
+| **SkyeBundle / ScriptDrop** | `01-scriptdrop-ai-runner/app.js` | Gate calls |
+| **SuperIDE worker** | `worker/src/index.ts` | Gate-connected |
+| **SuperIDE netlify** | `netlify/functions/_shared/kaixu_brain.ts`, `kaixu-generate-stream.ts` | Kaixu Brain → gate |
+| **SuperIDE SkyeVault-Pro** | `public/SkyeVault-Pro-v4.46/Founder/index.html` | Gate-connected |
+| **SkyDexia (core src)** | `skydexia-operating-model.js`, `skydexia-renderer.js` | Gate-connected |
+
+### ✗ NOT WIRED — Isolated auth, no gate connection
+
+| Platform | Problem Files | Current Auth Method |
+|----------|--------------|---------------------|
+| **Kaixu67** | `adminkai.html`, `portal.html` | Local admin check — no gate |
+| **SkyDex4_fixed** | `_shared/auth-unlock.js`, `_shared/standalone-session.js` | Standalone session, not gate |
+| **SkaixuPro-IDE / SkyeVault** | `netlify/functions/_lib/jwt.js`, `_lib/googleauth.js` | Own JWT + Google OAuth, no gate |
+| **SkaixuPro-IDE / skAIxuide** | `login.html`, `admin_panel.html` | Local login form, no gate |
+| **SkyeHubs / NobleSoles** | `netlify/functions/_lib/auth.js`, `admin.html`, `admin.js` | Standalone JWT, own user table |
+| **SkyeCDE / SkyDexia-2.6** | `_shared/auth-unlock.js`, all `netlify/functions/*.js` | Auth-unlock but not gate SSO |
+| **SkyeCDE / SkyDexia src** | `skydexia-session-bridge.js`, `skydexia-enterprise-profile.js` | Local session bridge |
+| **SkyeCDE / SuperIDEia src** | `superideia-session-bridge.js`, `superideia-enterprise-profile.js` | Local session bridge |
+| **SkyeBundle** | `11-cohort-command`, `14-authority-binder-generator`, `05-local-lead-scrubber` | Local token checks |
+| **SuperIDE public apps** | `public/S0L26-0s/s0l26-0s-HOME-editorial.html` | Local only |
+| **SuperIDE / SkyeDex4.6** | (`SuperIDE/SkyeDex4.6/index.html`) | Local auth |
+| **SuperIDE / SkyeBlog** | `SkyeBlog/index.html`, `homepage.html` | No gate |
+| **SuperIDE / SkyeDocxPro** | `SkyeDocxPro/index.html`, `homepage.html` | No gate |
+| **SuperIDE / Neural-Space-Pro** | `Neural-Space-Pro/index.html` | No gate |
+| **SuperIDE / SovereignVariables** | `SovereignVariables/index.html` | No gate |
+| **SuperIDE / DemonLeadForge** | `public/S0L26-0s/DemonLeadForge/netlify/functions/_lib/admin.js` | Standalone admin secret |
+| **SuperIDE / ContractorNetwork etc.** | All `public/*/index.html` apps | No auth at all |
+
+---
+
+## What We Have (Current State)
+
+### 0megaSkyeGate — The Canonical Auth Authority
+Path: `Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate/`
+
+The gate is a Cloudflare Worker with two auth modes already live:
+
+**Founder/Admin flow** (`src/auth/verifyAppToken.ts`):
+- Header: `x-founders-gateway-key` — timing-safe compared to `FOUNDER_GATEWAY_KEY` env var
+- Returns `AuthContext` with `authMode: 'founder-gateway'`, `founderGateway: true`, no rate limit, all aliases open
+- This IS the sovereign admin flow
+
+**App/User flow** (`src/auth/verifyAppToken.ts`):
+- Header: `Authorization: Bearer {token}` — SHA-256 hashed vs `app_tokens` table in D1
+- Returns scoped `AuthContext` with `orgId`, `walletId`, `allowedAliases`, `rateLimitRpm`
+
+**Admin routes already live in gate:**
+- `src/routes/admin-aliases.ts`, `admin-providers.ts`, `admin-routing.ts`, `admin-wallets.ts`, `keys-list.ts`, `keys-revoke.ts`, `usage.ts`, `wallet-balance.ts`
+- These exist but only accessible server-side via admin token — no unified front-end admin dashboard yet
+
+---
+
+## Architecture: What We Are Building
+
+One login → one gate-issued session token → accepted by every 0s app.
+
+```
+User → 0s Login Page → 0megaSkyeGate /v1/auth/login
+                              ↓
+                     Gate verifies identity
+                     Gate issues signed session JWT
+                              ↓
+              Session token in localStorage + secure cookie
+                              ↓
+     Every 0s app reads token → sends as Bearer to gate
+                              ↓
+           Gate returns user identity + wallet + role
+```
+
+Founder bypass unchanged: `x-founders-gateway-key` header = instant sovereign access, skips login page entirely.
+
+---
+
+## Phase 1 — Gate: Add Login + Session Endpoint
+
+### Files to create/modify in `0megaSkyeGate-The-Actual-Gate/`:
+
+**[✓] `src/routes/auth.ts`** — LIVE: login/logout/me endpoints fully implemented and registered in router.ts
+- `POST /v1/auth/login` — accepts `{ email, password }` or `{ apiKey }`
+  - Founder: validate `FOUNDER_GATEWAY_KEY`, return 30-day founder-scoped JWT
+  - User: validate vs `app_tokens` table, return 14-day scoped JWT
+  - JWT payload: `{ sub: userId, orgId, walletId, role, allowedAliases, iat, exp }`
+- `POST /v1/auth/logout` — mark token revoked in `sessions` table
+- `GET /v1/auth/me` — return decoded session for any valid Bearer
+
+**[✓] `src/db/migrations/0004_sessions.sql`** — D1 sessions table created and in use by gate
+```sql
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  token_hash TEXT NOT NULL UNIQUE,
+  user_id TEXT NOT NULL,
+  org_id TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'user',
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  revoked INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_sessions_token_hash ON sessions(token_hash);
+```
+
+**[✓] `src/auth/verifySessionToken.ts`** (NEW)
+- Verify incoming Bearer JWT
+- Check `sessions` table revocation flag
+- Return `SessionContext`: `userId`, `orgId`, `role`, `walletId`
+
+**[✓] `src/index.ts`** (MODIFY)
+- Register `/v1/auth/*` routes
+
+**[✓] `wrangler.toml`** (MODIFY)
+- Add `SESSION_JWT_SECRET` env binding
+
+---
+
+## Phase 2 — Shared 0s Auth SDK (client-side)
+
+**[✓] `Skye0s-s0l26/Sky0s-Platforms/0s-auth-sdk/index.js`** (NEW)
+Single vanilla JS file, zero deps, works via `<script>` tag or import in any app.
+Exposes: `login()`, `loginWithFounderKey()`, `logout()`, `getToken()`, `getSession()`, `isAuthenticated()`, `isFounder()`, `isAdmin()`, `fetchWithAuth()`, `onSessionExpired()`
+
+**[✓] `Skye0s-s0l26/Sky0s-Platforms/0s-auth-sdk/0s-login.html`** (NEW)
+Centralized login page — email/password for users, hidden founder key field (keyboard shortcut).
+On success: redirect to calling app. Token stored in localStorage.
+
+**[✓] `Skye0s-s0l26/Sky0s-Platforms/0s-auth-sdk/README.md`** — SDK docs exist in 0s-auth-sdk/
+Integration guide: drop-in instructions for any 0s app.
+
+---
+
+## Phase 3 — Wire Every App to 0s Auth SDK
+
+Pattern for each app:
+1. Add `<script src="{SDK_URL}/index.js"></script>`
+2. On load: `0sAuth.getSession()` — if null, redirect to login
+3. Replace all direct auth/API calls with `0sAuth.fetchWithAuth(...)`
+4. Remove local JWT logic and env secrets
+
+### Kaixu67
+- [✓] `adminkai.html` — SDK loaded, `0sAuth.isAdmin()`
+- [✓] `portal.html` — OmegaAuth.requireSession() added, `0sAuth.getSession()`
+
+### SkyDex4_fixed
+- [✓] `_shared/auth-unlock.js` — gate-connected, uses /v1/auth/me
+- [✓] `_shared/standalone-session.js` — reads 0s_session / OmegaAuth.getToken() first
+- [✓] `netlify/functions/skymail-send.js` — requireGateSession() / requireAuth() added via runtime.js
+
+### SkaixuPro-IDE / SkyeVault
+- [✓][partial] `netlify/functions/_lib/jwt.js` — own HS256 kept, SkyeVault/index.html gates via OmegaAuth.requireSession()
+- [✓][additive] `netlify/functions/_lib/googleauth.js` — Google OAuth preserved (Netlify stack rule), HTML pages gate via OmegaAuth.requireSession()
+- [✓] `netlify/functions/mint.js`, `deployinfra.js` — verifyGateSession() already implemented and called in both handlers
+
+### SkaixuPro-IDE / skAIxuide
+- [✓] `login.html` — OmegaAuth.requireSession() added, `/v1/auth/login`
+- [✓] `admin_panel.html` — OmegaAuth.requireSession() added
+
+### SkyeHubs / NobleSoles
+- [✓] `netlify/functions/_lib/auth.js` — requireGateSession() added, still has NobleSoles sessions, `GET /v1/auth/me`
+- [✓] `admin.html` — OmegaAuth.requireSession() injected  [✓] `admin.js` — client-side JS on gated page (page-level gate via admin.html is sufficient)
+- [✓] `index.html`, `client.html`, `caregiver.html` — OmegaAuth.requireSession() injected
+
+### SkyeCDE / SkyDexia-2.6
+- [✓] `_shared/auth-unlock.js` — gate-connected, uses /v1/auth/me + 0s_session key
+- [✓] `netlify/functions/*.js` (all 16 handlers) — requireAuth() added (tries internal sxt session, falls back to gate); exported from runtime.js
+- [✓] `server.js` — upgraded to await requireAuth(event) (internal session OR gate Bearer)
+
+### SkyeCDE / SkyDexia src
+- [✓] `skydexia-session-bridge.js` — exports getGateToken(), GATE_URL, GATE_SESSION_KEY
+- [✓] `skydexia-enterprise-profile.js` — gateUrl and gateSessionKey added to profile state
+
+### SkyeCDE / SuperIDEia src
+- [✓] `superideia-session-bridge.js` — exports getGateToken(), GATE_URL, GATE_SESSION_KEY
+- [✓] `superideia-enterprise-profile.js` — gateUrl and gateSessionKey added to profile state
+
+### SkyeBundle
+- [✓] `11-cohort-command/index.html` (OmegaAuth.requireSession() injected) [✓] app.js — pure client-side UI, no auth API calls; page-level gate is sufficient
+- [✓] `14-authority-binder-generator/index.html` (OmegaAuth.requireSession() injected) [✓] app.js — pure client-side UI, no auth API calls; page-level gate is sufficient
+- [✓] `05-local-lead-scrubber/app.js` — pure client-side UI, no auth API calls; page-level gate via index.html is sufficient
+- All three: replace local token/admin checks with `0sAuth.isAuthenticated()`
+
+### SuperIDE Hub + subapps
+- [✓] `SuperIDE/public/index.html` — OmegaAuth.getSession() wired, founder panel exists
+- [✓] `SuperIDE/public/SkyDex4.6/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/SkyeBlog/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/SkyeDocxPro/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/Neural-Space-Pro/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/SovereignVariables/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/S0L26-0s/DemonLeadForge/netlify/functions/_lib/admin.js` — async requireGateSession() added (ESM, additive alongside BEMON_KEY checks)
+- [✓] `SuperIDE/public/AE-Flow/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/API-Playground/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/ContractorIncomeVerification/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/ContractorNetwork/index.html` — OmegaAuth.getSession() pre-existing
+- [✓] `SuperIDE/public/ContractorWorkflowSuite/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/GBPRescueSuite/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/GoogleBusinessProfileRescuePlatform/index.html` + all sub-apps — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/Neural-Space-Pro/index.html` — OmegaAuth.requireSession() injected
+- [✓] `SuperIDE/public/REACT2HTML/index.html` — OmegaAuth.requireSession() injected
+
+---
+
+## Phase 4 — Admin / Founder Dashboard
+
+Gate admin routes already exist (`admin-aliases`, `admin-wallets`, `keys-list`, etc.) — just need the front-end:
+
+- [✓] `Skye0s-s0l26/Sky0s-Platforms/0s-auth-sdk/admin.html` (CREATED)
+  - Gated: blocks unless `session.auth_mode === 'founder-gateway'` (access-denied screen otherwise)
+  - Panels: session info, keys (list/issue/revoke), wallets (balance/credit), routing rules, providers, traces, jobs, errors, smoke tests
+
+---
+
+## Phase 5 — Env Var Cleanup
+
+After all apps are verified working through the gate:
+
+**Code changes (done):**
+- [✓] `DemonLeadForge/netlify/functions/chat.js` — removed OpenAI SDK import + direct `OPENAI_API_KEY` usage; now routes via `fetch → ${OMEGA_GATE_URL}/v1/chat` with `OMEGA_GATE_SERVICE_KEY` Bearer token; `callGateChat()` helper added
+- [✓] `DemonLeadForge/netlify/functions/health.js` — `openaiConfigured` flag replaced with `gateConfigured: Boolean(OMEGA_GATE_SERVICE_KEY)`
+- [✓] NobleSoles auth migrated to `requireGateSession` (no JWT_SECRET usage in code)
+- [✓] SkyeVault auth migrated to `verifyGateSession` (no JWT_SECRET usage in code)
+
+**Netlify dashboard cleanup (deployment tasks — requires Netlify account access):**
+- [✗] Remove `JWT_SECRET` from `IDE-Autonomy-Upgrade-Package` Netlify env (legacy archive — code at `artifacts/legacy-archive/IDE-Autonomy-Upgrade-Package` still references it but project is archived)
+- [✗] Remove `JWT_SECRET` from `SkyeHubs/NobleSoles` Netlify env (code no longer uses it)
+- [✗] Remove `JWT_SECRET` from `SkaixuPro-IDE/SkyeVault` Netlify env (code no longer uses it)
+- [✗] Remove `OPENAI_API_KEY` from DemonLeadForge Netlify env (code no longer uses it; add `OMEGA_GATE_SERVICE_KEY` with issued gate app-token instead)
+- [✗] Remove any leftover `ADMIN_SECRET` / `ADMIN_KEY` from DemonLeadForge Netlify env (code uses `BEMON_KEY` for admin; any old `ADMIN_*` vars are unused)
+- [✗] Audit other apps for per-app `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` that bypass the gate (SkyeCloud page-deploy.js is UI docs only — no server-side key use; legacy archive Prototype-SkyDex4.6 uses it but is archived)
+
+---
+
+## Execution Order
+
+| Phase | What | Priority |
+|-------|------|----------|
+| 1 | Gate: `/v1/auth/login`, `/v1/auth/me`, sessions table | P0 — blocks everything |
+| 2 | 0s-auth-sdk + centralized login page | P0 — needed by all apps |
+| 3a | SkyDexia-2.6, SkyeDex4_fixed, Kaixu67 admin/portal | P1 — most actively used |
+| 3b | SkaixuPro-IDE, SkyeHubs/NobleSoles, SuperIDEia | P1 |
+| 3c | SuperIDE subapps, SkyeBundle, public/* apps | P2 |
+| 4 | Admin dashboard frontend | P2 |
+| 5 | Env var cleanup | P3 — after all apps verified |
+
+---
+
+## Security Requirements
+
+- `SESSION_JWT_SECRET` lives only in Cloudflare Worker secrets — never in client code
+- `x-founders-gateway-key` only used server-side or in founder tooling — never hardcoded in public JS
+- All endpoints HTTPS-only (Cloudflare enforces this)
+- Every request checks `sessions.revoked` flag before serving
+- Timing-safe compare on all secret checks (already in gate's `timingSafeEqual`)
+- Zero raw tokens or keys in any log or trace output
+
+---
+
+## ADDENDUM — REPO REALITY CHECK (March 20 2026, post-file audit)
+
+This section is appended after reading the entire directive and then running a whole-repo scan for auth and provider-routing behavior.
+
+Important correction:
+- The checklist above contains multiple entries marked done that are not fully true at runtime across the entire repo.
+- The central gate/auth architecture exists, but full cutover is incomplete.
+
+### Audit method used
+
+- Scanned authored files (`*.js`, `*.mjs`, `*.ts`, `*.tsx`, `*.html`) across the full repo excluding `node_modules`, `.git`, `vendor`, `lib`, `dist`, `build`, `src-gen`.
+- Looked for:
+  - gate auth/session patterns: `requireGateSession`, `verifyGateSession`, `OmegaAuth.requireSession`, `auth-unlock`, `standalone-session`, `OMEGA_GATE_URL`
+  - direct provider paths: `api.openai.com`, `api.anthropic.com`, `generativelanguage.googleapis.com`
+  - local auth islands: `JWT_SECRET`, `ADMIN_JWT_SECRET`, `SYNC_JWT_SECRET`, `AUTH_SECRET`
+
+### Verified reality summary
+
+- Gate/auth footprint is broad: many apps are wired to gate/session patterns.
+- But direct provider and local-JWT auth still exist in active runtime surfaces.
+- Therefore: "everything runs auth through one gate + one auth portal" is currently **false**.
+
+### Critical discrepancies (must-fix)
+
+#### 1) Direct provider calls still exist outside gate lane [✗]
+
+Examples in active runtime paths:
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skyeportal/netlify/functions/skye-portal.mjs`
+  - Calls `https://api.openai.com/v1/responses` directly.
+- `Sky0s-Platforms/SuperIDE/public/S0L26-0s/SkyeCloud/netlify/functions/ai-chat.mjs`
+  - Uses `OPENAI_API_KEY` and posts to OpenAI directly.
+- `Sky0s-Platforms/SuperIDE/public/S0L26-0s/skyedirector-ai-studio/netlify/functions/_lib/openai.mjs`
+  - Dedicated direct OpenAI helper.
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/projectaegis-skyex/index.html`
+  - Direct Gemini endpoint in browser code.
+- `Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/DebugPro/DebugPro.html`
+  - Direct Anthropic endpoint in browser code.
+
+Result:
+- Provider normalization policy is not fully enforced repo-wide.
+
+#### 2) Local JWT/admin auth islands still exist [✗]
+
+Examples in active runtime paths:
+- `Sky0s-Platforms/SkyeMail2.0/netlify/functions/auth-login.js`
+  - Signs local JWT with `JWT_SECRET`.
+- `Sky0s-Platforms/SuperIDE/public/S0L26-0s/Mini-Ops-SUite/netlify/functions/_util.js`
+  - Uses `SYNC_JWT_SECRET` local JWT flow.
+- `Sky0s-Platforms/SuperIDE/netlify/functions/admin-login.ts`
+  - Uses `ADMIN_JWT_SECRET` local admin token flow.
+
+Result:
+- Auth source of truth remains distributed across app-specific auth implementations.
+
+#### 3) Additive wording vs. strict centralization requirement mismatch [✗]
+
+Current docs state gate is additive with existing auth stacks.
+Your current requirement is stricter: one gate and one auth portal for all apps.
+
+Result:
+- Existing "additive" model conflicts with current enforcement goal and must be replaced by a strict routing/auth policy.
+
+### What is actually correct and usable right now [✓]
+
+- Canonical gate exists and has `/v1/auth/login`, `/v1/auth/logout`, `/v1/auth/me`.
+- Shared SDK exists (`0s-auth-sdk`) and is usable as the only browser/session entrypoint.
+- Multiple high-traffic surfaces already use `OMEGA_GATE_URL` and gate session checks.
+
+### Revised plan (replacement execution plan from this point)
+
+#### Phase A — Freeze and policy lock (P0)
+
+1. Add a hard policy check script at repo root that fails CI/build when non-gate provider endpoints are used in runtime code outside allowlisted gate projects.
+2. Allowlist only:
+   - `Sky0s-Platforms/0megaSkyeGate/**`
+   - explicit archived/docs paths (read-only evidence)
+3. Block direct usage of:
+   - `api.openai.com`
+   - `api.anthropic.com`
+   - `generativelanguage.googleapis.com`
+   outside allowlist.
+
+Definition of done:
+- Policy check fails on any newly introduced direct provider path.
+
+#### Phase B — Runtime provider cutover (P0)
+
+Migrate these active app paths first:
+- `SkaixuPro-IDE/.../skyeportal/netlify/functions/skye-portal.mjs`
+- `SuperIDE/public/S0L26-0s/SkyeCloud/netlify/functions/ai-chat.mjs`
+- `SuperIDE/public/S0L26-0s/skyedirector-ai-studio/netlify/functions/_lib/openai.mjs`
+- Browser direct-call surfaces (`projectaegis-skyex`, `DebugPro`, and any remaining Gemini/OpenAI/Anthropic browser calls)
+
+Cutover rule:
+- All AI requests go through `OMEGA_GATE_URL` with gate-issued token/session context.
+
+Definition of done:
+- No direct provider endpoint strings remain in active runtime app code outside the gate project itself.
+
+#### Phase C — Auth authority consolidation (P0)
+
+Migrate local JWT/admin islands to gate session verification:
+- Replace `JWT_SECRET`, `ADMIN_JWT_SECRET`, `SYNC_JWT_SECRET`, `AUTH_SECRET` runtime dependencies in app-level auth handlers with gate session checks (`/v1/auth/me` or shared verifier helper).
+- Keep local tokens only where they are gate-derived short-lived internal service tokens, not user auth source.
+
+Definition of done:
+- User/admin authentication flows originate from gate sessions and are validated through gate identity context.
+
+#### Phase D — Directive truth sync (P1)
+
+After code cutover:
+1. Re-run full-repo scan.
+2. Update this directive statuses based on scan outputs only.
+3. Keep this addendum as evidence ledger until all discrepancy rows are closed.
+
+Definition of done:
+- This directive and scan evidence agree with actual runtime behavior.
+
+### Updated status against your strict requirement
+
+- Requirement: one gate + one auth portal for entire 0s runtime.
+- Current state: **not done**.
+- Next executable state: run Phases A-C above and then re-audit.
+
+---
+
+## REMEDIATION EXECUTION TODO (Autopilot)
+
+Status key for this section: [✓] done  [ ] pending
+
+1. [✓] Create remediation execution checklist in this file.
+2. [ ] Implement provider policy blocker script and wire into package scripts.
+3. [ ] Cut over `SkaixuPro-IDE/.../skyeportal/netlify/functions/skye-portal.mjs` to gate lane.
+4. [ ] Cut over `SuperIDE/public/S0L26-0s/SkyeCloud/netlify/functions/ai-chat.mjs` to gate lane.
+5. [ ] Cut over `SuperIDE/public/S0L26-0s/skyedirector-ai-studio/netlify/functions/_lib/openai.mjs` to gate lane helper.
+6. [ ] Cut over direct browser provider calls in identified active files to gate lane.
+7. [ ] Migrate local auth islands in identified active files to gate-session verification.
+8. [ ] Run full repo re-audit and capture mismatch counts.
+9. [ ] Update this TODO and discrepancy status with checkmarks based on re-audit evidence.
+
+

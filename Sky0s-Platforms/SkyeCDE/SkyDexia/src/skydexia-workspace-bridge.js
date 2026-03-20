@@ -1,4 +1,4 @@
-export const SKYDEXIA_WORKSPACE_ROOT = 'Sky0s-Platforms/SkyeCDE';
+export const SKYDEXIA_WORKSPACE_ROOT = 'Sky0s-Platforms/SkyeCDE/SkyDexia';
 
 export function getWorkspaceBridgeStatus() {
   return {

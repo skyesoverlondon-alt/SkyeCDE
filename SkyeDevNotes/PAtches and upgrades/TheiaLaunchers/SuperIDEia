@@ -1,0 +1,120 @@
+SuperIDEia Plan
+
+Core rule
+
+SuperIDE stays the platform.
+Theia stays the support layer.
+SuperIDEia must not collapse SuperIDE into a generic Theia workbench.
+
+Current source of truth for SuperIDE
+
+Primary product root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE
+
+Key active files
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/package.json
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/src/App.tsx
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/src/main.tsx
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/src/data/app-registry.json
+
+Planned upgraded build root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia
+
+Design goal
+
+SuperIDEia should keep SuperIDE as the visible enterprise IDE and platform network while adding Theia-powered support features for coding workflows, launcher control, workspace access, and process orchestration.
+
+File-by-file build plan
+
+1. Preserve the current SuperIDE core
+
+Keep authoritative and largely untouched:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/src/App.tsx
+  Purpose: main product shell.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/src/data/app-registry.json
+  Purpose: SuperIDE surface registry.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/worker/
+  Purpose: service/runtime backend.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SuperIDE/netlify/
+  Purpose: deployed backend flows.
+
+2. Create the SuperIDEia folder
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/
+
+Planned files:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/README.md
+  Purpose: documents that SuperIDEia is SuperIDE plus Theia support infrastructure.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/package.json
+  Purpose: orchestration scripts for wrapper build, local run, and health checks.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-shell.tsx
+  Purpose: top-level shell that keeps SuperIDE front and center.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-auth-bridge.ts
+  Purpose: federates session context without replacing SuperIDE auth.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-workspace-bridge.ts
+  Purpose: lets SuperIDE invoke Theia file and terminal services when useful.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-launcher.ts
+  Purpose: launcher-specific bootstrap and live URL handoff.
+
+3. Theia support files to extend
+
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/browser/launcher-service.ts
+  Purpose: client launcher calls for SuperIDEia startup.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/launcher-backend-module.ts
+  Purpose: bind SuperIDEia backend services.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-studio-launcher-widget.tsx
+  Purpose: give SuperIDEia its own coding-environment action.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-app-opener.ts
+  Purpose: preserve full-launch behavior for SuperIDEia.
+- /workspaces/SkyeCDE/Skye0s-s0l26/scripts/sync-skye-catalog.js
+  Purpose: register SuperIDEia as a new launchable build without overwriting SuperIDE.
+
+4. Add backend runtime control
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/superideia-launcher-endpoint.ts
+  Purpose: start or attach SuperIDEia runtime and return the live URL.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/superideia-process-service.ts
+  Purpose: port allocation, health checks, logs, restart, and shutdown.
+
+5. Preserve SuperIDE-specific power systems
+
+Do not move these concerns into Theia:
+- SuperIDE app registry logic
+- org and workspace behavior
+- audit or evidence systems
+- deploy and worker pipelines
+- embedded surface model
+
+Theia should augment only:
+- terminals
+- coding tasks
+- navigator/workspace shell access
+- extension and assistant tooling
+- launcher integration
+
+6. Acceptance criteria
+
+SuperIDEia is done when:
+- SuperIDE remains the visible product.
+- SuperIDEia launches from the 0s catalog as a full app.
+- users can access coding workflows, terminals, files, and support tooling through the upgraded shell.
+- SuperIDE runtime and governance systems remain owned by SuperIDE, not Theia.
+
+7. Delivery sequence
+
+Phase 1
+- scaffold SuperIDEia wrapper
+
+Phase 2
+- add launcher and runtime process control
+
+Phase 3
+- wire auth and workspace bridges
+
+Phase 4
+- register SuperIDEia beside SuperIDE in the 0s catalog
+
+Phase 5
+- test app launch, coding flows, and service stability

@@ -55,6 +55,8 @@
     a { color: var(--gold); }
     @media (max-width: 1024px){ .grid{ grid-template-columns: 1fr; } .kpis{ grid-template-columns: repeat(2, minmax(0,1fr)); } .split{ grid-template-columns: 1fr; } }
   </style>
+  <script src="/0s-auth-sdk/index.js"></script>
+  <script>OmegaAuth.requireSession();</script>
 </head>
 <body>
   <div class="shell">

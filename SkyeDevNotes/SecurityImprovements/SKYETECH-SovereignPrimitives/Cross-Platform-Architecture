@@ -1,0 +1,292 @@
+# SKYETECH Sovereign Primitives — Cross-Platform Architecture Plan
+
+## Mission
+This is the file for the upgrade talk: how the current sovereign apps should be woven together project-wide across the 0s so they stop behaving like separate surfaces and start behaving like one operating ecosystem.
+
+The focus here is **integration, standardization, rollout, and upgrades** — not basic app descriptions.
+
+Companion documents in this folder:
+- `SkyeHawk` — direct description of SkyeHawk, what exists today, and the full implementation backlog.
+- `IDEia-Completion-Reality` — direct description of the gap between verified baseline parity and full enterprise completion for the IDEia lanes.
+
+---
+
+## 1. Architecture principle
+The ecosystem should be built around **shared sovereign primitives**, not app-specific security islands.
+
+Every app can keep its own UX, but the following primitives should become universal:
+1. **Identity primitive** — shared auth, session, org/workspace scope, role context
+2. **Policy primitive** — SKNore zones/classification/action rules
+3. **AI primitive** — 0megaSkyeGate as the only provider boundary
+4. **Secret primitive** — SovereignVariables + SkyeVault as config and vault governance plane
+5. **Package primitive** — `.skye` / SKYE Capsule for portable encrypted state
+6. **Storage primitive** — SkyeVault Pro / SkyeDrive / vault-backed local-first sync
+7. **Event primitive** — sovereign events + timeline fanout
+8. **Release primitive** — release seals, release gates, and CI policy enforcement
+
+---
+
+## 2. Proposed target-state model
+
+### Layer 1 — Sovereign identity and access
+**Current foundations already present:** shared auth model, RBAC, worker-side Access JWT verification.
+
+**Directive:**
+- every app request resolves `org_id`, `user_id`, `role`, `ws_id`
+- every privileged action uses shared auth headers / standalone session contract
+- every edge/worker privileged route enforces Access JWT validation
+
+**Outcome:** a single trust spine across the whole 0s.
+
+---
+
+### Layer 2 — Sovereign policy engine
+**Current foundations already present:** SKNore and the SovereignPrimitives zone/guardrail model.
+
+**Directive:**
+- expand SKNore from path deny-lists into a unified zone/classification engine
+- attach a zone/classification to files, records, docs, packages, variables, prompts, exports, and releases
+- every action resolves a capability decision before proceeding:
+  - ai_read
+  - ai_summarize
+  - ai_rewrite
+  - export
+  - publish
+  - release
+  - deploy
+  - share
+  - backup
+  - human_edit
+
+**Outcome:** one enforcement brain for the whole ecosystem.
+
+---
+
+### Layer 3 — AI traffic boundary
+**Current foundations already present:** 0megaSkyeGate catalog role, PR provider-signature gate, SKNore AI protections.
+
+**Directive:**
+- all AI requests route through 0megaSkyeGate
+- no app stores or uses direct third-party provider credentials in app UI code
+- gate applies:
+  - provider allow/deny policy
+  - SKNore content filtering
+  - org/workspace policy resolution
+  - request logging into sovereign events
+  - signature/pattern leak checks where applicable
+
+**Outcome:** one sovereign AI control plane.
+
+---
+
+### Layer 4 — Secrets and sovereign variables plane
+**Current foundations already present:** SovereignVariables, SkyeVault, vault-role controls, worker/KV guidance.
+
+**Directive:**
+- SovereignVariables becomes the modeling and packaging interface for variables
+- SkyeVault becomes the governance interface for approvals, rotation, attestation, and break-glass
+- worker/KV/R2-backed secret stores become the privileged storage path
+- variables get metadata:
+  - owner
+  - workspace
+  - environment
+  - classification zone
+  - rotation policy
+  - release policy
+  - allowed destination apps
+
+**Outcome:** secrets stop being loose env strings and become sovereign managed assets.
+
+---
+
+### Layer 5 — Secure package and data portability plane
+**Current foundations already present:** shared `SkyeSecure` runtime, `.skye` validation, SKYE Capsule concept.
+
+**Directive:**
+- standardize `.skye` as the default encrypted app-state package format
+- introduce package profiles:
+  - `skye-state` for app state
+  - `skye-doc` for document/content handoff
+  - `skye-config` for environment/config bundles
+  - `skye-vault-capsule` for multi-object secured exports
+  - `skye-release-seal` for signed release manifests
+- all packages must carry:
+  - app_id
+  - schema_version
+  - workspace scope
+  - classification zone
+  - exported_at
+  - integrity metadata
+
+**Outcome:** sovereign data can move safely between apps and platforms without falling back to ad hoc JSON.
+
+---
+
+### Layer 6 — Vault-backed storage and sync
+**Current foundations already present:** SkyeVault Pro, `.skye` doc handling, disk sync, vault manifests, hosted backup hooks.
+
+**Directive:**
+- make SkyeVault Pro the canonical local-first sync substrate for high-value assets
+- support dual mode:
+  - local vault mode
+  - hosted sovereign vault mode
+- every imported/exported object should map to:
+  - vault item id
+  - logical source app
+  - classification zone
+  - integrity hash
+  - sync lineage
+
+**Outcome:** the vault becomes a substrate for the 0s, not just a standalone app.
+
+---
+
+### Layer 7 — Event bus and cross-app interaction model
+**Current foundations already present:** suite intents, sovereign events, localStorage bridge drafts, `postMessage`, vault bridge transforms.
+
+**Directive:**
+Create a single **Sovereign Interaction Contract** used everywhere.
+
+#### Required event envelope
+- `event_id`
+- `source_app`
+- `target_app`
+- `workspace_id`
+- `org_id`
+- `intent_name`
+- `classification_zone`
+- `payload_ref` or inline `payload`
+- `requires_vault`
+- `requires_policy_eval`
+- `correlation_id`
+- `created_at`
+- `signature`
+
+#### Transport modes
+1. **Local-first mode** — localStorage / BroadcastChannel / postMessage for same-browser surfaces
+2. **Platform mode** — Netlify/worker relay for hosted cross-surface actions
+3. **Audit mode** — sovereign event emission for all non-trivial actions
+
+**Outcome:** apps stop inventing one-off bridges and start speaking one sovereign protocol.
+
+---
+
+### Layer 8 — Sovereign navigation and hidden command surface
+**Current foundations already present:** SkyeHawk launcher rail in SuperIDE, SkyeHawk popup guidance in Neural Space Pro, and the standalone `skyehawk.js` navigator terminal inside SkaixuPro-IDE.
+
+**Directive:**
+- define **SkyeHawk** as the sovereign navigation layer for the 0s
+- allow SkyeHawk to open from:
+  - visible launcher controls where the shell already exposes them
+  - a hidden command gesture / hotkey path for power users
+  - a text-entry command path such as `skyehawk`, `open skyehawk`, or `show system menu`
+- make SkyeHawk operate in two modes:
+  - `menu mode` for searchable app, lane, and system navigation
+  - `command mode` for routing users directly to platform surfaces, workspaces, or recovery/admin lanes
+- use one shared route registry so SkyeHawk can see:
+  - core 0s platforms
+  - SkyeCDE hub and IDEia lanes
+  - recovery, contractor, admin, vault, and gateway lanes
+- require SkyeHawk to respect policy and role context before exposing privileged destinations
+
+**Outcome:** the 0s gets one sovereign command surface for discovery and movement instead of separate ad hoc menus.
+
+---
+
+## 3. How the existing apps should be woven in
+
+### SKNore
+Becomes the universal policy engine called by all apps before AI, export, publish, deploy, and release.
+
+### SovereignVariables
+Becomes the secure config authoring and exchange surface. It should feed vault-controlled secret release, not just local exports.
+
+### SovereignPrimitives
+Becomes the blueprint/reference implementation for zones, capsules, guardrails, seals, and decision ledger logic.
+
+### SkyeVault / SkyeVault Pro
+Become the operational vault and storage substrate for secure state, approvals, break-glass, and cross-app import/export.
+
+### SkyDex 4.6 / SuperIDE shell
+Remain the orchestration bench and launcher, but move from browser-only handoffs to signed sovereign interaction contracts.
+
+### SkyeHawk
+Becomes the shared sovereign navigation surface. It should stop living as a one-off launcher pattern inside individual platforms and instead become the hidden-command and visible-menu layer that can open SkyeCDE, platform systems, recovery lanes, and role-approved app clusters across the whole 0s.
+
+### SkyeDocxPro / SkyeBlog
+Become content producers that output classified, sealed, and route-aware sovereign packages.
+
+### SkyeChat / SkyeMail
+Become policy-aware communication endpoints for sovereign distribution, not just plain output destinations.
+
+### 0megaSkyeGate
+Becomes the mandatory AI execution gateway and provider boundary for the whole 0s.
+
+---
+
+## 4. Rollout plan
+
+### Phase 1 — Formalize the contracts
+- define SKNore zones as a shared schema
+- define sovereign event envelope as a shared schema
+- define `.skye` package profiles and metadata rules
+- define suite-intent / cross-app interaction contract
+
+### Phase 2 — Centralize enforcement
+- mirror SKNore checks server-side and worker-side
+- require sovereign event emission for privileged actions
+- require 0megaSkyeGate routing for all AI calls
+- require vault-backed handling for secret-class assets
+
+### Phase 3 — Upgrade routing
+- replace ad hoc localStorage-only bridges with signed interaction envelopes
+- support queue + ack + replay behavior across apps/platforms
+- persist interaction history into sovereign events/timeline
+
+### Phase 3.5 — Promote SkyeHawk into the system menu layer
+- define the canonical SkyeHawk trigger contract for visible and hidden entry
+- add SkyeCDE as a first-class SkyeHawk destination
+- expose searchable app/platform/lane route metadata to the SkyeHawk layer
+- support role-aware filtering so admin/gateway/recovery surfaces only appear when allowed
+- standardize `open menu`, `show system`, and `skyehawk` command intents across platforms
+
+### Phase 4 — Unify package handling
+- make all sensitive export/import flows rely on shared `SkyeSecure`
+- add classification and seal metadata into exported packages
+- standardize import validators across all apps
+
+### Phase 5 — Platform-wide vault adoption
+- map docs, variables, release assets, and sensitive records into the vault model
+- allow vault-origin push into SkyeDocxPro, SkyeBlog, SkyeChat, SkyeMail, SkyeDrive, and deployment lanes
+- require approvals/break-glass for defined high-risk actions
+
+### Phase 6 — Executive release governance
+- tie release seals, release gates, and CI policy gates together
+- require evidence packages for deploy/release workflows
+- log seal + release actions into sovereign events
+
+---
+
+## 5. Non-negotiable project-wide rules
+
+1. **No direct provider calls from downstream apps.** AI always routes through 0megaSkyeGate.
+2. **No sensitive export without policy evaluation.** SKNore/classification must resolve first.
+3. **No privileged secret handling outside vault-governed paths.**
+4. **No secure package without shared `.skye` runtime rules.**
+5. **No cross-app handoff without sovereign interaction metadata.**
+6. **No privileged action without sovereign event emission.**
+7. **No release without CI/release gate coverage.**
+
+---
+
+## 6. What success looks like
+When this is done, the 0s will behave like one sovereign ecosystem:
+- apps can talk to each other across platforms
+- data can move through encrypted, validated package contracts
+- secrets are modeled, approved, rotated, and audited instead of casually copied
+- AI traffic is routed through one secure boundary
+- every important action is policy-checked and event-recorded
+- the vault acts as a real substrate for secure assets
+- SuperIDE remains the orchestration brain, but the rules work even outside SuperIDE
+
+That is the difference between a collection of apps and a true operating system ecosystem.

@@ -33,6 +33,8 @@
     .intro-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 2px}
     @media (max-width:760px){.intro-actions{flex-direction:column}.skip-intro-btn{right:16px;bottom:16px}}
   </style>
+  <script src="/0s-auth-sdk/index.js"></script>
+  <script>OmegaAuth.requireSession();</script>
 </head>
 <body class="has-live-bg">
   <iframe class="app-background-frame" src="./background.html" title="Background" aria-hidden="true" tabindex="-1"></iframe>

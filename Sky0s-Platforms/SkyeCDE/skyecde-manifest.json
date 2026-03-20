@@ -6,9 +6,9 @@
       "id": "skydexia",
       "label": "SkyDexia",
       "status": "verified",
-      "href": "./SkyDexia/index.html",
+      "href": "./SkyDexia-2.6/index.html",
       "source": "../SkyDex/SkyDex4_fixed/index.html",
-      "summary": "SkyDex upgraded under SkyeCDE with Theia-backed workspace, terminal, and full-launch support."
+      "summary": "SkyDexia 2.6 is the verified autonomous package lane under SkyeCDE with real workspace, task, runtime, and release ownership."
     },
     {
       "id": "superideia",

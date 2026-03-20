@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChromeBoard Managed Bootstrap Setup</title>
+  <style>
+    body{font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0e1120;color:#eef1ff;margin:0;padding:24px;max-width:860px}
+    h1,h2{margin:0 0 10px}
+    .card{background:#171b2d;border:1px solid #2d355d;border-radius:16px;padding:16px;margin:0 0 16px}
+    input,textarea{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #394374;background:#0c1020;color:#fff;padding:12px}
+    button{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#6d4aff,#3a82ff);color:#fff;font-weight:700;cursor:pointer;margin-top:10px}
+    code,pre{background:#0b0f1d;color:#dfe5ff;border-radius:12px;padding:2px 6px}
+    pre{padding:14px;overflow:auto}
+    .muted{color:#b7c0e8}
+  </style>
+</head>
+<body>
+  <h1>ChromeBoard Managed Bootstrap Setup</h1>
+  <div class="card">
+    <h2>1) Set the ChromeBoard URL</h2>
+    <p class="muted">For most users, put your live ChromeBoard site URL here — usually your Netlify URL or custom domain. Only use a local URL during development. Enterprise policy exists only if an admin wants to prefill the same destination for many managed users.</p>
+    <input id="urlInput" placeholder="https://your-chromeboard-site.example" />
+    <button id="saveBtn">Save local URL</button>
+    <p id="saveStatus" class="muted"></p>
+  </div>
+  <div class="card">
+    <h2>1b) Which URL should I actually use?</h2>
+    <p class="muted"><strong>Usually: yes, use your Netlify URL.</strong> Example: <code>https://your-board.netlify.app/</code>.</p>
+    <p class="muted">Use a localhost URL only while developing on your own machine. If you are not doing managed enterprise rollout, you can ignore the policy wording and just save the live board URL here.</p>
+    <p class="muted"><a href="tutorial.html" target="_blank">Open the full step-by-step tutorial</a></p>
+  </div>
+  <div class="card">
+    <h2>2) Managed policy keys supported by this extension</h2>
+    <pre>{
+  "chromeboardUrl": "https://your-chromeboard-site.example",
+  "autoBootstrapOnStartup": true,
+  "forceReimportOnStartup": false,
+  "seedFromInstalledApps": true,
+  "seedFromBookmarkBar": true,
+  "seedFromOpenTabs": false,
+  "seedPinned": true,
+  "seedDesktopId": "desk-main",
+  "seedTags": ["managed", "ops"],
+  "seedItems": [
+    {
+      "name": "Gmail",
+      "url": "https://mail.google.com/",
+      "icon": "✉️",
+      "description": "Managed seed app",
+      "tags": ["email", "google"],
+      "pinned": true
+    }
+  ]
+}</pre>
+  </div>
+  <div class="card">
+    <h2>3) Reality check</h2>
+    <p class="muted">This extension can read enterprise-managed values from <code>chrome.storage.managed</code>, import installed apps that Chrome exposes through <code>chrome.management.getAll()</code>, and import bookmarks/tabs. It still cannot magically read the private native launcher pin list on an unmanaged Chromebook because Chrome does not publish a normal read API for that OS surface.</p>
+    <p class="muted">That is why this build uses the same enterprise lane that admins already use to force-install or pin apps, then mirrors that seed into ChromeBoard.</p>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

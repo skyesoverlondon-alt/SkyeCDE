@@ -1,0 +1,692 @@
+SKY0S PLATFORMS — FULL PLATFORM AND APP CATALOG
+Generated: 2026-03-17 | Source tree: /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/
+Actual total listed surfaces in this catalog: 354 (three hundred fifty-four)
+================================================================================
+
+PURPOSE
+This file is the actual app-and-platform inventory for the Sky0s tree.
+It is meant to answer two questions for every visible platform surface:
+  1. What is this thing?
+  2. What does it do?
+
+READING RULE
+Descriptions below are based on the current repo contents: folder names,
+page names, package files, setup docs, READMEs, and obvious code structure.
+If a folder exists but its product purpose is thin or ambiguous in-repo, that is
+called out directly instead of being hand-waved.
+
+SUPPLEMENTAL HEALTH REPORTS
+Each top-level platform has a companion file under:
+  /workspaces/SkyeCDE/SkyeDevNotes/Maintenance/Apps-Platforms/OverallHealth/
+
+  0megaSkyeGate-health.md
+  chromeboards-launchers-health.md
+  kaixu67-health.md
+  kaixusuper-ide-health.md
+  skaixupro-ide-health.md
+  skydex-health.md
+  skyeerrors-health.md
+  skyebundle-health.md
+  skyecde-health.md
+  skyehubs-health.md
+  skyemail2-health.md
+  skyespace-health.md
+  skyefoundry-health.md
+  sovereignprimitives-health.md
+  superide-health.md
+
+================================================================================
+1. 0megaSkyeGate
+================================================================================
+Path:
+  Sky0s-Platforms/0megaSkyeGate/
+
+What it is:
+  The sovereign AI gateway for the ecosystem. This is the central provider-key
+  boundary and the place where downstream apps should route AI traffic.
+
+Apps and sub-platforms:
+  - 0megaSkyeGate-The-Actual-Gate/ — the live gateway worker codebase handling
+    model routing, auth, usage, and health checks.
+  - GatewayUpgrades/ — upgrade packs, migration notes, and additive gateway
+    feature material.
+
+What it does:
+  - Accepts app-token-authenticated AI requests.
+  - Routes generation, chat, streaming, and health traffic.
+  - Holds provider-facing configuration away from downstream clients.
+
+Health file:
+  OverallHealth/0megaSkyeGate-health.md
+
+================================================================================
+2. ChromeBoards-ChromeBook-Launchers
+================================================================================
+Path:
+  Sky0s-Platforms/ChromeBoards-ChromeBook-Launchers/
+
+What it is:
+  A ChromeBook launcher family with multiple product tiers.
+
+Apps and sub-platforms:
+  - ChromeBoard-MVP/ — the lightweight starter launcher surface.
+  - ChromeBoard-Pro/ — the more feature-complete launcher tier.
+  - ChromeBoard-MaxPro/ — the highest-tier launcher variant.
+
+What they do:
+  - Provide ChromeBook/PWA-style launch surfaces.
+  - Organize and expose app links and local launch actions.
+
+Health file:
+  OverallHealth/chromeboards-launchers-health.md
+
+================================================================================
+3. Kaixu67
+================================================================================
+Path:
+  Sky0s-Platforms/Kaixu67/
+
+What it is:
+  A browser-first pack of many single-purpose kAIxu mini-app pages. This is one
+  platform with dozens of narrow AI tools rather than one monolithic product.
+
+Shared platform surfaces:
+  - index.html — main launcher/hub into the Kaixu67 tool collection.
+  - intro.html — introduction or entry experience.
+  - portal.html — alternate navigation portal into the tool pack.
+  - gateway.html — gateway configuration/testing surface.
+  - smokekai.html — smoke test surface for quick validation.
+  - smokecoveragekai.html — smoke coverage or broader validation surface.
+  - innersanctum.html — private/internal entry page.
+  - livemodekai.html — live mode switch or production-oriented surface.
+  - introskipkai.html — fast path into the tools without the intro sequence.
+  - changelogkai.html — visible change log for the pack.
+  - readmekai.html — in-browser product/readme page.
+  - background.html — shared background/scene surface.
+  - _shared/ — shared JS/CSS/config assets for the Kaixu67 tool family.
+
+Apps and what they do:
+  - adkai.html — generates ad copy and ad concepts.
+  - adminkai.html — admin/control surface for the tool pack.
+  - biokai.html — writes bios and profile summaries.
+  - briefkai.html — creates creative or project briefs.
+  - captionkai.html — generates captions for posts and assets.
+  - casekai.html — drafts case studies and proof narratives.
+  - cheatkai.html — makes cheat sheets or quick-reference outputs.
+  - codekai.html — code generation and coding help surface.
+  - coldkai.html — cold outreach or cold-email drafting.
+  - contractkai.html — drafts contract text and agreement language.
+  - coverkai.html — writes cover letters or cover-page text.
+  - debugkai.html — debugging assistance and issue analysis.
+  - deckkai.html — presentation deck content generation.
+  - diagramkai.html — diagram planning and system mapping help.
+  - flashkai.html — rapid idea cards or flash-output surface.
+  - goalkai.html — goal planning and execution mapping.
+  - habitkai.html — habit planning and routine design.
+  - invoicekai.html — invoice text and billing-document drafting.
+  - jobkai.html — job application or job-description assistance.
+  - journalkai.html — journal prompt and reflection support.
+  - kaixuchat.html — general-purpose chat interface.
+  - landingkai.html — landing page copy and structure generation.
+  - legalkai.html — legal copy assistance and legal-style drafts.
+  - mailkai.html — email drafting.
+  - mapkai.html — mapping/planning concepts or route-style layouts.
+  - mathkai.html — math help and calculation-oriented prompting.
+  - meetkai.html — meeting agendas, summaries, or prep notes.
+  - namekai.html — naming and brand-name generation.
+  - newsletterkai.html — newsletter writing and structure.
+  - offlinepackkai.html — offline-capable pack or local fallback surface.
+  - palettekai.html — palette and color-direction generation.
+  - personakai.html — persona creation and audience modeling.
+  - photokai.html — photo prompt or visual concept generation.
+  - pitchkai.html — pitch writing and pitch-structure assistance.
+  - policykai.html — policy writing and compliance-style text generation.
+  - prkai.html — PR/public-relations copy drafting.
+  - promptkai.html — prompt engineering and prompt drafting.
+  - proposalkai.html — proposals and sales-doc generation.
+  - quickpalettekai.html — faster palette variation surface.
+  - quizkai.html — quiz creation.
+  - readkai.html — reading, summarization, or analysis support.
+  - recipekai.html — recipe generation or food-plan drafting.
+  - repkai.html — repetition/training/rep-tracking style helper; purpose is
+    name-inferred and should be clarified later.
+  - resumekai.html — resume drafting and revision.
+  - reviewkai.html — review response or critique generation.
+  - roastkai.html — roast-style or sharpened critique content.
+  - scriptkai.html — script writing.
+  - searchboosterkai.html — SEO/search-boost style content assistance.
+  - seokai.html — SEO text and search optimization help.
+  - skaixuide.html — bridge page into the related IDE ecosystem.
+  - sqlkai.html — SQL writing and query assistance.
+  - storykai.html — story writing and narrative development.
+  - swotkai.html — SWOT analysis generation.
+  - telemetrylitekai.html — lightweight telemetry/usage visibility page.
+  - testkai.html — testing-focused prompt or QA helper.
+  - themereactorkai.html — theme restyling or theme variation generation.
+  - threadkai.html — thread-writing for social or content chains.
+  - translatekai.html — translation support.
+  - triviago.html — trivia or quiz/training content surface.
+  - voicekai.html — voice/tone generation or rewrite helper.
+  - watchdogkai.html — monitoring/watchdog helper surface.
+
+Health file:
+  OverallHealth/kaixu67-health.md
+
+================================================================================
+4. KaixuSuper-IDE-(Internal Gate)
+================================================================================
+Path:
+  Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/
+
+What it is:
+  An internal browser IDE platform with Netlify functions, worker assets, admin
+  surfaces, legacy gateway material, and several embedded helper apps.
+
+Core IDE and governance surfaces:
+  - index.html — main landing shell for the internal IDE platform.
+  - ide.html — the actual editor/workspace surface.
+  - homelanding.html — alternate platform landing page.
+  - kaixu-admin.html — admin entry surface.
+  - aboutthecreator.html — creator/about page.
+  - investor-trust.html — trust/investor positioning page.
+  - privacy.html — privacy policy surface.
+  - security.html — security posture page.
+  - dpa.html — data processing agreement page.
+  - sla.html — service-level commitment page.
+  - subprocessors.html — subprocessors disclosure page.
+  - terms.html — terms page.
+  - status.html — platform status surface.
+  - smoke-live.html — live smoke validation page.
+  - smoketest.html — test validation surface.
+
+Platform code layers:
+  - app.js — main shell logic.
+  - admin.js — admin behavior.
+  - editor.js — editor behavior.
+  - explorer.js — file explorer behavior.
+  - commands.js — command palette or action routing.
+  - collab.js — collaboration logic.
+  - github.js — GitHub integration layer.
+  - scm.js — source control management helpers.
+  - search.js and search.worker.js — search and workerized search logic.
+  - problems.js — diagnostics/problem panel logic.
+  - outline.js — structure/outline panel logic.
+  - snippets.js — snippet behavior.
+  - templates.js — templates or starter assets.
+  - db.js — database interaction layer for platform logic.
+
+Platform subsystems:
+  - netlify/ — Netlify functions and backend services.
+  - sql/ — SQL artifacts and schema helpers.
+  - worker/ — worker runtime assets.
+  - xnthgateway/ — legacy or alternate gateway material.
+  - docs/ — platform docs.
+  - tests/ — test material.
+  - scripts/ — maintenance/build scripts.
+  - tools/ — utility tooling.
+  - dev notes/ — internal notes.
+
+Embedded app surfaces:
+  - solesheetslogin/ — login and auth surface for the SoleSheets side product.
+  - other apps/jwt secret gen/ — JWT secret generation utility.
+  - other apps/kaixucodepro/ — code-centric helper app.
+  - other apps/neuralspacepro/ — chat/workspace AI app for neural-space style
+    interaction and document-assisted prompting.
+  - other apps/signinpro/ — sign-in or auth helper app.
+
+Health file:
+  OverallHealth/kaixusuper-ide-health.md
+
+================================================================================
+5. SkaixuPro-IDE
+================================================================================
+Path:
+  Sky0s-Platforms/SkaixuPro-IDE/
+
+What it is:
+  A multi-module platform tree made of many named app surfaces, tool modules,
+  and product experiments rather than a single app.
+
+Top-level product surfaces:
+  - SkaixuPro-IDE-Platform/ — the main active platform tree.
+  - skaixuidepro-marketing-site/ — marketing surface for the platform.
+  - SkaixuPro-IDE-Website/ — placeholder or reserved website folder with thin
+    current content.
+
+Modules inside SkaixuPro-IDE-Platform and what they do:
+  - ALLAI.html — broad all-in-one AI entry page.
+  - AI-Directives/ — directive packs and AI operating instructions.
+  - AI-Visual-Guides/ — visual guidance assets for the platform.
+  - Code Genie/ — code generation or coding-assist module.
+  - Data Forge/ — data shaping, transformation, or structured data tooling.
+  - DebugPro/ — debugging-focused module.
+  - DevProof Lab/ — proofing, validation, or evidence-oriented dev module.
+  - GodCode/ — high-authority code generation surface.
+  - GodKode/ — alternate branded code-generation variant.
+  - GodNodes/ — node/workflow/system-graph oriented module.
+  - KaiPrompt/ — prompt authoring and prompt operations module.
+  - Neural-Space-Pro/ — neural-space chat/AI workspace module.
+  - Nexus Forge Studio/ — studio surface for Nexus-branded workflows.
+  - Nexus-Pro/ — Nexus product surface.
+  - NexusConnectHomepage/ — landing/home page for NexusConnect.
+  - NexusDBExplorer/ — database exploration module.
+  - PWA Factory/ — PWA/app generation or packaging module.
+  - PlanItPro/ — planning and project-mapping module.
+  - RegexGen/ — regex generation tool.
+  - SkyeBox/ — box/storage or asset-container surface.
+  - SkyeDocx/ — document authoring/document tooling surface.
+  - SkyeKnife/ — utility toolkit or multi-tool module.
+  - SkyeVault/ — vault/rules/storage management module with strong legacy cloud
+    stack assumptions still visible.
+  - SkyeView-Red/ — red-themed or review-oriented view surface.
+  - SovereignVariables/ — variable/configuration management surface.
+  - THE SOLE NETWORK/ — sole-network branded community/business surface.
+  - WebPilePro/ — web collection/pile-up/research aggregation tool.
+  - Webby/ — web utility or site-builder style module.
+  - kaixumagic/ — magic-tool style helper module.
+  - projectaegis-skyex/ — project-Aegis branded platform experiment.
+  - reactforge/ — React-building or React-template module.
+  - skAIxuide/ — AI-IDE themed module.
+  - skriptx/ — scripting/automation module.
+  - skriptxdataalchemist/ — data-alchemy scripting module.
+  - skyeofferforge/ — offer/proposal creation module.
+  - skyeportal/ — shared portal surface.
+  - skyeuipro/ — UI generation or UI system module.
+  - intro/ — introduction assets.
+  - new/ and NEWNEW/ — staging or in-progress work areas.
+  - skAIxu Editorials/ — editorial/content pack.
+  - skAIxu 2 Editorials/ — second editorial pack.
+  - Images/ — image assets.
+  - netlify/ — backend/serverless support.
+
+Operational note:
+  This platform contains both active modules and obvious staging or legacy
+  folders. The names above are real surfaces in the repo even where the product
+  definition is still thin.
+
+Health file:
+  OverallHealth/skaixupro-ide-health.md
+
+================================================================================
+6. SkyDex
+================================================================================
+Path:
+  Sky0s-Platforms/SkyDex/
+
+What it is:
+  A marketplace or exchange-style platform tree for digital assets and service
+  flows.
+
+Apps and sub-platforms:
+  - SkyDex4_fixed/ — the current primary SkyDex app tree.
+  - SkyDex4_fixed/index.html — main app surface.
+  - SkyDex4_fixed/netlify/ — backend/serverless support.
+  - SkyDex4_fixed/archive/ — older or parked material.
+  - SkyDex4_fixed/_shared/ — shared assets for the SkyDex surface.
+
+What it does:
+  - Provides the current exchange/marketplace app surface.
+  - Includes backend support and archived upgrade material.
+
+Health file:
+  OverallHealth/skydex-health.md
+
+================================================================================
+7. SkyErrors
+================================================================================
+Path:
+  Sky0s-Platforms/SkyErrors/
+
+What it is:
+  Error-routing and AI support infrastructure centered on the kAIxU-Brain
+  worker project.
+
+Apps and sub-platforms:
+  - kAIxU-Brain/ — the main worker-based error and AI infrastructure project.
+  - kAIxU-Brain/skye-errors/ — error-specific code/assets.
+  - kAIxU-Brain/smokehouse-standalone.html — smoke test surface.
+  - kAIxU-Brain/docs/ — docs for the error/worker stack.
+  - kAIxU-Brain/ops/ — operational procedures and ops assets.
+  - kAIxU-Brain/observability/ — observability and monitoring material.
+  - kAIxU-Brain/scripts/ — automation scripts.
+  - kAIxU-Brain/src/ — worker source.
+  - kAIxU-Brain/artifacts/ — generated or captured artifacts.
+
+What it does:
+  - Hosts worker logic for error handling and infrastructure support.
+  - Provides smoke tests, observability material, and deployment/ops support.
+
+Health file:
+  OverallHealth/skyeerrors-health.md
+
+================================================================================
+8. SkyeBundle
+================================================================================
+Path:
+  Sky0s-Platforms/SkyeBundle/
+
+What it is:
+  A bundle of fifteen discrete business micro-apps. Each folder is its own app
+  rather than a subpage inside one larger platform.
+
+Apps and what they do:
+  - 01-scriptdrop-ai-runner/ — script generation and script-running assistance.
+  - 02-offerforge-proposal-builder/ — offer and proposal builder.
+  - 03-objection-crusher-studio/ — objection handling and rebuttal writing.
+  - 04-follow-up-cadence-machine/ — follow-up sequence planning.
+  - 05-local-lead-scrubber/ — local lead cleanup/enrichment workflow.
+  - 06-service-page-generator-x/ — service-page generation.
+  - 07-review-rocket-writer/ — review and testimonial drafting.
+  - 08-case-study-builder/ — case-study creation.
+  - 09-pricestack-architect/ — pricing structure design.
+  - 10-contract-pack-generator/ — contract pack drafting/generation.
+  - 11-cohort-command/ — cohort/group coordination helper.
+  - 12-video-idea-engine/ — video idea generation.
+  - 13-intakevault-lite/ — intake capture/storage helper app.
+  - 14-authority-binder-generator/ — authority/credibility binder generator.
+  - 15-ae-route-planner-pro/ — AE route planning and route organization.
+
+Health file:
+  OverallHealth/skyebundle-health.md
+
+================================================================================
+9. SkyeCDE
+================================================================================
+Path:
+  Sky0s-Platforms/SkyeCDE/
+
+What it is:
+  The active cloud development environment hub for the IDEia upgrade lanes.
+  This is now a real platform root that holds the shared bridge shell, the
+  SkyeCDE hub page, and the upgraded IDE build lanes that preserve the original
+  platform identities.
+
+Apps and sub-platforms:
+  - index.html — the SkyeCDE hub page for entering the upgraded IDE lanes.
+  - skyecde-manifest.json — the lane registry for SkyDexia, SuperIDEia,
+    SkaixuProIDEia, and KaixuSuperIDEia.
+  - _shared/ — shared bridge client, shell renderer, and shared shell styling.
+  - SkyDexia-2.6/ — verified autonomous SkyDexia package lane under SkyeCDE.
+  - SkyDexia/ — older SkyDexia wrapper lane still present in repo history and bridge work.
+  - SuperIDEia/ — upgraded SuperIDE build lane under SkyeCDE.
+  - SkaixuProIDEia/ — upgraded SkaixuPro-IDE build lane under SkyeCDE.
+  - KaixuSuperIDEia/ — upgraded KaixuSuper-IDE build lane under SkyeCDE.
+
+What it does:
+  - Serves as the front door into the IDEia upgrade system.
+  - Hosts shared workspace, file, runtime, and full-launch support for the
+    IDE upgrade lanes.
+  - Uses SkyDexia-2.6 as the canonical autonomous SkyDexia launch lane when
+    launcher routing is kept truthful.
+  - Preserves the original platform identities while centralizing upgrade entry,
+    bridge logic, and lane management.
+
+Health file:
+  OverallHealth/skyecde-health.md
+
+================================================================================
+10. SkyeHubs
+================================================================================
+Path:
+  Sky0s-Platforms/SkyeHubs/
+
+What it is:
+  A shared service-booking and commerce platform with branded variants.
+
+Core platform surfaces:
+  - index.html — public landing/intake entry.
+  - host.html — host-facing management surface.
+  - cohost.html — cohost-facing management surface.
+  - admin.html — admin control surface.
+  - portal.html — user portal entry surface.
+  - request.html — booking/request intake flow.
+  - success.html — payment-success completion page.
+  - cancel.html — payment-cancel flow.
+  - README_SETUP.html — setup and environment guide.
+  - hub-api.js — shared runtime/API layer.
+  - app.js — public app behavior.
+  - host.js — host workflow behavior.
+  - cohost.js — cohost workflow behavior.
+  - admin.js — admin workflow behavior.
+  - request.js — request and checkout behavior.
+  - portal.js — portal behavior.
+  - netlify/ — serverless backend layer.
+
+Branded variants:
+  - Mobile Detailing/ — the mobile-detailing branded deployment of the hub.
+  - NobleSoles/ — the NobleSoles branded deployment of the hub.
+
+What it does:
+  - Handles service-provider intake and approval.
+  - Handles booking requests and payment flow.
+  - Uses Neon/Postgres-backed APIs and Stripe for commerce after migration.
+
+Health file:
+  OverallHealth/skyehubs-health.md
+
+================================================================================
+11. SkyeMail2.0
+================================================================================
+Path:
+  Sky0s-Platforms/SkyeMail2.0/
+
+What it is:
+  A secure business-email center and encrypted inbox platform with org, auth,
+  audit, SSO, and procurement-focused controls.
+
+Page surfaces and what they do:
+  - index.html — public landing page.
+  - signup.html — account creation.
+  - login.html — account sign-in.
+  - forgot.html — password reset request flow.
+  - reset.html — password reset completion.
+  - verify.html — email verification flow.
+  - dashboard.html — main inbox/dashboard surface.
+  - message.html — message view surface.
+  - thread.html — thread view surface.
+  - send.html — message composition/sending surface.
+  - sessions.html — session visibility/control surface.
+  - keys.html — key management surface.
+  - org.html — organization and member management.
+  - accept-invite.html — invite acceptance flow.
+  - audit.html — audit log viewer.
+  - procurement.html — procurement/security posture surface.
+  - founder.html — founder/admin or project-intro page.
+  - ai.html — optional AI assistance surface.
+  - siem.html — SIEM/security event visibility surface.
+  - sso.html — SSO initiation/config surface.
+  - due_diligence_room/ — due-diligence material for enterprise review.
+  - trust/ — trust-pack pages and public security/supporting docs.
+  - netlify/ — backend functions for auth, org flows, messaging, ingress,
+    audit, SSO, SCIM, and procurement features.
+  - sql/ — schema and data-layer artifacts.
+  - tests/ — validation and test material.
+  - tools/ — support utilities.
+
+What it does:
+  - Provides a secure business inbox with encrypted message handling.
+  - Supports org/RBAC, audit logging, SSO, and procurement hardening.
+  - Uses Netlify Functions and Neon/Postgres.
+
+Health file:
+  OverallHealth/skyemail2-health.md
+
+================================================================================
+12. SkyeSpace
+================================================================================
+Path:
+  Sky0s-Platforms/SkyeSpace/
+
+What it is:
+  A multi-page community/social platform MVP.
+
+Pages and what they do:
+  - index.html — main entry/landing page.
+  - academy.html — academy or learning surface.
+  - council.html — council/governance surface.
+  - districts.html — district or neighborhood navigation surface.
+  - forge.html — making/building/creation surface.
+  - market.html — market/commerce surface.
+  - messages.html — messaging surface.
+  - muse.html — inspiration/creative surface.
+  - profile.html — user profile surface.
+  - signal.html — alerts/signals/announcements surface.
+  - stage.html — performance/presentation surface.
+  - studio.html — creation studio surface.
+  - vaults.html — vault/storage/archive surface.
+  - assets/, css/, js/ — supporting frontend assets and behavior.
+
+Health file:
+  OverallHealth/skyespace-health.md
+
+================================================================================
+13. Skye_platform_foundry_pack
+================================================================================
+Path:
+  Sky0s-Platforms/Skye_platform_foundry_pack/
+
+What it is:
+  A foundry pack of static platform starters and community/product blueprints.
+
+Apps and what they do:
+  - index.html — foundry selector or launch hub.
+  - skyecircuit/ — guild/lab/notebook/salon style platform starter.
+  - skyeflux/ — auction/drop/room/alert style platform starter.
+  - skyemuse/ — creative/atelier/gallery style platform starter.
+  - skyescene/ — creator/live/studio/explore style platform starter.
+  - skyetown/ — districts/events/businesses/residents style platform starter.
+  - _shared/ — shared assets used by the foundry apps.
+
+Health file:
+  OverallHealth/skyefoundry-health.md
+
+================================================================================
+14. SovereignPrimitives
+================================================================================
+Path:
+  Sky0s-Platforms/SovereignPrimitives/
+
+What it is:
+  A static design-token and sovereign-UI primitive demo surface.
+
+Apps and sub-platforms:
+  - index.html — showcase/demo page for the primitives.
+  - app.js — demo logic for interactions.
+  - styles.css — primitive styles and tokens.
+  - README.md — usage and explanation notes.
+
+What it does:
+  - Demonstrates baseline UI primitives and presentation tokens.
+  - Acts as a reference surface rather than a user-facing application product.
+
+Health file:
+  OverallHealth/sovereignprimitives-health.md
+
+================================================================================
+15. SuperIDE
+================================================================================
+Path:
+  Sky0s-Platforms/SuperIDE/
+
+What it is:
+  A large integrated IDE and app platform with a main IDE app plus a major
+  public app directory full of side products, utilities, and branded surfaces.
+
+Core platform layers:
+  - apps/skye-ide/ — the main IDE application package.
+  - src/ — application source for the main platform shell.
+  - netlify/ — serverless backend layer.
+  - worker/ — worker/runtime layer.
+  - db/ — schema and database artifacts.
+  - docker/ — container/devops material.
+  - docs/ — documentation.
+  - scripts/ — automation and maintenance scripts.
+  - Neural-Space-Pro/ — main platform-level neural-space app surface.
+  - SkyDex4.6/ — embedded SkyDex variant.
+  - SUPERIDE-UI-Dropin/ — UI drop-in package or overlay material.
+  - SKNore/ — branded side product or tool surface.
+  - SkyeBlog/ — blog/content surface.
+  - SkyeDocxPro/ — document-focused product surface.
+  - SovereignVariables/ — configuration/variable management surface.
+
+Public app directory surfaces and what they do:
+  - public/AE-Flow/ — AE workflow surface.
+  - public/API-Playground/ — API test and playground surface.
+  - public/ContractorIncomeVerification/ — contractor income verification app.
+  - public/ContractorNetwork/ — contractor network/community surface.
+  - public/ContractorWorkflowSuite/ — contractor workflow tool suite.
+  - public/GBPRescueSuite/ — Google Business Profile rescue suite.
+  - public/GoogleBusinessProfileRescuePlatform/ — GBP rescue platform variant.
+  - public/Neural-Space-Pro/ — public neural-space AI surface.
+  - public/REACT2HTML/ — React-to-HTML conversion or export utility.
+  - public/S0L26-0s/ — large branded app cluster including the solecontractor
+    addon surface now being migrated onto the shared contractor API lane.
+  - public/SKNore/ — public SKNore variant.
+  - public/SKYEMAIL-GEN/ — skymail generation or email-assist surface.
+  - public/Skye-ID/ — identity/account surface.
+  - public/SkyeAdmin/ — admin surface.
+  - public/SkyeAnalytics/ — analytics/reporting surface.
+  - public/SkyeBlog/ — public blog variant.
+  - public/SkyeBookx/ — book/document reading or authoring surface.
+  - public/SkyeCalendar/ — calendar/scheduling surface.
+  - public/SkyeChat/ — chat/messaging surface.
+  - public/SkyeDocs/ — docs surface.
+  - public/SkyeDocxPro/ — public document tool variant.
+  - public/SkyeDrive/ — drive/storage surface.
+  - public/SkyeForms/ — forms/survey surface.
+  - public/SkyeMail/ — mail surface.
+  - public/SkyeNotes/ — notes surface.
+  - public/SkyePlatinum/ — premium or flagship branded surface.
+  - public/SkyeSheets/ — sheet/spreadsheet surface.
+  - public/SkyeSlides/ — slides/presentation surface.
+  - public/SkyeTasks/ — task management surface.
+  - public/SkyeVault/ — vault/storage surface.
+  - public/SkyeVault-Pro-v4.46/ — advanced vault variant.
+  - public/Smokehouse/ — smoke-test and validation surface.
+  - public/SovereignVariables/ — public config-variable surface.
+  - public/WebPilePro/ — web aggregation/research surface.
+  - public/kAIxU/ — base kAIxU-branded public AI surface.
+  - public/kAIxU-Codex/ — codex/documentation flavored kAIxU surface.
+  - public/kAIxU-Faction/ — faction/team/community flavored kAIxU surface.
+  - public/kAIxU-Matrix/ — matrix/workflow flavored kAIxU surface.
+  - public/kAIxU-PrimeCommand/ — command-center flavored kAIxU surface.
+  - public/kAIxU-Vision/ — visual/vision flavored kAIxU surface.
+  - public/kAIxUSuite/ — broader kAIxU suite entry surface.
+  - public/kAIxu-Atlas/ — atlas/navigation flavored kAIxU surface.
+  - public/kAIxu-Atmos/ — ambience/environment flavored kAIxU surface.
+  - public/kAIxu-Bestiary/ — bestiary/worldbuilding flavored kAIxU surface.
+  - public/kAIxu-Cinematic/ — cinematic/storyboard flavored kAIxU surface.
+  - public/kAIxu-Forge/ — build/forge flavored kAIxU surface.
+  - public/kAIxu-Mythos/ — mythos/lore flavored kAIxU surface.
+  - public/kAIxu-Persona/ — persona/character flavored kAIxU surface.
+  - public/kAIxu-Quest/ — quest/journey flavored kAIxU surface.
+  - public/kAixU-Chronos/ — time/timeline flavored kAIxU surface.
+  - public/kAixu-Nexus/ — nexus/hub flavored kAIxU surface.
+  - public/contractor income verification drop in/ — drop-in contractor income
+    verification variant.
+
+Operational note:
+  SuperIDE is one of the broadest trees in the repo. Some public folders are
+  clearly productized apps; others are brand/theme variants of related ideas.
+  They are still listed here because they are real app surfaces in the tree.
+
+Health file:
+  OverallHealth/superide-health.md
+
+================================================================================
+SUMMARY NOTES
+================================================================================
+- Top-level platform count in the current tree: 15 (fifteen)
+- Actual total listed app, module, page, tool, and platform surfaces in this catalog: 354 (three hundred fifty-four)
+- The current catalog now lists the visible app surfaces under each platform,
+  not just the platform names.
+- SkyeCDE is currently an empty marker directory rather than a live app tree.
+- SuperIDE, Kaixu67, and SkaixuPro-IDE are the broadest platform families and
+  contain the largest concentration of sub-app surfaces.
+- Some surfaces are clearly staging, legacy, or thinly defined. They are still
+  included because they exist and need to be tracked.
+
+================================================================================
+END OF CATALOG
+Last Updated: 2026-03-17
+================================================================================

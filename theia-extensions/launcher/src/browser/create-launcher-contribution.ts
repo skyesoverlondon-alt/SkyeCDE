@@ -37,19 +37,23 @@ export class CreateLauncherCommandContribution implements FrontendApplicationCon
             if (!initialized) {
                 const messageContainer = document.createElement('div');
                 // eslint-disable-next-line max-len
-                messageContainer.textContent = nls.localizeByDefault(`Install a shell command for ${applicationName}?\nYou will be able to open the studio from the command line by typing '${uriScheme}'.`);
+                messageContainer.textContent = nls.localizeByDefault(`Install a shell command for ${applicationName}?\nYou will be able to open the 0s command deck from the command line by typing '${uriScheme}'.`);
                 messageContainer.setAttribute('style', 'white-space: pre-line');
                 const details = document.createElement('p');
-                details.textContent = nls.localizeByDefault('Administrator privileges are required for installation. You may be prompted for your password next.');
+                details.textContent = nls.localizeByDefault('Administrator privileges are required for installation. You may be prompted for your password next. Gate bootstrap metadata for first-party launch targets will be written during install.');
                 messageContainer.appendChild(details);
                 const dialog = new ConfirmDialog({
-                    title: nls.localizeByDefault('Install studio launcher'),
+                    title: nls.localizeByDefault('Install 0s launcher command'),
                     msg: messageContainer,
                     ok: Dialog.YES,
                     cancel: Dialog.NO
                 });
                 const install = await dialog.open();
-                this.launcherService.createLauncher(!!install, uriScheme);
+                this.launcherService.createLauncher(!!install, {
+                    uriScheme,
+                    requiresGateBootstrap: true,
+                    launchTargets: this.launcherService.buildFirstPartyLaunchTargets(uriScheme)
+                });
                 this.logger.info('Initialized application launcher.');
             } else {
                 this.logger.info('Application launcher was already initialized.');

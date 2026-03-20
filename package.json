@@ -65,6 +65,7 @@
     "license:check": "npm exec -- dash-licenses-wrapper --configFile=./configs/license-check-config.json",
     "license:check:review": "npm exec -- dash-licenses-wrapper --configFile=./configs/license-check-config.json --review",
     "policy:check:ai-providers": "node scripts/check-disallowed-ai-providers.js",
+    "policy:check:runtime-ai-routing": "node scripts/check-runtime-ai-routing.js",
     "postinstall": "theia-patch"
   },
   "theiaPluginsDir": "plugins",

@@ -50,3 +50,9 @@ id      = "REPLACE_AFTER_CREATE"
 [[r2_buckets]]
 binding     = "SKYE_ERRORS_RAW"
 bucket_name = "skye-errors-raw"
+
+# ── Secrets (set via `wrangler secret put`, NOT stored here) ─────────────────
+# SESSION_JWT_SECRET   — HMAC-SHA256 key for signing gate session JWTs
+#                        wrangler secret put SESSION_JWT_SECRET
+# Founders_GateWay_Key — founder-level bypass key
+#                        wrangler secret put Founders_GateWay_Key

@@ -306,17 +306,24 @@
         }
 
         async function callGeminiEngine(systemPrompt, userPrompt) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const gateBase = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+            const url = `${gateBase}/v1/chat`;
             const options = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: userPrompt }] }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                    alias: 'kaixu/deep',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt }
+                    ]
                 })
             };
             const data = await fetchWithRetry(url, options);
-            return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().replace(/^```[a-z]*\n|```$/g, '') || "";
+            return String(data?.output?.text || '').trim().replace(/^```[a-z]*\n|```$/g, '') || "";
         }
 
         // --- HANDLERS ---
@@ -326,10 +333,10 @@
                 apiKey = val.trim();
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
-                addLog("Aegis Kernel Booted: kAIxu Logic Engine Initialized", "success");
+                addLog("Aegis Kernel Booted: 0mega gate lane initialized", "success");
                 renderSettings();
             } else {
-                addLog("Authentication Failure: Invalid API Key Format", "error");
+                addLog("Authentication Failure: Invalid gate token format", "error");
             }
         }
 

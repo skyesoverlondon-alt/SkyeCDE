@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "ChromeBoard Managed Bootstrap",
+  "version": "2.0.0",
+  "description": "Bootstrap ChromeBoard from managed policy, installed Chrome apps, tabs, bookmarks, and right-click import lanes.",
+  "permissions": [
+    "bookmarks",
+    "contextMenus",
+    "management",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "ChromeBoard Managed Bootstrap",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "import-current-tab": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y"
+      },
+      "description": "Import the current tab to ChromeBoard"
+    }
+  },
+  "storage": {
+    "managed_schema": "managed_schema.json"
+  },
+  "icons": {
+    "192": "icon-192.png",
+    "512": "icon-512.png"
+  }
+}

@@ -1,0 +1,101 @@
+I need to know if there is a way users can install VSX extensions into our theia launcher from the user side. For instance i have two extensions on the VSX store id like to add as an extension on my 0s. is there a way a user can do so from the actual launcher????? Meaning like i should be able to release extensions and tell me clients and they just go to the extensions and add in the new extensions via the VSX store
+Detailed build plan to accomplish that goal:
+
+Answer:
+- Yes. Users can install Open VSX extensions from the launcher UI if we wire launcher frontend + backend install services and policy controls.
+
+Goal:
+- Publish your extensions once to Open VSX.
+- Let clients open the launcher and self-install those extensions.
+
+Phase 1: MVP (Install by ID)
+1. Add an Extensions panel to the launcher.
+2. Add an input for extension ID format: publisher.name.
+3. Add Install action that calls backend endpoint.
+4. Backend resolves extension from Open VSX API.
+5. Backend downloads VSIX for selected version.
+6. Backend validates extension ID/version against requested target.
+7. Backend stores VSIX under the configured plugins directory.
+8. Frontend shows install result and prompts reload if needed.
+
+Phase 2: Search + Installed Management
+1. Add Open VSX search in launcher Extensions panel.
+2. Show search results with name, publisher, version, install button.
+3. Add Installed tab with version, update, uninstall actions.
+4. Add failed/partial install recovery action (retry/remove).
+
+Phase 3: Governance and Trust Controls
+1. Add allowlist support by publisher and extension ID.
+2. Add denylist support for blocked publishers/extensions.
+3. Add role checks (admin/operator/user) for install permissions.
+4. Add policy modes: open, allowlist-only, strict enterprise.
+5. Add policy-driven UI messages when installs are blocked.
+
+Phase 4: Reliability + Operations
+1. Track install states: queued, downloading, validating, installing, complete, failed.
+2. Add retry with exponential backoff for transient network errors.
+3. Add audit events (user, extension ID, version, source, status, timestamp).
+4. Add support diagnostics endpoint for failure analysis.
+
+Backend Components
+1. Open VSX adapter
+- Search endpoint wrapper.
+- Extension metadata lookup by ID.
+- Version and file URL resolution.
+
+2. Extension install service
+- Download VSIX to temp path.
+- Validate metadata and package identity.
+- Move to plugin directory atomically.
+- Return structured success/error payload.
+
+3. Extension management service
+- List installed extensions.
+- Update extension to latest/selected version.
+- Uninstall extension and clean residual files.
+
+Frontend Components
+1. Extensions panel
+- Install by ID form.
+- Search box and results list.
+- Installed list with update/uninstall controls.
+
+2. UX feedback
+- Progress indicator per install job.
+- Clear error messages with actionable next step.
+- Reload prompt after successful install/update.
+
+Security Requirements
+1. Validate extension ID input server-side.
+2. Enforce install path boundaries (no path traversal).
+3. Verify downloaded package identity matches requested extension.
+4. Enforce policy checks before download/install begins.
+
+Testing Plan
+1. Unit tests
+- ID validation.
+- Policy allow/deny logic.
+- Open VSX response normalization.
+
+2. Integration tests
+- Install valid extension by ID.
+- Block install by policy.
+- Update flow.
+- Uninstall flow.
+
+3. End-to-end tests
+- User installs from launcher and sees extension active after reload.
+- User search/install flow from Open VSX works in UI.
+
+Rollout Plan
+1. Ship behind feature flag for internal testing.
+2. Pilot with your two existing Open VSX extensions.
+3. Roll out to client tenants in allowlist mode.
+4. Move to default-on once metrics are stable.
+
+Definition of Done
+1. Client can install extension from launcher by ID.
+2. Client can search Open VSX and install from results.
+3. Client can update and uninstall from launcher.
+4. Policy controls are enforced for all install actions.
+5. Install/update/uninstall actions are auditable.

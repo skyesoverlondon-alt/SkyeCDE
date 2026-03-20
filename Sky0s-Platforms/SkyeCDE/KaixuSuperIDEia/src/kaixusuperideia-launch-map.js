@@ -2,7 +2,7 @@ export const kaixuSuperIDEiaLaunchMap = {
   self: './index.html',
   hub: '../index.html',
   currentKaixuSuperIDE: '../../KaixuSuper-IDE-(Internal Gate)/index.html',
-  skydexia: '../SkyDexia/index.html'
+  skydexia: '../SkyDexia-2.6/index.html'
 };
 
 export function resolveKaixuSuperIDEiaLaunchTarget(key) {

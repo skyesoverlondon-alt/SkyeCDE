@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SkyDexia">
+  <defs>
+    <linearGradient id="skydexiaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d6871" />
+      <stop offset="100%" stop-color="#cf7d24" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#f7efe4" />
+  <path d="M15 18h34l-8 12 8 16H15l8-16-8-12Z" fill="url(#skydexiaGradient)" />
+  <path d="M25 24h14l-4 6 4 10H25l4-10-4-6Z" fill="#f7efe4" />
+</svg>

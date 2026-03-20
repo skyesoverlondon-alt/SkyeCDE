@@ -1,0 +1,5 @@
+we must run through every app and every platform in the file /workspaces/SkyeCDE/SkyeDevNotes/Maintenance/Apps-Platforms/Catalog and determine if it has actually been built out from end to end meaning an actual UI with every button working, functional, readable and clickable, no ghost buttons that are not wired up and no apps claiming they do things they are not actually doing or able to do.
+
+This is making sure the UI is functional
+
+Then we make sure there is proper back end plumbing for everything. We should be following a cannonical stack: Neon, Cloudflare, Netlify functions, forms, blobs, identity, login, gmail by google for the actual email sending and resend for backups if the gmail one fails. There should be two different versions of Skye Email inside the current project but both should have the same plumbing. Everything should be very easy to wire up and fix, because everything literally uses the same type of plumbing from end to end or should be by now at this point. 

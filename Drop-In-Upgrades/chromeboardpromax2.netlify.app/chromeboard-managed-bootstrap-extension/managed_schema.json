@@ -1,0 +1,91 @@
+{
+  "type": "object",
+  "properties": {
+    "chromeboardUrl": {
+      "title": "ChromeBoard URL",
+      "description": "Managed ChromeBoard base URL used for imports.",
+      "type": "string"
+    },
+    "autoBootstrapOnStartup": {
+      "title": "Auto bootstrap on startup",
+      "description": "Open ChromeBoard and seed it when Chrome starts if a new policy signature is detected.",
+      "type": "boolean"
+    },
+    "forceReimportOnStartup": {
+      "title": "Force reimport on startup",
+      "description": "Re-run bootstrap every startup even when the policy signature has not changed.",
+      "type": "boolean"
+    },
+    "seedFromInstalledApps": {
+      "title": "Seed from installed apps",
+      "description": "Also import installed Chrome-visible apps from chrome.management.",
+      "type": "boolean"
+    },
+    "seedFromBookmarkBar": {
+      "title": "Seed from bookmark bar",
+      "description": "Also import bookmark-bar links.",
+      "type": "boolean"
+    },
+    "seedFromOpenTabs": {
+      "title": "Seed from open tabs",
+      "description": "Also import currently open tabs.",
+      "type": "boolean"
+    },
+    "seedPinned": {
+      "title": "Pin imported items",
+      "description": "Mark imported seed items as pinned inside ChromeBoard.",
+      "type": "boolean"
+    },
+    "seedDesktopId": {
+      "title": "Desktop ID",
+      "description": "Optional desktop id to target inside ChromeBoard.",
+      "type": "string"
+    },
+    "seedTags": {
+      "title": "Default tags",
+      "description": "Tags applied to every managed seed item.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seedItems": {
+      "title": "Managed seed items",
+      "description": "Explicit items to seed into ChromeBoard.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "desktopId": {
+            "type": "string"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      }
+    }
+  }
+}

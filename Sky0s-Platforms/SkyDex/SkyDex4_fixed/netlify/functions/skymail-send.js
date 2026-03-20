@@ -2,6 +2,21 @@
 //   RESEND_API_KEY       — API key from resend.com (must have send access)
 //   SKYDEX_MAIL_FROM     — From address, e.g. "SkyDex <notify@yourdomain.com>"
 //   RESEND_FROM_EMAIL    — Fallback from address if SKYDEX_MAIL_FROM is not set
+//   OMEGA_GATE_URL       — Optional override for gate URL
+
+const GATE_URL = process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+
+async function requireGateSession(event) {
+  const authHeader = String(event?.headers?.authorization || event?.headers?.Authorization || '').trim();
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  if (!token) return null;
+  try {
+    const res = await fetch(`${GATE_URL}/v1/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+    const body = await res.json().catch(() => ({}));
+    return (res.ok && body.ok) ? body.session : null;
+  } catch { return null; }
+}
+
 exports.handler = async (event) => {
   const headers = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -12,6 +27,10 @@ exports.handler = async (event) => {
   };
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+
+  // Require a valid gate session before allowing email sends
+  const gateSession = await requireGateSession(event);
+  if (!gateSession) return { statusCode: 401, headers, body: JSON.stringify({ error: 'gate_session_required' }) };
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON body.' }) }; }
   const to = String(body?.to || '').trim();

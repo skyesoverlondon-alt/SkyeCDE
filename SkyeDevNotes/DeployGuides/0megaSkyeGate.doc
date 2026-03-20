@@ -1,0 +1,541 @@
+0megaSkyeGate — DEPLOY GUIDE (Plain English Version)
+Written for: someone who has never deployed a Cloudflare Worker before
+Source platform: Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate/
+================================================================================
+
+WHAT ARE WE DEPLOYING?
+================================================================================
+0megaSkyeGate is a Cloudflare Worker — basically a small server that runs at
+Cloudflare's edge, all around the world, with no actual server you manage.
+It acts as the single front door for ALL AI calls across every Skye platform.
+Instead of every app talking directly to OpenAI, Gemini, or Anthropic, they
+all talk to THIS worker, and it figures out which AI provider to use, tracks
+spending (in SKYFUEL), and logs everything.
+
+This guide is the source of truth for the AI gateway layer only.
+Legacy client database/auth stacks are not part of a valid 0megaSkyeGate deployment.
+Do not add legacy client config values or provider keys to downstream
+browser apps when wiring AI. Provider keys live on 0megaSkyeGate only.
+
+Live URL once deployed:
+  https://0megaskyegate.skyesoverlondon.workers.dev
+
+
+DOWNSTREAM PLATFORM RULES
+================================================================================
+If a platform needs AI, it must route through 0megaSkyeGate.
+
+Valid downstream AI env patterns in this repo are:
+
+  - Browser / static apps:
+      OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+      The browser may also read window.OMEGA_GATE_URL or localStorage OMEGA_GATE_URL.
+
+  - Netlify / server-side apps:
+      OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+      KAIXU_APP_TOKEN=issued-from-0megaSkyeGate-admin-api
+
+  - SuperIDE server-side alias:
+      KAIXU_GATEWAY_ENDPOINT=https://0megaskyegate.skyesoverlondon.workers.dev
+      KAIXU_APP_TOKEN=issued-from-0megaSkyeGate-admin-api
+
+What does NOT belong in downstream AI wiring:
+
+  - OpenAI_API_KEY, GEMINI_API_KEY, ANTHROPIC_API_KEY on browser apps
+  - Legacy client-database config values for AI routing
+  - Direct browser-side persistence config for AI routing
+
+If a platform still has a legacy direct browser persistence stack in its codebase, treat that as
+legacy technical debt to remove. It is not part of the approved AI env model.
+
+
+BEFORE YOU START — WHAT YOU NEED
+================================================================================
+
+1. A Cloudflare account
+   Go to dash.cloudflare.com and log in (or create one — it's free to start).
+
+2. Wrangler CLI installed
+   This is the command-line tool that deploys to Cloudflare.
+   Run this once if you don't have it:
+     npm install -g wrangler
+
+3. You need to log Wrangler into your Cloudflare account:
+     wrangler login
+   A browser window will open. Click "Allow". Done.
+
+4. API keys from the AI providers you want to use:
+   - OpenAI  → platform.openai.com → API Keys
+   - Gemini  → aistudio.google.com → API Keys
+   - Anthropic → console.anthropic.com → API Keys
+   You don't need all three — just the ones you're activating.
+
+5. Node.js installed (v18 or newer)
+   Check with: node --version
+   If you don't have it: nodejs.org
+
+
+STEP 1 — GO INTO THE PROJECT FOLDER
+================================================================================
+
+Open your terminal and navigate to the gate folder:
+
+  cd Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate
+
+Install dependencies (only needed first time):
+
+  npm install
+
+That's it for setup. The project has no complex build pipeline — Wrangler handles
+everything else.
+
+
+STEP 2 — CREATE YOUR SECRETS FILE (local development only)
+================================================================================
+
+There is a file called .dev.vars.example in the folder. This is the template
+for your secret keys. You need to copy it and fill it in.
+
+  cp .dev.vars.example .dev.vars
+
+Now open .dev.vars and fill in your values. Here is what each section means:
+
+── OPENAI KEYS ──
+  OPENAI_API_KEY      = your main OpenAI key (goes into all OpenAI calls)
+  OPENAI_TEXT_KEY     = can be the same as OPENAI_API_KEY
+  OPENAI_IMAGES_KEY   = can be the same as OPENAI_API_KEY
+  OPENAI_VIDEOS_KEY   = can be the same as OPENAI_API_KEY (Sora key if separate)
+  OPENAI_AUDIO_KEY    = can be the same as OPENAI_API_KEY
+  OPENAI_REALTIME_KEY = can be the same as OPENAI_API_KEY
+  OPENAI_PROJECT_ID   = your OpenAI Project ID (found in platform.openai.com)
+
+   TIP: If you only have one OpenAI key, paste it into all six KEY fields.
+
+── OTHER PROVIDER KEYS ──
+  GEMINI_API_KEY    = your Google Gemini API key
+  ANTHROPIC_API_KEY = your Anthropic Claude key
+
+  TIP: If you're not using Gemini or Anthropic yet, leave them blank.
+       The gate will simply not use those providers.
+
+── GATE ADMIN TOKENS ──
+  KAIXU_ADMIN_TOKEN   = make up a long random string (this is your admin password)
+                        Example: openssl rand -hex 32
+  ADMIN_MASTER_TOKEN  = another long random string (master override token)
+                        Can be the same as KAIXU_ADMIN_TOKEN for now, but
+                        ideally use a different one for extra security.
+
+  IMPORTANT: These tokens protect the /admin/* routes. Anyone with these can
+  manage your AI budget, create app tokens, view usage, etc. Keep them secret.
+
+── SKYE ERRORS ──
+  SKYE_ERRORS_ADMIN_SECRET = another random string, used to authenticate error
+                             reports coming from other platforms into the errors DB.
+
+── EVERYTHING ELSE ──
+  The other lines (feature flags, model names, brand name) already have good
+  defaults in the example file. You don't need to change them to get started.
+
+  DO NOT commit .dev.vars to git. It is already in .gitignore.
+
+  IMPORTANT: This local file is for the gate itself. Downstream platforms do not
+  copy provider keys out of this file. They only get the gate URL and their own
+  app token.
+
+
+STEP 3 — CREATE THE CLOUDFLARE DATABASES AND KV STORE
+================================================================================
+
+The gate needs three things created in Cloudflare before it can run:
+  - Two D1 databases (SQLite databases hosted by Cloudflare)
+  - One KV namespace (a key-value store for smoke test tracking)
+
+--- Create the main AI database ---
+
+  wrangler d1 create sky_currency
+
+Cloudflare will print output like this:
+  [[d1_databases]]
+  binding = "DB"
+  database_name = "sky_currency"
+  database_id = "abc123..."   ← COPY THIS ID
+
+Open wrangler.toml and find this section:
+  [[d1_databases]]
+  binding       = "DB"
+  database_name = "sky_currency"
+  database_id   = "REPLACE_AFTER_CREATE"
+
+Replace REPLACE_AFTER_CREATE with the ID you just copied.
+
+--- Create the errors database ---
+
+  wrangler d1 create skye_errors_db
+
+Same thing — copy the database_id and paste it into wrangler.toml:
+  [[d1_databases]]
+  binding       = "SKYE_ERRORS_DB"
+  database_name = "skye_errors_db"
+  database_id   = "REPLACE_AFTER_CREATE"   ← replace this one
+
+--- Create the KV namespace ---
+
+  wrangler kv namespace create KAIXU_SMOKE_KV
+
+Copy the ID it gives you and paste into wrangler.toml:
+  [[kv_namespaces]]
+  binding = "KAIXU_SMOKE_KV"
+  id      = "REPLACE_AFTER_CREATE"   ← replace this one
+
+--- Create the R2 bucket (error log storage) ---
+
+  wrangler r2 bucket create skye-errors-raw
+
+This one doesn't need an ID pasted back — Wrangler finds it by bucket name.
+
+After all of this, your wrangler.toml should have no more "REPLACE_AFTER_CREATE"
+placeholders. They should all have real IDs in them.
+
+
+STEP 4 — APPLY THE DATABASE SCHEMA
+================================================================================
+
+The databases exist now, but they're empty. You need to create the tables.
+Run this for the main database:
+
+  wrangler d1 execute sky_currency --remote --file=src/db/schema.sql
+
+Run this for the errors database (if SkyErrors platform will connect to it):
+
+  wrangler d1 execute skye_errors_db --remote --file=src/db/schema.sql
+
+  NOTE: If skye_errors_db uses a different schema file, use that path instead.
+  The main gate's schema.sql covers the sky_currency DB tables.
+
+
+STEP 5 — SEED THE DATABASE WITH STARTER DATA
+================================================================================
+
+The schema creates empty tables. The seed file fills them with the starting
+AI providers, model aliases, routing rules, and the first app wallet.
+
+  wrangler d1 execute sky_currency --remote --file=src/db/seed.sql
+
+What this seeds:
+  - 3 AI providers: OpenAI, Gemini, Anthropic
+  - Model aliases: kaixu/flash, kaixu/deep, kaixu/code, kaixu/vision, kaixu/embed
+  - A starting wallet for SuperIDE with 50,000 SKYFUEL
+  - Routing rules for each model alias
+  - Pricing rates per alias
+
+  WARNING: The seed.sql starts with DELETE statements that wipe the tables first.
+  Only run this on a fresh database. If you've already seeded and added live app
+  tokens, running seed.sql again will DELETE all your custom tokens and wallets.
+  For production re-seeds, use the admin API routes instead.
+
+
+STEP 6 — SET YOUR SECRETS IN CLOUDFLARE (for production)
+================================================================================
+
+The .dev.vars file only works when running locally. For the live deployed worker,
+you set secrets through Wrangler. Run one command per secret:
+
+  wrangler secret put OPENAI_API_KEY
+  (Wrangler will prompt you to paste the value. Press enter. Done.)
+
+  wrangler secret put OPENAI_TEXT_KEY
+  wrangler secret put OPENAI_IMAGES_KEY
+  wrangler secret put OPENAI_VIDEOS_KEY
+  wrangler secret put OPENAI_AUDIO_KEY
+  wrangler secret put OPENAI_REALTIME_KEY
+  wrangler secret put GEMINI_API_KEY
+  wrangler secret put ANTHROPIC_API_KEY
+  wrangler secret put KAIXU_ADMIN_TOKEN
+  wrangler secret put ADMIN_MASTER_TOKEN
+  wrangler secret put SKYE_ERRORS_ADMIN_SECRET
+
+  TIP: You can also set secrets in the Cloudflare dashboard under:
+       Workers & Pages → 0megaskyegate → Settings → Environment Variables
+
+  The non-secret config (APP_NAME, feature flags, model names, etc.) is already
+  in wrangler.toml under [vars] so it deploys automatically — you don't need to
+  set those manually.
+
+
+STEP 6.5 — SET THE ONLY DOWNSTREAM AI VARS YOU SHOULD NEED
+================================================================================
+
+Once 0megaSkyeGate is deployed and you have issued app tokens, downstream apps
+should be configured like this:
+
+  Browser-first tools (Kaixu67, many SkaixuPro modules, SkyeMail browser helpers)
+    OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+
+  Netlify-backed apps (KaixuSuper-IDE, SkyeMail functions, other server callers)
+    OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+    KAIXU_APP_TOKEN=the app token you issued for that platform
+
+  SuperIDE
+    KAIXU_GATEWAY_ENDPOINT=https://0megaskyegate.skyesoverlondon.workers.dev
+    KAIXU_APP_TOKEN=the app token you issued for SuperIDE
+
+Do not set provider keys on these downstream apps. They call the gate.
+
+
+STEP 7 — TEST IT LOCALLY FIRST
+================================================================================
+
+Before deploying to the world, run it on your own machine:
+
+  npm run dev
+
+This starts the worker locally at http://localhost:8787
+
+Test the health check:
+  curl http://localhost:8787/v1/health
+
+You should see something like:
+  {"status":"ok","gate":"0megaSkyeGate","env":"development"}
+
+If you see that — the gate is running. If you see an error, check that your
+.dev.vars file is filled in correctly.
+
+
+STEP 8 — DEPLOY TO CLOUDFLARE
+================================================================================
+
+When you're ready to go live:
+
+  npm run deploy
+
+This runs wrangler deploy under the hood. Wrangler will:
+  1. TypeScript-compile the source
+  2. Bundle everything into a single Worker script
+  3. Upload it to Cloudflare under the name "0megaskyegate"
+  4. Print the live URL when done
+
+The live URL will be:
+  https://0megaskyegate.skyesoverlondon.workers.dev
+
+Test the live gate immediately:
+  curl https://0megaskyegate.skyesoverlondon.workers.dev/v1/health
+
+You should see the same health response, now with "env":"production".
+
+
+STEP 9 — VERIFY WITH A REAL AI CALL
+================================================================================
+
+To test that AI actually works through the gate, you need an app token.
+The seed.sql already created one for SuperIDE. Get its raw token by checking
+the seed file — the token_hash in the DB is a SHA-256 hash of the actual token.
+
+For a quick smoke test without a real token, hit the smokehouse:
+  https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse
+
+This runs an internal health check across all AI modalities and returns a report.
+No token required.
+
+For a real gated AI call with a token:
+  curl -X POST https://0megaskyegate.skyesoverlondon.workers.dev/v1/chat \
+    -H "Authorization: Bearer YOUR_APP_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"model":"kaixu/flash","messages":[{"role":"user","content":"hello"}]}'
+
+If you get a JSON response with a "choices" array — everything is working.
+
+
+ISSUING NEW APP TOKENS
+================================================================================
+
+Every platform that talks to the gate needs its own app token.
+You create them via the admin API. You need your KAIXU_ADMIN_TOKEN for this.
+
+First, create a wallet for the new app:
+  curl -X POST https://0megaskyegate.skyesoverlondon.workers.dev/admin/wallets \
+    -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"scope_type":"app","scope_id":"kaixu67","currency":"SKYFUEL","balance":25000}'
+
+Then issue a token for that wallet:
+  curl -X POST https://0megaskyegate.skyesoverlondon.workers.dev/admin/keys/issue \
+    -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "app_id": "kaixu67",
+      "org_id": "org_skyes",
+      "wallet_id": "THE_WALLET_ID_FROM_ABOVE",
+      "allowed_aliases": ["kaixu/flash","kaixu/deep"],
+      "rate_limit_rpm": 60
+    }'
+
+The response will include the raw token. Copy it immediately — it is only shown
+once. Store it in the platform's Netlify env vars as KAIXU_APP_TOKEN.
+
+If the platform is a browser-first surface, store only the gate URL client-side.
+Do not expose KAIXU_APP_TOKEN in browser JavaScript unless that surface was
+explicitly designed for public token use and locked down accordingly.
+
+
+AUTOMATIC STUFF YOU DON'T HAVE TO SET UP
+================================================================================
+
+These happen automatically once the gate is deployed:
+
+  - Cron job runs every 30 minutes (set in wrangler.toml) — runs smoke tests
+    and cleans up old error logs older than 30 days.
+
+  - Cloudflare Observability is enabled (wrangler.toml [observability]) — you can
+    see request logs, error rates, and p99 latency in the Cloudflare dashboard
+    under Workers & Pages → 0megaskyegate → Logs.
+
+  - Fallback routing is enabled (ENABLE_FALLBACKS=true) — if your primary
+    AI provider is down, the gate automatically retries with the next provider
+    in the model alias list.
+
+
+THE FLOW WHEN A PLATFORM CALLS THE GATE
+================================================================================
+
+Here's what happens every time Kaixu67, SuperIDE, or any other platform
+sends a request to the gate. This is for your mental model:
+
+  Platform sends:
+    POST /v1/chat
+    Authorization: Bearer sk_app_kaixu67_xxxxx
+    Body: { "model": "kaixu/flash", "messages": [...] }
+
+  Gate does:
+    1. Extracts the Bearer token from the header
+    2. SHA-256 hashes it and looks it up in the app_tokens DB table
+    3. If not found or disabled → returns 401 Unauthorized
+    4. Checks the wallet balance — does this app have enough SKYFUEL?
+    5. If not enough → returns 402 Payment Required
+    6. Looks up "kaixu/flash" in model_aliases → resolves to gemini-2.5-flash
+       (or gpt-5.4-mini as fallback if Gemini is down)
+    7. Sends the request to Gemini's API with your GEMINI_API_KEY
+    8. Gets the response back
+    9. Deducts SKYFUEL from the wallet
+    10. Logs the usage event to the DB
+    11. Returns the response to the platform
+
+
+CURRENT TRUTH CHECK
+================================================================================
+
+As of this guide revision, the approved AI architecture is:
+
+  - 0megaSkyeGate holds provider keys
+  - downstream platforms point AI traffic at 0megaSkyeGate
+  - downstream server apps authenticate with KAIXU_APP_TOKEN
+  - Legacy direct browser persistence stacks are not part of the AI gateway contract
+
+If you find a platform still wired directly to a legacy direct browser persistence stack or a legacy
+brain for AI behavior, that platform is out of policy and needs migration.
+
+  From the platform's perspective: they just got a normal OpenAI-style response.
+  They never see the actual provider key. They never talk to Gemini directly.
+
+
+TROUBLESHOOTING
+================================================================================
+
+Problem: "wrangler login" opens browser but nothing happens
+Fix:     Try wrangler login --browser=false and follow the link manually
+
+Problem: Deploy fails with "database_id not found"
+Fix:     You forgot to replace REPLACE_AFTER_CREATE in wrangler.toml
+         Run the d1 create commands from Step 3 and paste the IDs
+
+Problem: /v1/health returns 500
+Fix:     Your DB tables don't exist yet. Run the schema.sql step (Step 4)
+
+Problem: AI calls return 401
+Fix:     The app token you're using doesn't match what's in the DB.
+         Either re-seed (if dev) or issue a fresh token via the admin API
+
+Problem: AI calls return 402
+Fix:     The wallet is out of SKYFUEL. Top it up:
+         curl -X POST .../admin/wallets/{wallet_id}/credit \
+           -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
+           -d '{"amount":50000,"note":"top up"}'
+
+Problem: AI calls return a real response but model is wrong
+Fix:     Check the model_aliases table. The alias "kaixu/flash" may be pointing
+         to a model your API key doesn't have access to. Check your OpenAI/Gemini
+         plan limits.
+
+Problem: Wrangler says "unknown binding" for DB or KAIXU_SMOKE_KV
+Fix:     You created the D1/KV in Cloudflare but the wrangler.toml still has the
+         REPLACE_AFTER_CREATE placeholder. Paste the real IDs in and redeploy.
+
+
+QUICK REFERENCE — ALL COMMANDS IN ORDER
+================================================================================
+
+  npm install
+  wrangler login
+  cp .dev.vars.example .dev.vars        ← fill this in
+  wrangler d1 create sky_currency       ← copy the ID into wrangler.toml
+  wrangler d1 create skye_errors_db     ← copy the ID into wrangler.toml
+  wrangler kv namespace create KAIXU_SMOKE_KV  ← copy ID into wrangler.toml
+  wrangler r2 bucket create skye-errors-raw
+  wrangler d1 execute sky_currency --remote --file=src/db/schema.sql
+  wrangler d1 execute sky_currency --remote --file=src/db/seed.sql
+  wrangler secret put OPENAI_API_KEY
+  wrangler secret put KAIXU_ADMIN_TOKEN
+  wrangler secret put ADMIN_MASTER_TOKEN
+  wrangler secret put SKYE_ERRORS_ADMIN_SECRET
+  (... other secrets as needed ...)
+  npm run dev                           ← test locally at localhost:8787
+  npm run deploy                        ← go live
+
+
+WHAT'S IN THE FOLDER (FOR REFERENCE)
+================================================================================
+
+  src/index.ts              — entry point; handles all incoming Worker requests
+  src/router.ts             — routes each URL path to the right handler
+  src/auth/
+    verifyAppToken.ts       — checks the Bearer token against the DB
+    verifyAdminToken.ts     — checks the admin token
+    policyGuard.ts          — enforces per-token allowed aliases + rate limits
+  src/adapters/             — one file per modality (chat, stream, images, etc.)
+    openaiChat.ts           — wraps the chat endpoint
+    openaiStream.ts         — wraps the SSE streaming endpoint
+    openaiImages.ts         — wraps image generation
+    openaiVideos.ts         — wraps video generation (Sora)
+    openaiAudioSpeech.ts    — wraps text-to-speech
+    openaiAudioTranscriptions.ts — wraps speech-to-text
+    openaiRealtime.ts       — wraps the realtime WebSocket API
+  src/providers/
+    openai.ts               — OpenAI API integration
+    gemini.ts               — Gemini API integration
+    anthropic.ts            — Anthropic API integration
+    normalizeRequest.ts     — converts incoming request to provider format
+    normalizeResponse.ts    — converts provider response back to standard format
+  src/ledger/
+    reserveBudget.ts        — puts a hold on SKYFUEL before the call
+    debitWallet.ts          — subtracts SKYFUEL after call completes
+    creditWallet.ts         — adds SKYFUEL to a wallet (admin top-up)
+    finalizeUsage.ts        — writes usage event to DB
+    refundUsage.ts          — refunds SKYFUEL if call failed
+  src/db/
+    schema.sql              — creates all DB tables
+    seed.sql                — fills tables with starter data
+    queries.ts              — reusable DB query functions
+  src/utils/
+    errors.ts               — error helpers and error pipeline integration
+    hashing.ts              — SHA-256 token hashing
+    ids.ts                  — ID generation (nanoid-style)
+    sse.ts                  — server-sent events streaming helper
+    trace.ts                — request tracing functions
+  wrangler.toml             — Cloudflare deployment config (name, bindings, vars)
+  .dev.vars.example         — template for your local secrets (copy → .dev.vars)
+  tsconfig.json             — TypeScript config
+  package.json              — npm scripts (dev, deploy, typecheck)
+
+================================================================================
+END OF DEPLOY GUIDE
+Last Updated: March 2026 | 0megaSkyeGate v0.1.0
+================================================================================

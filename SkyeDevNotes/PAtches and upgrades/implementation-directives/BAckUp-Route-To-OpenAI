@@ -1,0 +1,11 @@
+please ensure that the backup route to  OPEN AI has not been disabled. It should actually be enabled via a certain founders code or something, if im not mistaken one of the superides had this architecture laid out cleanly but we need to upgrade our gate so i can have a backup brain implemented directly there so if a users kaixu key is rejected we just go bam right to the backup brain, which should still never reveal any provider other than Skyes Over London LC and our Kaixu Models 
+
+backup brain should already exist here /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-BackUP-Brain
+
+source-of-truth clarification: the canonical gate for the 0s and the entire project is the internal gate implementation located at /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate. any deployed OMEGA_GATE_URL value is only the runtime endpoint of that internal gate, not a separate gate authority.
+
+implementation rule: the backup brain route must be implemented as a capability inside that internal gate architecture, with /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-BackUP-Brain treated as the backup brain source feeding the gate rather than as a separate public-facing provider lane.
+
+pre-deploy clarification: do not read gate-wired code as proof that the gate is already live. the integration work should still be completed now so every route, env var, and fallback path is wired correctly, but live calls are expected to fail until the internal gate is actually deployed and the required env vars are populated in the deploy target.
+
+deployment expectation: current failures before deployment are not evidence that the routing decision is wrong. they are the expected predeploy state if OMEGA_GATE_URL has not been pointed at a live deployment of /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate and if KAIXU_APP_TOKEN or related gate env vars have not yet been installed.

@@ -24,6 +24,17 @@ interface TerminalStartBody {
     args?: string[];
     env?: Record<string, string>;
     launchUrl?: string;
+    healthCheck?: RuntimeHealthCheck;
+}
+
+interface RuntimeHealthCheck {
+    name?: string;
+    url?: string;
+    path?: string;
+    expectedStatus?: number;
+    containsText?: string;
+    timeoutMs?: number;
+    headers?: Record<string, string>;
 }
 
 interface FileWriteBody {
@@ -55,6 +66,82 @@ interface RuntimeLogsQuery {
     limit?: string;
 }
 
+interface RuntimeProbeBody extends RuntimeHealthCheck {
+    id?: string;
+}
+
+interface GitHubConnectBody {
+    repo?: string;
+    branch?: string;
+    token?: string;
+    sourceRoot?: string;
+    installationId?: string;
+}
+
+interface GitHubPushBody extends GitHubConnectBody {
+    message?: string;
+}
+
+interface NetlifyConnectBody {
+    siteId?: string;
+    siteName?: string;
+    token?: string;
+    publishDir?: string;
+    cwd?: string;
+}
+
+interface NetlifyDeployBody extends NetlifyConnectBody {
+    title?: string;
+    prod?: boolean;
+}
+
+interface CloudflareConnectBody {
+    workerRoot?: string;
+    apiToken?: string;
+    accountId?: string;
+    configPath?: string;
+}
+
+interface CloudflareDeployBody extends CloudflareConnectBody {
+    environment?: string;
+}
+
+interface AutomationStateRecord {
+    github?: {
+        repo: string;
+        branch: string;
+        token?: string;
+        sourceRoot: string;
+        installationId?: string;
+        connectedAt: string;
+    };
+    netlify?: {
+        siteId?: string;
+        siteName?: string;
+        token?: string;
+        publishDir: string;
+        cwd: string;
+        connectedAt: string;
+    };
+    cloudflare?: {
+        workerRoot: string;
+        apiToken?: string;
+        accountId?: string;
+        configPath?: string;
+        connectedAt: string;
+    };
+    updatedAt?: string;
+}
+
+interface CommandExecutionResult {
+    command: string;
+    args: string[];
+    cwd: string;
+    stdout: string;
+    stderr: string;
+    exitCode: number;
+}
+
 interface RuntimeRecord {
     id: string;
     pid: number;
@@ -63,6 +150,7 @@ interface RuntimeRecord {
     args: string[];
     env: Record<string, string>;
     launchUrl: string | null;
+    healthCheck: RuntimeHealthCheck | null;
     stdoutPath: string;
     stderrPath: string;
     startedAt: string;
@@ -73,6 +161,7 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
     protected static PATH = '/launcher/skycde';
     protected readonly repoRoot = '/workspaces/SkyeCDE/Skye0s-s0l26';
     protected readonly runtimeDir = path.join(os.tmpdir(), 'skycde-runtime');
+    protected readonly automationStatePath = path.join(this.runtimeDir, 'automation-state.json');
     protected readonly runtimes = new Map<string, RuntimeRecord>();
 
     configure(app: Application): void {
@@ -90,6 +179,14 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
         router.get('/terminal/logs', (request, response) => this.runtimeLogs(request, response));
         router.post('/terminal/restart', (request, response) => this.restartRuntime(request, response));
         router.post('/terminal/stop', (request, response) => this.stopRuntime(request, response));
+        router.post('/terminal/probe', this.withErrorBoundary((request, response) => this.probeRuntime(request, response)));
+        router.get('/automation/state', (request, response) => this.automationState(response));
+        router.post('/automation/github/connect', this.withErrorBoundary((request, response) => this.githubConnect(request, response)));
+        router.post('/automation/github/push', this.withErrorBoundary((request, response) => this.githubPush(request, response)));
+        router.post('/automation/netlify/connect', this.withErrorBoundary((request, response) => this.netlifyConnect(request, response)));
+        router.post('/automation/netlify/deploy', this.withErrorBoundary((request, response) => this.netlifyDeploy(request, response)));
+        router.post('/automation/cloudflare/connect', this.withErrorBoundary((request, response) => this.cloudflareConnect(request, response)));
+        router.post('/automation/cloudflare/deploy', this.withErrorBoundary((request, response) => this.cloudflareDeploy(request, response)));
         app.use(json());
         app.use(SkyeCDEBridgeEndpoint.PATH, router);
     }
@@ -99,8 +196,20 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
             ok: true,
             repoRoot: this.repoRoot,
             bridge: 'skycde',
-            runtimeCount: this.listRuntimes().length
+            runtimeCount: this.listRuntimes().length,
+            automation: this.sanitizeAutomationState(this.loadAutomationState())
         });
+    }
+
+    protected withErrorBoundary(handler: (request: Request, response: Response) => Promise<void>): (request: Request, response: Response) => void {
+        return (request, response) => {
+            void handler(request, response).catch(error => {
+                if (response.headersSent) {
+                    return;
+                }
+                response.status(500).json({ error: error instanceof Error ? error.message : 'Automation request failed.' });
+            });
+        };
     }
 
     protected workspace(request: Request, response: Response): void {
@@ -267,6 +376,7 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
             args,
             env,
             launchUrl: body.launchUrl || null,
+            healthCheck: body.healthCheck || null,
             stdoutPath,
             stderrPath,
             startedAt: new Date().toISOString()
@@ -351,10 +461,331 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
             command: runtime.command,
             args: runtime.args,
             env: runtime.env,
-            launchUrl: runtime.launchUrl || undefined
+            launchUrl: runtime.launchUrl || undefined,
+            healthCheck: runtime.healthCheck || undefined
         };
         request.body = restartBody;
         this.startTerminal(request, response);
+    }
+
+    protected async probeRuntime(request: Request, response: Response): Promise<void> {
+        const body = request.body as RuntimeProbeBody;
+        const runtime = typeof body?.id === 'string' ? this.runtimes.get(body.id) : undefined;
+        const configuredProbe = runtime?.healthCheck || {};
+        const probe = this.normalizeProbeConfig({
+            ...configuredProbe,
+            ...body
+        }, runtime);
+        if (!probe.url) {
+            response.status(400).json({ error: 'A runtime id with a launchUrl or an explicit probe url is required.' });
+            return;
+        }
+
+        const startedAt = Date.now();
+        const controller = new AbortController();
+        const timeoutMs = probe.timeoutMs || 8000;
+        const timeoutHandle = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const fetchResponse = await globalThis.fetch(probe.url, {
+                headers: this.safeEnv(probe.headers || {}),
+                signal: controller.signal
+            });
+            const bodyText = await fetchResponse.text();
+            const expectedStatus = typeof probe.expectedStatus === 'number' ? probe.expectedStatus : undefined;
+            const statusMatch = typeof expectedStatus === 'number' ? fetchResponse.status === expectedStatus : fetchResponse.ok;
+            const containsTextMatch = probe.containsText ? bodyText.includes(probe.containsText) : true;
+            const ok = statusMatch && containsTextMatch;
+            response.json({
+                ok,
+                probe: {
+                    runtimeId: runtime?.id || null,
+                    name: probe.name || runtime?.id || 'runtime probe',
+                    url: probe.url,
+                    status: fetchResponse.status,
+                    expectedStatus: expectedStatus || null,
+                    containsText: probe.containsText || null,
+                    containsTextMatched: containsTextMatch,
+                    durationMs: Date.now() - startedAt,
+                    timestamp: new Date().toISOString(),
+                    excerpt: bodyText.slice(0, 800)
+                }
+            });
+        } finally {
+            clearTimeout(timeoutHandle);
+        }
+    }
+
+    protected automationState(response: Response): void {
+        response.json({
+            ok: true,
+            automation: this.sanitizeAutomationState(this.loadAutomationState())
+        });
+    }
+
+    protected async githubConnect(request: Request, response: Response): Promise<void> {
+        const body = request.body as GitHubConnectBody;
+        const repo = this.normalizeGitHubRepo(body.repo);
+        if (!repo) {
+            response.status(400).json({ error: 'GitHub repo must be in owner/repo format.' });
+            return;
+        }
+        const stored = this.loadAutomationState();
+        const branch = this.normalizeBranch(body.branch || stored.github?.branch || 'main');
+        const sourceRoot = this.resolveRepoDirectory(body.sourceRoot || stored.github?.sourceRoot || '.');
+        const token = this.resolveSecret(body.token, stored.github?.token, process.env.GITHUB_TOKEN, process.env.GH_TOKEN);
+        const remoteUrl = this.buildGitHubRemoteUrl(repo, token);
+        const verification = await this.executeCommand('git', ['ls-remote', '--heads', remoteUrl], {
+            cwd: sourceRoot,
+            timeoutMs: 45000
+        });
+        const nextState = this.loadAutomationState();
+        nextState.github = {
+            repo,
+            branch,
+            token,
+            sourceRoot: path.relative(this.repoRoot, sourceRoot) || '.',
+            installationId: typeof body.installationId === 'string' ? body.installationId.trim() || undefined : undefined,
+            connectedAt: new Date().toISOString()
+        };
+        nextState.updatedAt = new Date().toISOString();
+        this.saveAutomationState(nextState);
+
+        response.json({
+            ok: true,
+            github: this.sanitizeAutomationState(nextState).github,
+            verification: {
+                branch,
+                remoteVisible: Boolean(verification.stdout.trim()),
+                output: this.trimCommandOutput(verification)
+            }
+        });
+    }
+
+    protected async githubPush(request: Request, response: Response): Promise<void> {
+        const body = request.body as GitHubPushBody;
+        const stored = this.loadAutomationState();
+        const repo = this.normalizeGitHubRepo(body.repo || stored.github?.repo);
+        if (!repo) {
+            response.status(400).json({ error: 'GitHub repo must be configured before pushing.' });
+            return;
+        }
+        const branch = this.normalizeBranch(body.branch || stored.github?.branch || 'main');
+        const sourceRoot = this.resolveRepoDirectory(body.sourceRoot || stored.github?.sourceRoot || '.');
+        const gitRootResult = await this.executeCommand('git', ['rev-parse', '--show-toplevel'], {
+            cwd: sourceRoot,
+            timeoutMs: 30000
+        });
+        const gitRoot = path.resolve(gitRootResult.stdout.trim());
+        if (!(gitRoot === this.repoRoot || gitRoot.startsWith(`${this.repoRoot}${path.sep}`))) {
+            response.status(400).json({ error: 'Git root must stay inside the current workspace.' });
+            return;
+        }
+        const statusResult = await this.executeCommand('git', ['status', '--short'], {
+            cwd: gitRoot,
+            timeoutMs: 30000
+        });
+        const token = this.resolveSecret(body.token, stored.github?.token, process.env.GITHUB_TOKEN, process.env.GH_TOKEN);
+        const remoteUrl = this.buildGitHubRemoteUrl(repo, token);
+        const message = typeof body.message === 'string' && body.message.trim()
+            ? body.message.trim()
+            : `SkyDexia promotion ${new Date().toISOString()}`;
+        let commitResult: CommandExecutionResult | undefined;
+        if (statusResult.stdout.trim()) {
+            await this.executeCommand('git', ['add', '--all'], {
+                cwd: gitRoot,
+                timeoutMs: 30000
+            });
+            commitResult = await this.executeCommand('git', ['commit', '-m', message], {
+                cwd: gitRoot,
+                timeoutMs: 120000,
+                allowNonZeroExit: true
+            });
+            if (commitResult.exitCode !== 0 && !/nothing to commit/i.test(`${commitResult.stdout}\n${commitResult.stderr}`)) {
+                throw new Error(this.trimCommandOutput(commitResult));
+            }
+        }
+        const headResult = await this.executeCommand('git', ['rev-parse', '--short', 'HEAD'], {
+            cwd: gitRoot,
+            timeoutMs: 30000
+        });
+        const pushResult = await this.executeCommand('git', ['push', remoteUrl, `HEAD:${branch}`], {
+            cwd: gitRoot,
+            timeoutMs: 180000
+        });
+        response.json({
+            ok: true,
+            github: this.sanitizeAutomationState(this.loadAutomationState()).github,
+            promotion: {
+                repo,
+                branch,
+                gitRoot: path.relative(this.repoRoot, gitRoot) || '.',
+                committedChanges: Boolean(statusResult.stdout.trim()),
+                head: headResult.stdout.trim(),
+                commit: commitResult ? this.trimCommandOutput(commitResult) : 'No new commit was required.',
+                push: this.trimCommandOutput(pushResult)
+            }
+        });
+    }
+
+    protected async netlifyConnect(request: Request, response: Response): Promise<void> {
+        const body = request.body as NetlifyConnectBody;
+        const stored = this.loadAutomationState();
+        const cwd = this.resolveRepoDirectory(body.cwd || stored.netlify?.cwd || '.');
+        const publishDir = this.resolveRepoDirectory(body.publishDir || stored.netlify?.publishDir || 'Sky0s-Platforms/SkyeCDE/SkyDexia');
+        const token = this.resolveSecret(body.token, stored.netlify?.token, process.env.NETLIFY_AUTH_TOKEN);
+        if (!token) {
+            response.status(400).json({ error: 'Netlify token is required either in the form or NETLIFY_AUTH_TOKEN.' });
+            return;
+        }
+        const command = this.resolveNetlifyCommand(cwd);
+        const listResult = await this.executeCommand(command.command, [...command.prefixArgs, 'sites:list', '--json'], {
+            cwd,
+            env: { NETLIFY_AUTH_TOKEN: token },
+            timeoutMs: 180000
+        });
+        const sites = this.extractJson(listResult.stdout) as Array<Record<string, unknown>> | undefined;
+        const matchedSite = (sites || []).find(site => {
+            const id = typeof site.id === 'string' ? site.id : undefined;
+            const name = typeof site.name === 'string' ? site.name : undefined;
+            return (body.siteId && id === body.siteId.trim()) || (body.siteName && name === body.siteName.trim());
+        });
+        const nextState = this.loadAutomationState();
+        nextState.netlify = {
+            siteId: matchedSite && typeof matchedSite.id === 'string' ? matchedSite.id : body.siteId?.trim() || undefined,
+            siteName: matchedSite && typeof matchedSite.name === 'string' ? matchedSite.name : body.siteName?.trim() || undefined,
+            token,
+            publishDir: path.relative(this.repoRoot, publishDir) || '.',
+            cwd: path.relative(this.repoRoot, cwd) || '.',
+            connectedAt: new Date().toISOString()
+        };
+        nextState.updatedAt = new Date().toISOString();
+        this.saveAutomationState(nextState);
+
+        response.json({
+            ok: true,
+            netlify: this.sanitizeAutomationState(nextState).netlify,
+            verification: {
+                matchedSite: matchedSite || null,
+                output: this.trimCommandOutput(listResult)
+            }
+        });
+    }
+
+    protected async netlifyDeploy(request: Request, response: Response): Promise<void> {
+        const body = request.body as NetlifyDeployBody;
+        const stored = this.loadAutomationState();
+        const cwd = this.resolveRepoDirectory(body.cwd || stored.netlify?.cwd || '.');
+        const publishDir = this.resolveRepoDirectory(body.publishDir || stored.netlify?.publishDir || 'Sky0s-Platforms/SkyeCDE/SkyDexia');
+        const token = this.resolveSecret(body.token, stored.netlify?.token, process.env.NETLIFY_AUTH_TOKEN);
+        const siteId = typeof body.siteId === 'string' && body.siteId.trim()
+            ? body.siteId.trim()
+            : stored.netlify?.siteId;
+        const siteName = typeof body.siteName === 'string' && body.siteName.trim()
+            ? body.siteName.trim()
+            : stored.netlify?.siteName;
+        if (!token) {
+            response.status(400).json({ error: 'Netlify token is required either in the form or NETLIFY_AUTH_TOKEN.' });
+            return;
+        }
+        const command = this.resolveNetlifyCommand(cwd);
+        const args = [...command.prefixArgs, 'deploy', '--json', '--dir', publishDir, '--message', (body.title || `SkyDexia deploy ${new Date().toISOString()}`).trim()];
+        if (body.prod !== false) {
+            args.push('--prod');
+        }
+        if (siteId) {
+            args.push('--site', siteId);
+        } else if (siteName) {
+            args.push('--site', siteName);
+        }
+        const deployResult = await this.executeCommand(command.command, args, {
+            cwd,
+            env: { NETLIFY_AUTH_TOKEN: token },
+            timeoutMs: 300000
+        });
+        const deployPayload = this.extractJson(deployResult.stdout) as Record<string, unknown> | undefined;
+        response.json({
+            ok: true,
+            netlify: this.sanitizeAutomationState(this.loadAutomationState()).netlify,
+            deployment: {
+                siteId,
+                siteName,
+                publishDir: path.relative(this.repoRoot, publishDir) || '.',
+                deployUrl: typeof deployPayload?.deploy_url === 'string' ? deployPayload.deploy_url : null,
+                siteUrl: typeof deployPayload?.site_url === 'string' ? deployPayload.site_url : null,
+                output: this.trimCommandOutput(deployResult)
+            }
+        });
+    }
+
+    protected async cloudflareConnect(request: Request, response: Response): Promise<void> {
+        const body = request.body as CloudflareConnectBody;
+        const stored = this.loadAutomationState();
+        const workerRoot = this.resolveRepoDirectory(body.workerRoot || stored.cloudflare?.workerRoot || 'Sky0s-Platforms/SuperIDE/worker');
+        const apiToken = this.resolveSecret(body.apiToken, stored.cloudflare?.apiToken, process.env.CLOUDFLARE_API_TOKEN, process.env.CF_API_TOKEN);
+        const accountId = this.resolveSecret(body.accountId, stored.cloudflare?.accountId, process.env.CLOUDFLARE_ACCOUNT_ID, process.env.CF_ACCOUNT_ID);
+        if (!apiToken) {
+            response.status(400).json({ error: 'Cloudflare API token is required either in the form or CLOUDFLARE_API_TOKEN.' });
+            return;
+        }
+        const command = this.resolveWranglerCommand(workerRoot);
+        const whoamiResult = await this.executeCommand(command.command, [...command.prefixArgs, 'whoami'], {
+            cwd: workerRoot,
+            env: this.safeEnv({
+                CLOUDFLARE_API_TOKEN: apiToken,
+                CLOUDFLARE_ACCOUNT_ID: accountId || ''
+            }),
+            timeoutMs: 180000
+        });
+        const nextState = this.loadAutomationState();
+        nextState.cloudflare = {
+            workerRoot: path.relative(this.repoRoot, workerRoot) || '.',
+            apiToken,
+            accountId,
+            configPath: typeof body.configPath === 'string' && body.configPath.trim() ? body.configPath.trim() : stored.cloudflare?.configPath,
+            connectedAt: new Date().toISOString()
+        };
+        nextState.updatedAt = new Date().toISOString();
+        this.saveAutomationState(nextState);
+
+        response.json({
+            ok: true,
+            cloudflare: this.sanitizeAutomationState(nextState).cloudflare,
+            verification: {
+                output: this.trimCommandOutput(whoamiResult)
+            }
+        });
+    }
+
+    protected async cloudflareDeploy(request: Request, response: Response): Promise<void> {
+        const body = request.body as CloudflareDeployBody;
+        const stored = this.loadAutomationState();
+        const workerRoot = this.resolveRepoDirectory(body.workerRoot || stored.cloudflare?.workerRoot || 'Sky0s-Platforms/SuperIDE/worker');
+        const apiToken = this.resolveSecret(body.apiToken, stored.cloudflare?.apiToken, process.env.CLOUDFLARE_API_TOKEN, process.env.CF_API_TOKEN);
+        const accountId = this.resolveSecret(body.accountId, stored.cloudflare?.accountId, process.env.CLOUDFLARE_ACCOUNT_ID, process.env.CF_ACCOUNT_ID);
+        if (!apiToken) {
+            response.status(400).json({ error: 'Cloudflare API token is required either in the form or CLOUDFLARE_API_TOKEN.' });
+            return;
+        }
+        const deployResult = this.hasPackageScript(workerRoot, 'deploy')
+            ? await this.executeCommand('npm', ['run', 'deploy'], {
+                cwd: workerRoot,
+                env: this.safeEnv({
+                    CLOUDFLARE_API_TOKEN: apiToken,
+                    CLOUDFLARE_ACCOUNT_ID: accountId || ''
+                }),
+                timeoutMs: 300000
+            })
+            : await this.executeCloudflareDeploy(workerRoot, stored.cloudflare?.configPath || body.configPath, body.environment, apiToken, accountId);
+        response.json({
+            ok: true,
+            cloudflare: this.sanitizeAutomationState(this.loadAutomationState()).cloudflare,
+            deployment: {
+                workerRoot: path.relative(this.repoRoot, workerRoot) || '.',
+                environment: typeof body.environment === 'string' && body.environment.trim() ? body.environment.trim() : null,
+                output: this.trimCommandOutput(deployResult),
+                previewUrl: this.extractCloudflareUrl(deployResult.stdout)
+            }
+        });
     }
 
     protected stopRuntime(request: Request, response: Response): void {
@@ -395,6 +826,7 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
             args: runtime.args,
             env: runtime.env,
             launchUrl: runtime.launchUrl,
+            healthCheck: runtime.healthCheck,
             startedAt: runtime.startedAt,
             status: statusOverride || (this.isPidRunning(runtime.pid) ? 'running' : 'stopped')
         };
@@ -461,10 +893,264 @@ export class SkyeCDEBridgeEndpoint implements BackendApplicationContribution {
         return undefined;
     }
 
+    protected resolveRepoDirectory(target: string): string {
+        const resolved = this.resolveRepoPath(target);
+        if (!resolved || !fs.existsSync(resolved) || !fs.statSync(resolved).isDirectory()) {
+            throw new Error(`Directory is invalid: ${target}`);
+        }
+        return resolved;
+    }
+
     protected safeEnv(env: Record<string, string>): Record<string, string> {
         return Object.fromEntries(
             Object.entries(env).filter(([, value]) => typeof value === 'string')
         );
+    }
+
+    protected loadAutomationState(): AutomationStateRecord {
+        fs.mkdirSync(this.runtimeDir, { recursive: true });
+        if (!fs.existsSync(this.automationStatePath)) {
+            return {};
+        }
+        try {
+            return JSON.parse(fs.readFileSync(this.automationStatePath, 'utf8')) as AutomationStateRecord;
+        } catch {
+            return {};
+        }
+    }
+
+    protected saveAutomationState(state: AutomationStateRecord): void {
+        fs.mkdirSync(this.runtimeDir, { recursive: true });
+        fs.writeFileSync(this.automationStatePath, JSON.stringify(state, null, 2), { encoding: 'utf8', mode: 0o600 });
+    }
+
+    protected sanitizeAutomationState(state: AutomationStateRecord): Record<string, unknown> {
+        return {
+            github: state.github ? {
+                repo: state.github.repo,
+                branch: state.github.branch,
+                sourceRoot: state.github.sourceRoot,
+                installationId: state.github.installationId || null,
+                tokenConfigured: Boolean(state.github.token),
+                connectedAt: state.github.connectedAt
+            } : null,
+            netlify: state.netlify ? {
+                siteId: state.netlify.siteId || null,
+                siteName: state.netlify.siteName || null,
+                publishDir: state.netlify.publishDir,
+                cwd: state.netlify.cwd,
+                tokenConfigured: Boolean(state.netlify.token),
+                connectedAt: state.netlify.connectedAt
+            } : null,
+            cloudflare: state.cloudflare ? {
+                workerRoot: state.cloudflare.workerRoot,
+                accountId: state.cloudflare.accountId || null,
+                configPath: state.cloudflare.configPath || null,
+                tokenConfigured: Boolean(state.cloudflare.apiToken),
+                connectedAt: state.cloudflare.connectedAt
+            } : null,
+            updatedAt: state.updatedAt || null
+        };
+    }
+
+    protected normalizeGitHubRepo(repo: string | undefined): string | undefined {
+        const normalized = typeof repo === 'string' ? repo.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '') : '';
+        return /^[^/\s]+\/[^/\s]+$/.test(normalized) ? normalized : undefined;
+    }
+
+    protected normalizeBranch(branch: string): string {
+        return branch.trim() || 'main';
+    }
+
+    protected resolveSecret(...values: Array<string | undefined>): string | undefined {
+        for (const value of values) {
+            if (typeof value === 'string' && value.trim()) {
+                return value.trim();
+            }
+        }
+        return undefined;
+    }
+
+    protected buildGitHubRemoteUrl(repo: string, token: string | undefined): string {
+        return token
+            ? `https://x-access-token:${encodeURIComponent(token)}@github.com/${repo}.git`
+            : `https://github.com/${repo}.git`;
+    }
+
+    protected resolveNetlifyCommand(cwd: string): { command: string; prefixArgs: string[] } {
+        const localBinary = this.findNodeBinary(cwd, 'netlify');
+        if (localBinary) {
+            return { command: localBinary, prefixArgs: [] };
+        }
+        return { command: 'npx', prefixArgs: ['--yes', 'netlify-cli'] };
+    }
+
+    protected resolveWranglerCommand(cwd: string): { command: string; prefixArgs: string[] } {
+        const localBinary = this.findNodeBinary(cwd, 'wrangler');
+        if (localBinary) {
+            return { command: localBinary, prefixArgs: [] };
+        }
+        return { command: 'npx', prefixArgs: ['--yes', 'wrangler'] };
+    }
+
+    protected findNodeBinary(startDir: string, binaryName: string): string | undefined {
+        let current = startDir;
+        while (current === this.repoRoot || current.startsWith(`${this.repoRoot}${path.sep}`)) {
+            const candidate = path.join(current, 'node_modules', '.bin', binaryName);
+            if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+                return candidate;
+            }
+            if (current === this.repoRoot) {
+                break;
+            }
+            const parent = path.dirname(current);
+            if (parent === current) {
+                break;
+            }
+            current = parent;
+        }
+        return undefined;
+    }
+
+    protected hasPackageScript(cwd: string, scriptName: string): boolean {
+        const packageJsonPath = path.join(cwd, 'package.json');
+        if (!fs.existsSync(packageJsonPath) || !fs.statSync(packageJsonPath).isFile()) {
+            return false;
+        }
+        try {
+            const payload = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as { scripts?: Record<string, string> };
+            return typeof payload.scripts?.[scriptName] === 'string';
+        } catch {
+            return false;
+        }
+    }
+
+    protected async executeCloudflareDeploy(workerRoot: string, configPath: string | undefined, environment: string | undefined, apiToken: string, accountId: string | undefined): Promise<CommandExecutionResult> {
+        const command = this.resolveWranglerCommand(workerRoot);
+        const args = [...command.prefixArgs, 'deploy'];
+        if (configPath) {
+            args.push('--config', configPath);
+        }
+        if (typeof environment === 'string' && environment.trim()) {
+            args.push('--env', environment.trim());
+        }
+        return this.executeCommand(command.command, args, {
+            cwd: workerRoot,
+            env: this.safeEnv({
+                CLOUDFLARE_API_TOKEN: apiToken,
+                CLOUDFLARE_ACCOUNT_ID: accountId || ''
+            }),
+            timeoutMs: 300000
+        });
+    }
+
+    protected async executeCommand(command: string, args: string[], options: {
+        cwd: string;
+        env?: Record<string, string>;
+        timeoutMs?: number;
+        allowNonZeroExit?: boolean;
+    }): Promise<CommandExecutionResult> {
+        const timeoutMs = options.timeoutMs || 120000;
+        return await new Promise<CommandExecutionResult>((resolve, reject) => {
+            const child = spawn(command, args, {
+                cwd: options.cwd,
+                env: {
+                    ...process.env,
+                    ...(options.env || {})
+                },
+                stdio: ['ignore', 'pipe', 'pipe']
+            });
+            let stdout = '';
+            let stderr = '';
+            const timer = setTimeout(() => {
+                child.kill('SIGTERM');
+                reject(new Error(`Command timed out after ${timeoutMs}ms: ${command} ${args.join(' ')}`));
+            }, timeoutMs);
+            child.stdout?.on('data', chunk => {
+                stdout += chunk.toString();
+            });
+            child.stderr?.on('data', chunk => {
+                stderr += chunk.toString();
+            });
+            child.on('error', error => {
+                clearTimeout(timer);
+                reject(error);
+            });
+            child.on('close', code => {
+                clearTimeout(timer);
+                const result: CommandExecutionResult = {
+                    command,
+                    args,
+                    cwd: options.cwd,
+                    stdout,
+                    stderr,
+                    exitCode: typeof code === 'number' ? code : 1
+                };
+                if (result.exitCode !== 0 && !options.allowNonZeroExit) {
+                    reject(new Error(this.trimCommandOutput(result)));
+                    return;
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    protected trimCommandOutput(result: CommandExecutionResult): string {
+        const combined = [result.stdout.trim(), result.stderr.trim()].filter(Boolean).join('\n');
+        if (!combined) {
+            return `${result.command} ${result.args.join(' ')} exited with code ${result.exitCode}.`;
+        }
+        return combined.slice(0, 4000);
+    }
+
+    protected extractJson(raw: string): unknown {
+        const trimmed = raw.trim();
+        if (!trimmed) {
+            return undefined;
+        }
+        try {
+            return JSON.parse(trimmed);
+        } catch {
+            const arrayStart = trimmed.indexOf('[');
+            const arrayEnd = trimmed.lastIndexOf(']');
+            if (arrayStart >= 0 && arrayEnd > arrayStart) {
+                try {
+                    return JSON.parse(trimmed.slice(arrayStart, arrayEnd + 1));
+                } catch {
+                    // keep falling through
+                }
+            }
+            const objectStart = trimmed.indexOf('{');
+            const objectEnd = trimmed.lastIndexOf('}');
+            if (objectStart >= 0 && objectEnd > objectStart) {
+                try {
+                    return JSON.parse(trimmed.slice(objectStart, objectEnd + 1));
+                } catch {
+                    return undefined;
+                }
+            }
+            return undefined;
+        }
+    }
+
+    protected extractCloudflareUrl(output: string): string | null {
+        const match = output.match(/https:\/\/[\w.-]+(?:\.workers\.dev|\.pages\.dev|\.cloudflare\.com)[^\s]*/i);
+        return match ? match[0] : null;
+    }
+
+    protected normalizeProbeConfig(probe: RuntimeHealthCheck, runtime: RuntimeRecord | undefined): Required<Pick<RuntimeHealthCheck, 'timeoutMs'>> & RuntimeHealthCheck {
+        const launchUrl = runtime?.launchUrl || undefined;
+        const probePath = typeof probe.path === 'string' ? probe.path.trim() : '';
+        const resolvedUrl = typeof probe.url === 'string' && probe.url.trim()
+            ? probe.url.trim()
+            : launchUrl
+                ? new URL(probePath || '', launchUrl).toString()
+                : undefined;
+        return {
+            ...probe,
+            url: resolvedUrl,
+            timeoutMs: typeof probe.timeoutMs === 'number' && Number.isFinite(probe.timeoutMs) ? probe.timeoutMs : 8000
+        };
     }
 
     protected relocatePath(body: FileMoveBody, response: Response, operation: 'rename' | 'move'): void {

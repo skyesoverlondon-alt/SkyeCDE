@@ -1,0 +1,114 @@
+SkaixuProIDEia Plan
+
+Core rule
+
+SkaixuPro-IDE stays the product family.
+Theia stays the support layer.
+SkaixuProIDEia should unify the coding experience without flattening the platform into a generic editor shell.
+
+Current source of truth for SkaixuPro-IDE
+
+Primary product root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE
+
+Key active files
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/package.json
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/server.js
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide/
+
+Planned upgraded build root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia
+
+Design goal
+
+SkaixuProIDEia should sit above the current multi-tool platform and make the coding and operator flows feel unified, while preserving each tool module as its own surface.
+
+File-by-file build plan
+
+1. Preserve the current platform runtime
+
+Keep authoritative:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/server.js
+  Purpose: current local runtime and routing layer.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/skAIxuide/
+  Purpose: main IDE-facing surface.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/Neural-Space-Pro/
+  Purpose: separate product module.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/GodCode/
+  Purpose: tool module.
+
+2. Create the SkaixuProIDEia folder
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/
+
+Planned files:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/README.md
+  Purpose: defines the product boundary and support-layer rule.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/package.json
+  Purpose: orchestrates wrapper startup and local health checks.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-shell.tsx
+  Purpose: top shell for upgraded coding workflows.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-tool-map.ts
+  Purpose: tool registry that maps Skaixu surfaces to full launches.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-process-bridge.ts
+  Purpose: port and server control bridge into the existing local runtime.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-session-bridge.ts
+  Purpose: session handoff without replacing current platform auth.
+
+3. Theia support files to extend
+
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/browser/launcher-service.ts
+  Purpose: SkaixuProIDEia launcher bootstrap calls.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/launcher-backend-module.ts
+  Purpose: bind SkaixuProIDEia process services.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-studio-launcher-widget.tsx
+  Purpose: add a dedicated launch action for this upgraded IDE family.
+- /workspaces/SkyeCDE/Skye0s-s0l26/scripts/sync-skye-catalog.js
+  Purpose: register SkaixuProIDEia beside the existing platform entry.
+
+4. Backend files to add
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skaixuproideia-launcher-endpoint.ts
+  Purpose: start or attach the local SkaixuProIDEia service.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skaixuproideia-process-service.ts
+  Purpose: manage server process, ports, health, and shutdown.
+
+5. Product boundaries
+
+Do not move these into Theia ownership:
+- module identity for GodCode, KaiPrompt, Neural-Space-Pro, and other tool pockets
+- local runtime behavior in server.js
+- existing tool routing logic
+
+Theia should augment:
+- workspace file access
+- terminals and background processes
+- coding assistants and extension workflows
+- launcher unification
+
+6. Acceptance criteria
+
+SkaixuProIDEia is done when:
+- the base SkaixuPro-IDE platform remains intact.
+- the upgraded build launches as a full app.
+- users can move from launcher to coding environment to tool module without preview widgets.
+- Theia provides support functions but not product identity.
+
+7. Delivery sequence
+
+Phase 1
+- scaffold wrapper and service bridge files
+
+Phase 2
+- add launcher runtime control
+
+Phase 3
+- wire tool-map and session bridge
+
+Phase 4
+- register in the 0s catalog as a separate upgraded build
+
+Phase 5
+- test launch, process control, and tool handoff

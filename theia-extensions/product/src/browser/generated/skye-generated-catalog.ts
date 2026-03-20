@@ -103,19 +103,19 @@ export const skyeGeneratedCatalog = {
     {
       "id": "skyecde-skydexia",
       "label": "SkyDexia",
-      "summary": "upgraded SkyDex build lane under SkyeCDE.",
+      "summary": "verified autonomous SkyDexia 2.6 package lane under SkyeCDE.",
       "groupId": "skyecde",
-      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/index.html",
+      "href": "file:///workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia-2.6/index.html",
       "launchable": true,
       "external": false,
       "featured": true,
       "order": -9999,
       "keywords": [
         "SkyDexia",
-        "SkyDexia/",
+        "SkyDexia-2.6/",
         "skyecde"
       ],
-      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SkyDexia/",
+      "inventoryPath": "Sky0s-Platforms/SkyeCDE/SkyDexia-2.6/",
       "platform": false,
       "source": "catalog"
     },

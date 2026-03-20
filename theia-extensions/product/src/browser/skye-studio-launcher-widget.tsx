@@ -55,6 +55,12 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
             run: () => this.executeCommand(GettingStartedWidget.ID)
         },
         {
+            label: 'Launch SkyDex Autonomous',
+            description: 'Open SkyDex as a CDE-native autonomous execution lane.',
+            icon: codicon('rocket'),
+            run: () => this.launchSkydexAutonomous()
+        },
+        {
             label: 'New File',
             description: 'Start a fresh document, script or prompt.',
             icon: codicon('new-file'),
@@ -157,6 +163,42 @@ export class SkyeStudioLauncherWidget extends ReactWidget {
 
     protected async launchApp(app: SkyePlatformApp): Promise<void> {
         await openSkyePlatformApp(this.openerService, this.locationMapperService, this.windowService, app);
+    }
+
+    protected async launchSkydexAutonomous(): Promise<void> {
+        const apps = this.registry?.apps ?? [];
+        const skydex = apps.find(app =>
+            app.launchable
+            && !!app.href
+            && app.groupId === 'skydex'
+            && /\.html?(?:$|[?#])/i.test(app.href)
+        ) ?? apps.find(app =>
+            app.launchable
+            && !!app.href
+            && /skydex/i.test(`${app.id} ${app.label} ${app.groupId}`)
+            && /\.html?(?:$|[?#])/i.test(app.href)
+        );
+
+        if (!skydex?.href) {
+            await this.executeCommand(SkyesOverLondonCommands.OPEN_APP_CATALOG.id);
+            return;
+        }
+
+        if (/^file:\/\//i.test(skydex.href)) {
+            const launchUrl = await this.locationMapperService.map(skydex.href);
+            const url = new URL(launchUrl, window.location.origin);
+            url.searchParams.set('mode', 'execute');
+            url.searchParams.set('autonomy', 'autonomous');
+            url.searchParams.set('cde', '1');
+            await this.windowService.openNewWindow(url.toString(), { external: false });
+            return;
+        }
+
+        const url = new URL(skydex.href, window.location.origin);
+        url.searchParams.set('mode', 'execute');
+        url.searchParams.set('autonomy', 'autonomous');
+        url.searchParams.set('cde', '1');
+        await this.windowService.openNewWindow(url.toString(), { external: skydex.external });
     }
 
     protected renderActionGroup(title: string, intro: string, actions: StudioAction[]): React.ReactNode {

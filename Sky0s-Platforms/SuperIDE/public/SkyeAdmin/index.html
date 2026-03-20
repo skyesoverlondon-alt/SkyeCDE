@@ -28,6 +28,8 @@
     .row { display:grid; gap:8px; grid-template-columns: 1fr 1fr; }
     @media (max-width:760px){ .form{grid-template-columns:1fr;} }
   </style>
+  <script src="/0s-auth-sdk/index.js"></script>
+  <script>OmegaAuth.requireSession();</script>
 </head>
 <body data-app-id="SkyeAdmin">
   <div class="shell">

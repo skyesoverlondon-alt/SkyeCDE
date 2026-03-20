@@ -10,9 +10,9 @@ const SHARED_ROUTES = [
   {
     id: 'skydexia',
     label: 'SkyDexia',
-    href: '../SkyDexia/index.html',
+    href: '../SkyDexia-2.6/index.html',
     category: 'IDEia lane',
-    description: 'Open the upgraded SkyDex lane.',
+    description: 'Open the verified SkyDexia 2.6 autonomous lane.',
     keywords: ['skydex', 'ideia', 'upgrade']
   },
   {

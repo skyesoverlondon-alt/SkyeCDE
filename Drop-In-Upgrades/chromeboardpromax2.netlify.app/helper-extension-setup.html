@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChromeBoard Helper Setup</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#0f1020;color:#f5f5ff;margin:0;padding:24px;line-height:1.5}
+    .card{max-width:900px;margin:0 auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:24px}
+    a.btn{display:inline-block;padding:12px 16px;border-radius:12px;background:#6c4cff;color:#fff;text-decoration:none;font-weight:700;margin-right:12px;margin-bottom:12px}
+    code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
+    ol{padding-left:20px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>ChromeBoard Helper Setup</h1>
+    <p>Download the helper extension zip, extract it, then load the extracted folder in <code>chrome://extensions</code>. After install, use the separate tutorial to understand what each import action does and which URL belongs in the box.</p>
+    <p><a class="btn" href="./downloads/chromeboard-managed-bootstrap-extension.zip" download>Download helper ZIP</a><a class="btn" href="./helper-extension-tutorial.html">Open full tutorial</a></p>
+    <ol>
+      <li>Download <strong>chromeboard-managed-bootstrap-extension.zip</strong>.</li>
+      <li>Extract the zip.</li>
+      <li>Open <code>chrome://extensions</code>.</li>
+      <li>Turn on <strong>Developer mode</strong>.</li>
+      <li>Click <strong>Load unpacked</strong>.</li>
+      <li>Select the extracted folder.</li>
+      <li>Open the extension options and paste your deployed ChromeBoard URL. For most people, this should be your Netlify URL or live custom domain.</li>
+    </ol>
+    <p><strong>Important:</strong> the extension is a bridge into ChromeBoard. It sends tabs, bookmarks, apps, or managed policy seed items into your board. It does not magically build desktop items unless your ChromeBoard site handles the import.</p>
+  </div>
+</body>
+</html>

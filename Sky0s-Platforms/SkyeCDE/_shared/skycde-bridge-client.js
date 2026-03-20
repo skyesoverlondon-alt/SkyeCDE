@@ -9,6 +9,14 @@ const terminalStatusEndpoint = '/launcher/skycde/terminal/status';
 const terminalLogsEndpoint = '/launcher/skycde/terminal/logs';
 const terminalRestartEndpoint = '/launcher/skycde/terminal/restart';
 const terminalStopEndpoint = '/launcher/skycde/terminal/stop';
+const terminalProbeEndpoint = '/launcher/skycde/terminal/probe';
+const automationStateEndpoint = '/launcher/skycde/automation/state';
+const githubConnectEndpoint = '/launcher/skycde/automation/github/connect';
+const githubPushEndpoint = '/launcher/skycde/automation/github/push';
+const netlifyConnectEndpoint = '/launcher/skycde/automation/netlify/connect';
+const netlifyDeployEndpoint = '/launcher/skycde/automation/netlify/deploy';
+const cloudflareConnectEndpoint = '/launcher/skycde/automation/cloudflare/connect';
+const cloudflareDeployEndpoint = '/launcher/skycde/automation/cloudflare/deploy';
 
 export async function loadWorkspaceEntries(root = '.', options = {}) {
   const params = new URLSearchParams({ root });
@@ -119,10 +127,57 @@ export async function stopRuntime(runtimeId) {
   return handleJson(response, 'Failed to stop runtime.');
 }
 
+export async function probeRuntimeHealth(payload) {
+  const response = await fetch(terminalProbeEndpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  return handleJson(response, 'Failed to run runtime health probe.');
+}
+
+export async function getAutomationState() {
+  const response = await fetch(automationStateEndpoint);
+  return handleJson(response, 'Failed to load automation state.');
+}
+
+export async function connectGitHubIntegration(payload) {
+  return postJson(githubConnectEndpoint, payload, 'Failed to connect GitHub automation.');
+}
+
+export async function pushGitHubPromotion(payload) {
+  return postJson(githubPushEndpoint, payload, 'Failed to push GitHub promotion.');
+}
+
+export async function connectNetlifySite(payload) {
+  return postJson(netlifyConnectEndpoint, payload, 'Failed to connect Netlify automation.');
+}
+
+export async function deployNetlifySite(payload) {
+  return postJson(netlifyDeployEndpoint, payload, 'Failed to deploy to Netlify.');
+}
+
+export async function connectCloudflareWorker(payload) {
+  return postJson(cloudflareConnectEndpoint, payload, 'Failed to connect Cloudflare automation.');
+}
+
+export async function deployCloudflareWorker(payload) {
+  return postJson(cloudflareDeployEndpoint, payload, 'Failed to deploy to Cloudflare.');
+}
+
 export function openFullApp(target) {
   const launchTarget = new URL(target, window.location.href).toString();
   window.open(launchTarget, '_blank', 'noopener');
   return launchTarget;
+}
+
+async function postJson(url, payload, fallbackMessage) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload || {})
+  });
+  return handleJson(response, fallbackMessage);
 }
 
 async function handleJson(response, fallbackMessage) {

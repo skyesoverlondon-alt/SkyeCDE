@@ -478,6 +478,68 @@ export async function getKaixuTraceById(db: D1Database, traceId: string): Promis
   }
 }
 
+// ── Gate sessions ────────────────────────────────────────────────────────────
+
+export interface GateSession {
+  id: string
+  token_hash: string
+  app_id: string
+  org_id: string
+  auth_mode: string
+  created_at: string
+  expires_at: string
+  revoked: number
+}
+
+export async function insertGateSession(
+  db: D1Database,
+  session: Omit<GateSession, 'revoked'>,
+): Promise<void> {
+  await db
+    .prepare(`
+      INSERT INTO gate_sessions (id, token_hash, app_id, org_id, auth_mode, created_at, expires_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `)
+    .bind(
+      session.id,
+      session.token_hash,
+      session.app_id,
+      session.org_id,
+      session.auth_mode,
+      session.created_at,
+      session.expires_at,
+    )
+    .run()
+}
+
+export async function findGateSessionByHash(
+  db: D1Database,
+  tokenHash: string,
+): Promise<GateSession | null> {
+  return await db
+    .prepare(`
+      SELECT id, token_hash, app_id, org_id, auth_mode, created_at, expires_at, revoked
+      FROM gate_sessions
+      WHERE token_hash = ? AND expires_at > ? LIMIT 1
+    `)
+    .bind(tokenHash, new Date().toISOString())
+    .first<GateSession>()
+}
+
+export async function revokeGateSession(db: D1Database, sessionId: string): Promise<void> {
+  await db
+    .prepare('UPDATE gate_sessions SET revoked = 1 WHERE id = ?')
+    .bind(sessionId)
+    .run()
+}
+
+export async function revokeAllGateSessionsForApp(db: D1Database, appId: string): Promise<void> {
+  await db
+    .prepare('UPDATE gate_sessions SET revoked = 1 WHERE app_id = ? AND revoked = 0')
+    .bind(appId)
+    .run()
+}
+
 export async function listKaixuTracesForApp(db: D1Database, appId: string, limit = 50): Promise<Record<string, unknown>[]> {
   const result = await db.prepare(`
     SELECT trace_id, job_id, app_id, lane, engine_alias, public_status, usage_json, created_at

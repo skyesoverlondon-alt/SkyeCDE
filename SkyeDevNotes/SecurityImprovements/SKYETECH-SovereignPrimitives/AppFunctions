@@ -1,0 +1,282 @@
+# SKYETECH Sovereign Primitives — App Functions
+
+## Purpose
+This file is the straight app/function registry for the sovereign stack. It is intentionally focused on **what each app or security surface does right now**.
+
+It is **not** the upgrade plan. The upgrade and integration planning belongs in `Cross-Platform-Architecture`.
+
+---
+
+## Side-by-side sovereign app registry
+
+| App / Surface | Main job | Current functions | Current cross-app / platform behavior |
+| --- | --- | --- | --- |
+| **SKNore** | File-safety and AI policy console | Stores path/glob protection rules, blocks protected active files from AI generate, strips protected files from AI payloads, defines policy/event API surface | Opens from SuperIDE file-safety area and is meant to govern AI request surfaces |
+| **SovereignVariables** | Secure variables/config packager | Stores projects/environments/variables, imports `.json` / `.skye` / `.env` / `.txt`, exports encrypted `.skye`, auto-ingests queued config templates, records suite intents | Pushes active environment packages to SkyeChat and SkyeMail; receives queued shell handoffs |
+| **SovereignPrimitives** | Standalone primitives proof console | Manages zones, labels objects, evaluates guardrails, logs decisions, creates encrypted capsules, signs release seals, keeps local ledger | Currently standalone/offline-first; not yet wired into the hosted stack |
+| **SkyeVault** | Secret governance surface | Registers scoped secrets, handles approvals, rotation scheduling, usage attestation, break-glass workflow, loads/saves vault models | Works as the operational command surface for vault records |
+| **SkyeVault Pro** | Local-first vault workspace | Stores files/folders, creates `.skye` docs, imports/syncs folders, writes vault manifest, stages pending imports, emits bridge events, translates payloads for many apps | Bridges into SkyeDocs, SkyeNotes, SkyeForms, SkyeSheets, SkyeSlides, SkyeTasks, SkyeMail, SkyeChat, SkyeCalendar, SkyeDrive, and contractor flows |
+| **SkyeSecure runtime** | Shared encrypted package runtime | Validates secure `.skye` envelopes, encrypts/decrypts payloads, derives keys, validates schema, parses secure blobs | Shared by SovereignVariables, SkyeChat, SkyeBlog, SkyeDocxPro, and any other `.skye` surface |
+| **sovereign events** | Signed audit/event pipeline | Emits structured sovereign events, supports idempotency, writes internal signature, fans events into timeline entries, exposes scoped reads | Provides cross-app telemetry and auditable event retrieval |
+| **0megaSkyeGate** | Sovereign AI gateway boundary | Acts as the catalog-defined AI provider-key boundary and central AI route target | Downstream AI traffic is supposed to route through this boundary |
+| **SkyDexia 2.6** | Workspace bench / orchestration shell | Edits workspace files, records suite intents, stages bridge drafts, recalls records, syncs workspace context, runs bounded autonomous passes, persists founder sessions, saves workspaces, manages SkyeDrive restore points, requires founder/session auth before packaged reads or provider-backed actions, previews release policy, executes GitHub push and Netlify deploy from the saved workspace state, records GitHub / Netlify / SkyeChat release history, materializes saved workspaces to disk, starts local runtimes, captures logs, probes launch URLs, and restarts or stops packaged processes through a self-hosted package server | Syncs into SovereignVariables, reopens drafts in SkyeBlog, routes recalled content into SkyeChat and SkyeMail, and now ships a self-contained package/server lane for founder unlock, workspace persistence, runtime/process ownership, release continuity, authenticated AI/mail/policy execution, and credential-aware release execution when shared services are absent |
+| **SkyeDocxPro** | Secure document workstation | Creates/edits documents, exports encrypted `.skye`, publishes document records, can send to SkyeChat / SkyeMail / SkyeBlog / SkyeDrive | Stages drafts into SkyeBlog, posts to SkyeChat, sends to SkyeMail, mirrors into SkyeDrive |
+| **SkyeBlog** | Secure publishing desk | Creates/edits blog drafts, exports encrypted `.skye`, saves publish records, receives bridge drafts, pushes drafts to SkyeChat and SkyeMail | Consumes bridge drafts from other apps and routes content into SkyeChat / SkyeMail |
+| **SkyeChat** | Social / command communication surface | Imports/exports secure `.skye` state, validates app/schema compatibility, posts channel messages, stores feed records | Receives routed content from SovereignVariables, SkyDex, SkyeDocxPro, and SkyeBlog |
+| **SkyeMail** | Email delivery surface | Sends routed outbound mail and receives package/draft handoffs from app workflows | Receives routed content from SovereignVariables, SkyDex, SkyeDocxPro, and SkyeBlog |
+| **SuperIDE shell** | Main orchestration shell | Hosts app strip, app drawer, execution pipeline, workspace stack, file-safety policy entry point | Launches and coordinates the broader app ecosystem from one shell |
+
+---
+
+## Per-app function notes
+
+## 1. SKNore
+**What it does:**
+- defines protected file/path rules
+- blocks protected active files from AI generation
+- strips protected files from `files` payloads before AI generation
+- documents policy CRUD and blocked-event API surfaces
+
+**Current user-facing function:**
+- policy console for AI/file safety
+
+**Current connected behavior:**
+- launched from SuperIDE's file-safety area
+- positioned as the policy guard for generate endpoints
+
+---
+
+## 2. SovereignVariables
+**What it does:**
+- stores projects and environments
+- stores key/value variable sets
+- imports `.env`, `.json`, `.txt`, and encrypted `.skye`
+- exports encrypted `.skye`
+- keeps a queued intake inbox
+- records suite intents
+
+**Current user-facing function:**
+- configuration/secret package workspace
+
+**Current connected behavior:**
+- imports queued templates from shell handoffs
+- pushes active env packages to SkyeChat
+- pushes active env packages to SkyeMail
+
+---
+
+## 3. SovereignPrimitives
+**What it does:**
+- manages SKNore-style zones
+- manages labeled objects
+- evaluates actions against zone rules
+- records decision ledger entries
+- creates encrypted capsule exports
+- signs release manifests
+- verifies the latest seal locally
+
+**Current user-facing function:**
+- standalone sovereign control demo/workbench
+
+**Current connected behavior:**
+- runs standalone and local-only right now
+
+---
+
+## 4. SkyeVault
+**What it does:**
+- registers secrets with scope metadata
+- manages approval state
+- runs rotation scheduler logic
+- records usage attestations
+- supports break-glass sessions
+- loads/saves vault records through backend APIs
+
+**Current user-facing function:**
+- operational vault and secret-governance screen
+
+**Current connected behavior:**
+- uses shared auth/session helpers
+- persists through backend app-record APIs
+
+---
+
+## 5. SkyeVault Pro
+**What it does:**
+- stores vault folders and files
+- creates blank `.skye` documents
+- syncs to local folders on disk
+- imports from local folders on disk
+- writes `.skye-vault-manifest.json`
+- stages pending SuperIDE imports
+- transforms stored items into downstream app payloads
+
+**Current user-facing function:**
+- local-first personal vault / file hub
+
+**Current connected behavior:**
+- sends bridge events using `localStorage` and `postMessage`
+- imports staged SuperIDE snapshots
+- can hand vault content to multiple side apps
+
+---
+
+## 6. SkyeSecure runtime
+**What it does:**
+- defines secure `.skye` format rules
+- enforces `AES-256-GCM`
+- derives keys using `PBKDF2-SHA256`
+- validates envelope and plain-payload structure
+- parses secure `.skye` blobs
+- supports legacy normalization
+
+**Current user-facing function:**
+- not a direct app; shared crypto/runtime layer
+
+**Current connected behavior:**
+- reused by multiple `.skye`-capable apps
+
+---
+
+## 7. sovereign events
+**What it does:**
+- emits signed sovereign activity records
+- supports idempotency keys
+- stores actor/org/workspace/source/subject/severity/payload data
+- fans events into timeline entries
+- exposes filtered reads by org/workspace/source app
+
+**Current user-facing function:**
+- backend audit/event infrastructure
+
+**Current connected behavior:**
+- available to any app or workflow that emits sovereign telemetry
+
+---
+
+## 8. 0megaSkyeGate
+**What it does:**
+- acts as the catalog-defined sovereign AI boundary
+- represents the intended provider-key boundary for downstream apps
+
+**Current user-facing function:**
+- AI gateway layer for the ecosystem
+
+**Current connected behavior:**
+- positioned as the place downstream apps should route AI traffic
+
+---
+
+## 9. SkyDexia 2.6
+**What it does:**
+- edits and manages workspace files
+- records suite intents
+- runs bounded controlled or autonomous workspace passes
+- stages full-file operations and can auto-apply/save in autonomous mode
+- issues packaged founder-unlock sessions and signed runtime tokens
+- saves and reloads workspace snapshots through packaged server routes
+- stores integration status and SkyeDrive restore-point records inside the package
+- requires founder/session auth before packaged workspace, integration, SkyeDrive, and record reads are returned
+- requires founder/session auth before packaged AI, mail, and SKNore preview routes can use provider credentials or server-side policy evaluation
+- requires an explicitly configured session secret before packaged founder unlock can mint or verify runtime tokens
+- seals connected GitHub and Netlify provider tokens inside the packaged runtime state
+- only degrades to browser-local fallback when the packaged server lane is unavailable, instead of masking live auth or release failures with fake local success
+- validates connected provider targets before persisting release-ready integration state when credentials are available
+- previews SKNore release blocking before push/deploy actions
+- routes packaged AI calls through 0megaSkyeGate only after founder/session auth is present
+- routes packaged mail delivery through Resend only after founder/session auth is present
+- executes packaged GitHub push and Netlify deploy actions against remote APIs when credentials are available
+- records packaged GitHub push, Netlify deploy, and SkyeChat notification history
+- materializes the saved workspace into a package-owned runtime directory
+- starts, probes, logs, restarts, and stops local child processes through `/api/runtime/*`
+- exposes runtime URLs from the same saved workspace state the package just materialized
+- syncs workspace context into SovereignVariables
+- reopens bridge drafts in SkyeBlog
+- posts recalled records to SkyeChat
+- sends recalled records to SkyeMail
+- keeps save, sync, push, and deploy actions tied to the same workspace state
+
+**Current user-facing function:**
+- orchestration-heavy workspace editor with a packaged release/runtime lane that can really publish and locally own runtime/process execution without exposing anonymous provider-backed server actions
+
+**Current connected behavior:**
+- one of the strongest existing cross-app routing surfaces in the repo, now upgraded into the self-contained SkyDexia 2.6 package contract with packaged founder auth, gated workspace/integration/AI/mail/policy routes, SkyeDrive continuity, sealed provider credential storage, package-owned runtime/process control, secret-safe integration state, and real GitHub / Netlify release routes
+
+---
+
+## 10. SkyeDocxPro
+**What it does:**
+- edits document content
+- exports encrypted `.skye`
+- publishes saved records
+- pushes active document into SkyeBlog
+- pushes active document into SkyeChat
+- pushes active document into SkyeMail
+- mirrors active document into SkyeDrive
+
+**Current user-facing function:**
+- secure document authoring workstation
+
+**Current connected behavior:**
+- one document can be routed into multiple apps from one surface
+
+---
+
+## 11. SkyeBlog
+**What it does:**
+- edits/publishes blog drafts
+- exports encrypted `.skye`
+- consumes bridge drafts
+- saves publish/mail records
+- pushes drafts into SkyeChat
+- pushes drafts into SkyeMail
+
+**Current user-facing function:**
+- publishing desk / content release surface
+
+**Current connected behavior:**
+- receives drafts from other apps and routes them into communication surfaces
+
+---
+
+## 12. SkyeChat
+**What it does:**
+- stores command/chat feed state
+- exports/imports secure `.skye` state
+- validates app id and schema compatibility on import
+- posts routed content into channels
+
+**Current user-facing function:**
+- social / command communication surface
+
+**Current connected behavior:**
+- receives content packages from multiple upstream apps
+
+---
+
+## 13. SkyeMail
+**What it does:**
+- sends outbound mail for routed app workflows
+- acts as an email destination surface for app handoffs
+
+**Current user-facing function:**
+- outbound communication / delivery surface
+
+**Current connected behavior:**
+- receives draft/package content from SovereignVariables, SkyDex, SkyeDocxPro, and SkyeBlog
+
+---
+
+## 14. SuperIDE shell
+**What it does:**
+- shows app registry/drawer
+- hosts the execution pipeline view
+- hosts the workspace stack
+- exposes the file-safety policy entry point
+- opens side apps and docked apps
+
+**Current user-facing function:**
+- main shell/orchestration environment
+
+**Current connected behavior:**
+- central launcher and coordinator for side-by-side apps

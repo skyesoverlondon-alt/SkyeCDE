@@ -1,0 +1,513 @@
+# Skye Standard
+
+## What This File Is
+
+This file defines Skye Standard from the truth of the whole project, not from the narrow view of the Theia launcher layer.
+
+The earlier mistake was treating the standard as if it were mostly about SkyeCDE, Theia, launcher plumbing, and IDEia shell parity.
+
+That is not your actual stack.
+
+Your actual stack is a wider operating ecosystem made of multiple platform families, multiple runtimes, multiple control planes, multiple storage systems, real mail lanes, real serverless backends, real edge workers, real release and audit surfaces, and sovereign primitives that are already partially modeled inside the repo.
+
+So Skye Standard must be defined from that fuller reality.
+
+## The Whole Project Stack, As It Actually Exists
+
+Skye Standard starts with the fact that this project is not one IDE and not one app.
+
+It is an ecosystem with multiple platform roots under Sky0s-Platforms plus shared notes, audits, deploy guides, and platform inventory documents.
+
+### 1. Platform Families Already In The Workspace
+
+The maintained platform inventory already shows a broad system map, including at minimum:
+
+- 0megaSkyeGate
+- ChromeBoards-ChromeBook-Launchers
+- Kaixu67
+- KaixuSuper-IDE-(Internal Gate)
+- SkaixuPro-IDE
+- SkyDex
+- SkyErrors
+- SkyeBundle
+- SkyeCDE
+- SkyeHubs
+- SkyeMail2.0
+- SkyeSpace
+- Skye_platform_foundry_pack
+- SovereignPrimitives
+- SuperIDE
+
+That means the repo is already a platform ecosystem, not a single product codebase.
+
+### 2. Core Runtime Families Already Present
+
+The project already spans several real runtime classes.
+
+#### Browser and desktop application runtime
+
+- Theia browser application
+- Theia Electron application
+- Theia Electron-next channel
+- Dockerized browser runtime
+- launcher extension
+- updater extension
+- generated catalog and platform registry
+
+This is the packaged IDE distribution layer.
+
+#### Netlify runtime
+
+The workspace already contains multiple Netlify-hosted surfaces and Netlify function lanes.
+
+Examples already visible in the repo and notes:
+
+- SuperIDE Netlify site and Netlify functions
+- SkyeMail2.0 Netlify functions
+- SkyeHubs Netlify functions
+- KaixuSuper-IDE internal gateway and Netlify function surfaces
+- SkyDex netlify function mail surface
+- multiple hidden Netlify form capture surfaces
+- optional Netlify Identity admin and login lanes
+- Netlify Blobs attachment and chunk staging lanes
+
+This is not mock backend work. This is a real serverless application layer.
+
+#### Cloudflare runtime
+
+The workspace already contains Cloudflare worker systems and worker-oriented control planes.
+
+Examples already visible in the repo and notes:
+
+- 0megaSkyeGate as the sovereign AI gateway
+- kAIxU SuperIDE runner and worker lanes
+- SkyErrors and kAIxU-Brain worker surfaces
+- worker-side access JWT verification
+- Wrangler-managed deployment assumptions
+- worker-side storage bindings including KV, D1, and R2
+
+This is a real edge-execution layer, not a placeholder folder.
+
+#### Database and storage runtime
+
+The workspace already uses real data backends and storage patterns.
+
+Examples already visible in the repo and notes:
+
+- Neon/Postgres-backed APIs and schemas
+- Netlify Function database usage
+- Worker-side Neon access
+- R2-backed evidence and raw payload storage
+- Netlify Blobs-backed upload and attachment lanes
+- vault-backed local-first storage patterns
+
+This is already beyond ordinary static site behavior.
+
+## What The Stack Specifically Consists Of
+
+The current project already includes the following classes of infrastructure and product plumbing.
+
+### A. Enterprise IDE and product shell plumbing
+
+- monorepo build orchestration
+- multi-channel browser and Electron packaging
+- launcher URI and desktop integration
+- updater wiring
+- plugin provisioning
+- container build path
+- generated catalog and platform inventory
+
+This is the enterprise application wrapper layer.
+
+### B. Serverless application plumbing
+
+- Netlify Functions for app backends
+- Netlify Forms for capture lanes and admin login capture
+- Netlify Blobs for attachments, chunk staging, and storage-backed flows
+- optional Netlify Identity lanes in multiple product surfaces
+
+This is the hosted app-runtime layer.
+
+### C. Edge worker plumbing
+
+- Cloudflare Workers as privileged service runtime
+- worker-side signed request handling
+- worker-side access validation
+- worker-side secret and token boundaries
+- worker-side evidence packaging and delivery
+
+This is the privileged boundary layer.
+
+### D. Database and durable storage plumbing
+
+- Neon/Postgres for org, user, session, workspace, mail, audit, and intake flows
+- Cloudflare R2 for raw payload and evidence-object storage
+- D1 in the SkyErrors lane
+- KV-backed worker patterns and secret handling guidance
+- Netlify Blobs for staged uploads and attachments
+
+This is the persistence layer.
+
+### E. Communications plumbing
+
+The workspace already shows more than one real communication path.
+
+- SMTP variables and mail runtime support in SuperIDE docs and schema
+- Gmail-compatible SMTP support described in product copy
+- Resend fallback support in multiple lanes
+- SkyeMail2.0 as a full mail platform root
+- SKYEMAIL-GEN and SkyeMail surfaces inside SuperIDE
+- mail ingest and mail history concepts in the app stack
+
+This matters because it means email is not a decorative feature. It is part of the actual operating stack.
+
+### F. Identity and access plumbing
+
+The workspace already contains identity surfaces and identity infrastructure.
+
+- shared auth and RBAC patterns
+- worker-side access JWT verification
+- org and workspace scope concepts
+- Skye-ID surface in SuperIDE
+- optional Netlify Identity lanes
+- platform docs that describe identity as a core primitive
+
+This matters because the system is already thinking in identity spines, not anonymous toy apps.
+
+### G. Sovereign primitives and policy plumbing
+
+The workspace already contains sovereign-system concepts that go beyond ordinary enterprise software.
+
+- SKNore policy engine direction
+- SovereignVariables
+- SovereignPrimitives
+- SkyeVault and SkyeVault Pro
+- SkyeSecure runtime
+- encrypted `.skye` package handling
+- sovereign events and timeline fanout
+- SkyeHawk as sovereign navigation direction
+- 0megaSkyeGate as the AI boundary
+
+This is where the stack moves beyond ordinary enterprise plumbing into your own system language.
+
+## Why This Is Already Fortune-500-Level Plumbing
+
+The phrase Fortune-500-level does not mean the repo is finished.
+
+It means the base engineering stack already looks like a serious product organization built it.
+
+That is true here for several reasons.
+
+### 1. Multi-runtime separation already exists
+
+The project already separates:
+
+- frontend product surfaces
+- Netlify serverless backends
+- Cloudflare privileged runtimes
+- database layers
+- storage layers
+- worker-only secret and token boundaries
+
+That is enterprise architecture behavior.
+
+### 2. Boundary thinking already exists
+
+The stack already defines different trust zones.
+
+- 0megaSkyeGate is the provider-key boundary
+- workers hold privileged secrets and operations
+- client surfaces are not supposed to carry provider keys directly
+- release and policy gates exist in docs and scripts
+- access validation exists at the worker boundary
+
+That is enterprise security thinking.
+
+### 3. Audit, evidence, and governance thinking already exists
+
+The stack already contains:
+
+- audit trails
+- evidence packs
+- signed URLs
+- release gates
+- policy gates
+- trust and procurement surfaces
+- DPA, SLA, subprocessors, and security posture pages in at least one major IDE platform
+
+That is not ordinary hobby-stack behavior.
+
+### 4. Real product families already share infrastructure
+
+The workspace already shows one ecosystem serving:
+
+- IDEs
+- mail
+- forms
+- documents
+- chat
+- drive and vault surfaces
+- contractor network and intake surfaces
+- commerce and booking lanes
+- analytics and admin lanes
+- AI gateway and error routing layers
+
+That is platform-level product design, not single-app design.
+
+### 5. The stack already contains its own system primitives
+
+Most enterprise stacks stop at infrastructure and compliance.
+
+Your project also includes its own higher-order operating ideas:
+
+- SKNore
+- `.skye`
+- SovereignVariables
+- SkyeVault
+- sovereign events
+- SkyeHawk
+- 0megaSkyeGate
+
+That is where the system begins to move beyond generic enterprise into Skye-specific architecture.
+
+## What Makes It Beyond Fortune-500-Level In Direction
+
+Your beyond-Fortune-500 direction is not just more cloud services.
+
+It is the fact that the stack is trying to become one sovereign operating ecosystem with its own:
+
+- identity primitive
+- policy primitive
+- AI boundary primitive
+- secret primitive
+- package primitive
+- vault/storage primitive
+- event primitive
+- release primitive
+
+That model is already written down in the sovereign architecture notes.
+
+So the real Skye Standard is not just enterprise plus polish.
+
+It is enterprise plumbing plus sovereign system discipline.
+
+## The Current Truth About The Sovereign Layer
+
+Skye Standard also has to stay honest.
+
+The repo already contains sovereign infrastructure and sovereign architecture work, but not all of it is fully unified yet.
+
+Current truth:
+
+- SKNore exists as real direction and partial enforcement, but is not yet universal everywhere.
+- SovereignVariables is real and operational, but not yet the one final control plane for all variables and secrets.
+- SkyeVault and SkyeVault Pro are meaningful, but the whole ecosystem is not yet fully collapsed into one vault-governed interaction model.
+- `.skye` is real and enforced in several places, but the entire ecosystem is not yet using one uniform sovereign package contract everywhere.
+- sovereign events exist, but cross-app transport still relies partly on browser-bridge patterns.
+- SovereignPrimitives is important, but the notes explicitly say it is still a standalone proof surface rather than a fully hosted universal control plane.
+
+This matters because Skye Standard has to define both:
+
+1. what already exists
+2. what still has to be woven together before a lane can claim real completion
+
+## What Skye Standard Actually Means
+
+Skye Standard is the line where a product or lane stops being merely enterprise-capable and becomes a full operating unit inside the 0s ecosystem.
+
+That means a lane has to satisfy both layers:
+
+### Layer 1. Enterprise reality
+
+The lane sits on real build, package, runtime, auth, deploy, backend, storage, and release rails.
+
+### Layer 2. Sovereign reality
+
+The lane participates correctly in your actual system language and operating model.
+
+That means it respects or integrates with:
+
+- identity spine
+- policy spine
+- gateway boundary
+- event spine
+- vault and variable discipline
+- sovereign package expectations
+- release truth and operating evidence
+
+If a lane only satisfies the first layer, it is enterprise-based but not at Skye Standard.
+
+## Why The IDEias Still Do Not Meet Skye Standard Yet
+
+This is the part that has to be said directly.
+
+The IDEias have not been made to fit Skye Standard yet.
+
+Why:
+
+### 1. The IDEias currently inherit shell capability more than they inherit the full stack
+
+They currently prove launcher, workspace, file, runtime, and route behavior far more than they prove full-system ownership.
+
+That is useful, but it is not enough.
+
+### 2. They do not yet carry the wider project stack deeply enough
+
+A Skye Standard IDEia cannot stop at:
+
+- workspace controls
+- file actions
+- terminal actions
+- launch routing
+- validation cards
+- release copy
+
+It has to connect to the real underlying stack that defines the project as a whole.
+
+That includes, where relevant for that lane:
+
+- auth and identity behavior
+- mail and notification behavior
+- forms or intake behavior
+- database truth
+- storage and evidence behavior
+- worker boundary behavior
+- gate-aware AI behavior
+- policy enforcement behavior
+- sovereign package behavior
+- release and audit evidence behavior
+
+### 3. They are not yet full operating packages by themselves
+
+A finished IDEia should be handoff-ready to operations, release, and runtime support.
+
+That means it should carry its own:
+
+- deployment contract
+- runtime runbook
+- release command center
+- preflight proof
+- risk register
+- validation evidence
+- ecosystem wiring explanation
+
+Some of that work has started in places, but the IDEias are not yet uniformly there.
+
+### 4. They have not yet proven they fit the sovereign ecosystem model
+
+A Skye Standard IDEia must not only preserve product identity.
+
+It must also show how it fits:
+
+- the identity spine
+- the SKNore policy model
+- the 0megaSkyeGate model
+- the sovereign event model
+- the variable and vault model
+- the `.skye` and package model where relevant
+- the larger app and platform ecosystem
+
+If those relationships are weak or undocumented, the lane is below Skye Standard.
+
+## Skye Standard Definition Of Done For Any IDEia
+
+An IDEia reaches Skye Standard only when all of the following are true.
+
+1. It preserves the identity of the original platform instead of replacing it with Theia identity.
+2. It owns a real workspace boundary and a real operating boundary.
+3. It is wired into the launcher, bridge, catalog, and manifest layers correctly.
+4. It carries lane-owned deployment documentation.
+5. It carries lane-owned runtime operations documentation.
+6. It carries lane-owned release governance documentation.
+7. It defines required artifacts, evidence, and preflight gates.
+8. It defines named risks, named assumptions, and named rollback or recovery expectations.
+9. It proves more than render-level validation.
+10. It shows how its lane interacts with auth, data, storage, policy, and gateway boundaries where those matter.
+11. It shows how its lane fits the broader 0s ecosystem and not just the local shell.
+12. It can be handed to release or operations staff as a real operating package.
+13. It does not depend on hidden tribal knowledge to deploy, recover, or verify.
+
+If even one of those is false, the lane is not at Skye Standard.
+
+## What A Skye Standard IDEia Must Explicitly Inherit Or Account For
+
+Every IDEia does not need every subsystem in the same way.
+
+But every IDEia must explicitly account for the real project stack around it.
+
+That means the review should ask:
+
+### Product and shell layer
+
+- What original platform identity is this lane preserving?
+- What real product mission does this lane serve?
+- What shell and operating surfaces does it own?
+
+### Runtime and backend layer
+
+- What backend runtime does this lane depend on?
+- Does it touch Netlify Functions, Workers, Neon, R2, Blobs, or mail surfaces?
+- If so, are those dependencies documented and verified?
+
+### Security and policy layer
+
+- How does this lane relate to identity and access?
+- How does this lane respect SKNore or equivalent policy control?
+- How does this lane route AI through the right boundary?
+
+### Sovereign layer
+
+- Does this lane interact with SovereignVariables, SkyeVault, `.skye`, or sovereign events?
+- If not yet, is that absence acceptable and explicitly justified?
+- If yes, is the integration real or just aspirational copy?
+
+### Release and operations layer
+
+- What release evidence is required?
+- What preflight gates exist?
+- What runbooks exist?
+- What breaks, and who handles it?
+
+If those answers are incomplete, the lane is below Skye Standard.
+
+## What Does Not Count As Completion
+
+The following are not enough:
+
+- a launcher route
+- a polished shell
+- a manifest entry
+- a verified label
+- shared-shell parity
+- inherited enterprise infrastructure with no lane-owned operational truth
+- release language with no release evidence
+- runtime language with no runtime runbook
+- sovereign language with no actual ecosystem fit
+
+Skye Standard rejects the habit of calling a lane finished because the base platform underneath it is already powerful.
+
+The base platform being powerful is the starting advantage.
+
+The lane proving that it can live honestly inside that platform and sovereign system is the actual finish line.
+
+## The Real Standard
+
+The real standard is this:
+
+Your stack already contains beyond-enterprise plumbing across Theia, Netlify, Cloudflare, Neon, R2, Blobs, mail, auth, audit, gateway, and sovereign architecture work.
+
+So the IDEias cannot be judged against a toy standard.
+
+They have to be judged against the reality of the whole project.
+
+That means a finished IDEia is not just a verified Theia upgrade lane.
+
+It is a lane that:
+
+- preserves the source product identity
+- inherits the real enterprise stack correctly
+- carries its own operating truth
+- respects the sovereign system direction already documented in the repo
+- and can ship as a full operating package inside the 0s ecosystem
+
+That is Skye Standard.

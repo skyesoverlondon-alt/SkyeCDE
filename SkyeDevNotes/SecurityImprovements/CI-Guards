@@ -1,0 +1,121 @@
+# CI Guards, Security Controls, and Sovereign Security Infrastructure
+
+## Why this exists
+This note translates the repo's current security posture into plain English and then ties it back to the sovereign architecture already living inside the platform. The goal is to make the current controls understandable, name the custom systems already present, and show where they fit together.
+
+---
+
+## 1. CI and policy gates already in place
+
+### Build, package and test
+The main pull-request pipeline is the GitHub Actions workflow named **`Build, package and test`**. It runs on pull requests to `master`, on pushes to `master`, on manual dispatch, and on a nightly schedule. Inside that workflow, the first explicit security policy step is **`Policy Gate - Disallowed AI Provider Signatures`**, which runs `node scripts/check-disallowed-ai-providers.js`. In plain English: every PR can be scanned for banned AI provider signatures before the rest of the install/build/test stack runs, so a leak gets caught in CI instead of after merge. This is exactly the kind of “automatic PR block until fixed” control you described. The same workflow also enforces linting, packaging, and platform tests, which means security policy and software integrity are already tied together instead of being treated as separate concerns.
+
+### Release-gate layer
+SuperIDE also has a second gate model in its release tooling. The release gate evaluator groups checks into `security`, `reliability`, `data_integrity`, and `executive_readiness`, and the `security` lane explicitly requires `gateway_only`, `provider_strings`, `secure_defaults`, `external_endpoints`, and `protected_apps`. The `data_integrity` lane already includes `.skye`-related integrity checks through `skye_schema` and `export_import_schema`. That matters because it means the repo is not only checking “does it build?” but also “did the security boundary remain intact?” and “did the secure data format stay valid?”.
+
+### `.skye` validation visible in release planning
+The release-gates documentation explicitly says `.skye` validation must remain visible through canonical contract validity, secure roundtrip retention, tamper rejection, and passphrase enforcement. So the repo already treats `.skye` as a governed format, not a loose export convenience.
+
+---
+
+## 2. Core sovereign security systems already present
+
+### SKNore: file-safety and AI exclusion policy
+SKNore is already defined as a deny-list policy layer that prevents protected files from being included in AI generation payloads or export surfaces. The current architecture says it lets users mark file paths and globs as AI off-limits, removes protected files from outbound `files` payloads, blocks protected active files, and is meant to become audit-backed and server-side mirrored. The product-surface doc also defines API endpoints for policy load/save and event retrieval, plus enforcement against `POST /api/kaixu-generate`. In plain language: SKNore is your sovereign content-boundary engine. It is the start of repo-wide policy zoning.
+
+### Sovereign events: signed internal activity trail
+There is already a sovereign event system in the Netlify layer. The shared helper emits structured events with actor, org, workspace, mission, source app, subject, severity, summary, and payload metadata. It also supports idempotency keys, stores an `internal_signature`, and fans events out into `timeline_entries`. The public handler only allows authenticated reads, scopes reads to the caller's org, and optionally filters by workspace and source app. This is important because it gives you the beginnings of a project-wide sovereign telemetry spine instead of app-by-app logging silos.
+
+### Shared auth + RBAC + worker access validation
+The shared auth model already defines one identity/session model across Skye apps, role-based access control, and audit-friendly permission checks for every write. On the worker side, `verifyAccessJwt` validates Cloudflare Access JWTs, checks audience, issuer, expiration, fetches JWKS, and verifies signatures. Put simply: the repo already has a strong pattern for central identity, scoped authorization, and edge-verified requests.
+
+### 0megaSkyeGate as the AI boundary
+The generated product catalog describes **0megaSkyeGate** as “the sovereign AI gateway for the ecosystem,” explicitly calling it the central provider-key boundary and the place downstream apps should route AI traffic. That is strategically important. It means your architecture already contains the right conceptual home for AI-provider isolation, policy inspection, request signing, and future sovereign variable injection.
+
+---
+
+## 3. Sovereign Variables, vaulting, and secret-handling controls
+
+### SovereignVariables is already a serious security surface
+The SuperIDE app registry describes `SovereignVariables` as a secure environment variable vault with portable exports, and its MVP explicitly names `Encrypted .skye export` plus `Push to chat/mail`. The current public implementation imports the shared `SkyeSecure` runtime, accepts `.json`, `.skye`, `.env`, and `.txt`, auto-ingests queued templates from local storage, records suite intents, and can route packages into SkyeChat and SkyeMail. The app also runs behind shared auth/session helpers. That means SovereignVariables is already halfway between a local config manager, a secure exchange format, and a workflow router.
+
+### Vault boundaries are already partly enforced
+The repo's auth model says SkyeVault secret-value reads are limited to `owner` and `admin` unless explicitly delegated. Repo instructions for SuperIDE also state that secret vaulting and privileged operations belong in Worker/KV/R2 flows, not in frontend code or DB rows, and provider secrets should stay in KV/vault flows rather than database tables. This is the right architectural direction for your sovereign variable system: the frontends can model, preview, and queue, but privileged secret storage and retrieval should converge on vault services.
+
+### SkyeVault and SkyeVault Pro are not just storage; they are orchestration points
+`SkyeVault` already exposes scoped secret registration, approvals, rotation scheduling, attestation, and break-glass workflows in its command surface. `SkyeVault Pro` is a local-first vault workspace with a cross-app bridge. It stages imports, writes them into personal vault folders, sends bridge events through local storage and `postMessage`, and includes per-app payload transforms for SkyeDocs, SkyeNotes, SkyeForms, SkyeSheets, SkyeSlides, SkyeTasks, SkyeMail, SkyeChat, SkyeCalendar, SkyeDrive, and contractor flows. That makes the vault layer one of the most important pieces of infrastructure in the ecosystem because it is already acting like a routing hub.
+
+---
+
+## 4. `.skye` as a real secure transport format
+
+### `.skye` is not fake packaging in this repo
+The shared `SkyeSecure` runtime defines a real secure envelope model:
+- binary marker: `SKYESEC1`
+- format: `skye-secure-v1`
+- algorithm: `AES-256-GCM`
+- KDF: `PBKDF2-SHA256`
+- default iterations: `120000`
+- envelope validation, payload validation, and blob parsing helpers
+
+That means `.skye` is already architected as a structured encrypted container with validation rules, not just a renamed JSON file.
+
+### App-level `.skye` enforcement already exists
+SkyeChat refuses to import `.skye` files that do not belong to the app or fail schema validation. SkyeBlog and SkyeDocxPro both require passphrase-encrypted `.skye` export, use the shared runtime, support secure-envelope parsing, and explicitly reject insecure or unsupported `.skye` packages. Release notes further confirm that the DocxPro `.skye` path was hardened with strict passphrase and envelope validation. This is exactly the kind of app-consistent enforcement you want if `.SKYE` / `.skye` is supposed to become a sovereign format family across the 0s.
+
+### Vault-native `.skye` support is already present
+SkyeVault Pro treats `.skye` as a first-class document type, creates blank `.skye` docs, marks them editable, syncs them to disk, and writes a vault manifest. This means the vault layer can already become the physical storage substrate for sovereign document transport.
+
+---
+
+## 5. Cross-app routing and ecosystem weaving already happening
+
+### SuperIDE already behaves like an orchestration shell
+The main SuperIDE surface already includes an app strip, grouped drawer, execution pipeline controls, workspace stack configuration, and a direct link from the file-safety policy to the SKNore console. In other words: the shell already understands that apps are part of one governed bench, not isolated tabs.
+
+### SkyDex already routes into sovereign systems
+SkyDex 4.6 can record suite intents and sync workspace context directly into SovereignVariables. It also stages bridge drafts into SkyeBlog, posts recalled blog content into SkyeChat, and sends the same content into SkyeMail. So the behavior you want — “all my apps talking to one another” — is already partially implemented in live surfaces.
+
+### SovereignVariables already participates in cross-stream routing
+SovereignVariables has queued-intake auto-import, app-aware auth headers, suite-intent recording, and direct push functions for SkyeChat and SkyeMail. This means it is already a sovereign workflow node, not just a passive secret editor.
+
+### SkyeDocxPro and SkyeBlog already publish into the ecosystem
+SkyeDocxPro can stage content into SkyeBlog, publish to SkyeChat, send to SkyeMail, and mirror into SkyeDrive. SkyeBlog can receive bridge drafts, publish to SkyeChat, and deliver to SkyeMail while recording suite intents. These are the exact interaction patterns the sovereign primitives layer should standardize and harden.
+
+---
+
+## 6. What is missing / where the architecture is still immature
+
+1. **SKNore is not fully universal yet.** The architecture doc itself says server-side mirroring, org-level policy, and audit events are still next-step hardening work.
+2. **Sovereign primitives are still isolated proof surfaces.** The standalone SovereignPrimitives README explicitly says the surface is not wired into the Netlify / Neon / Worker stack yet.
+3. **Vault, variables, and `.skye` are powerful but not yet one control plane.** They exist in parallel and interact in spots, but they do not yet share one project-wide classification, policy, event, and key-management model.
+4. **Cross-app routing still leans heavily on localStorage/browser bridge patterns.** That is useful for local-first behavior, but the ecosystem needs stronger governed event transport for enterprise-grade sovereignty.
+5. **There is not yet one formal “Sovereign Primitive Contract” used by every app.** Right now the pieces exist, but the same rules are not consistently enforced across every platform/app in the 0s.
+
+---
+
+## 7. Recommended security directive going forward
+
+### Short version
+You already have the right ingredients:
+- CI policy gates
+- release gates
+- SKNore policy zoning
+- 0megaSkyeGate as provider boundary
+- sovereign event telemetry
+- shared auth/RBAC
+- vault workflows
+- secure `.skye` envelopes
+- cross-app routing in SuperIDE
+
+The next move is not to invent new security ideas from scratch. The next move is to **institutionalize these existing sovereign systems as mandatory platform primitives**.
+
+### Directive
+1. **Make SKNore the universal classification policy layer.** Every app that handles files, prompts, records, exports, publishing, deployment, or AI calls should resolve SKNore policy before action.
+2. **Make 0megaSkyeGate the only AI-provider boundary.** No downstream app should ever talk directly to external providers.
+3. **Make SovereignVariables + Vault the secrets and policy input plane.** Variables should be stored/transported through governed vault patterns, not ad hoc local app code.
+4. **Make `.skye` the sovereign portable package contract.** All app exports that contain sensitive state should use shared secure runtime validation rules.
+5. **Make sovereign events the required audit spine.** Every cross-app handoff, secret touch, policy block, release seal, import/export, and break-glass session should emit a signed sovereign event.
+6. **Make SuperIDE the orchestration shell, not the only host.** The same bridge rules should work across platforms, but the protocol must become platform-wide and signed.
+
+This is how the ecosystem stops being “apps that sometimes talk” and becomes a real sovereign operating fabric.

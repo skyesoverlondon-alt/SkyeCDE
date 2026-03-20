@@ -1,0 +1,139 @@
+# Branding Implementation Directive — Skyes Over London
+
+Status key: [✗] = not done  [✓] = done
+
+---
+
+## Context
+
+Skyes Over London is the primary product. Eclipse Theia is a dependency and upstream framework — not the owner, not the product name. All owned product-wrapper surfaces must reflect Skyes Over London. Upstream vendor source inside `vendor/theia/` and `vendor/theia-ide/` is intentionally untouched until a planned upstream rewrite pass, documented below.
+
+---
+
+## Scope Rules
+
+- **In scope now:** Any file we author and control — CI workflows, package.json metadata, electron-builder configs, app HTML/JS, docs, changelogs, launcher/updater plugins, scripts.
+- **Deferred (Theia upstream rewrite pass):** Files under `vendor/theia/` and `vendor/theia-ide/` that come from the Eclipse Theia project. These need a separate planned rewrite to avoid merge conflict debt.
+- **Never touch:** Copyright notices inside upstream Eclipse Theia source (`NOTICE.md`, `CONTRIBUTING.md`, `SECURITY.md` in vendor/theia) — those are legal attribution requirements.
+
+---
+
+## SECTION 1 — Main Workspace (`/workspaces/SkyeCDE`, branch: main)
+
+### 1.1 Result: CLEAN
+Full two-pass scan (March 20 2026) returned zero hits for `Eclipse Theia IDE`, `Theia IDE`, `Eclipse Theia`, or `theia-ide` display strings across all owned product-wrapper files.
+
+**Surfaces already rebranded:**
+- [✓] `applications/electron/electron-builder.yml` — product name, GitHub release URLs, Linux maintainer
+- [✓] `applications/electron-next/electron-builder.yml` — same
+- [✓] `package.json` (root) — product name and description
+- [✓] `theia-extensions/launcher/` — launcher branding and URLs
+- [✓] `theia-extensions/updater/` — updater GitHub release endpoint repointed
+- [✓] `theia-extensions/product/` — product plugin metadata
+- [✓] `.github/workflows/` — all CI workflow `name:` fields
+- [✓] `scripts/generate-brand-icons.js` — icon generator branded
+- [✓] `next/NEXT_INTEGRATION_BUILD.md` — wording cleaned
+- [✓] `PUBLISHING.md` — release flow doc updated
+
+---
+
+## SECTION 2 — Skye0s-s0l26 Worktree
+
+### 2.1 Owned CI Workflows — COMPLETE
+
+These are our CI pipelines, not Theia's. The `name:` field shows in GitHub Actions UI and release notifications.
+
+**File: `Skye0s-s0l26/.github/workflows/build-next-release.yml`**
+- [✓] Line 1: `name: Build Skyes Over London Next Release (Linux)`
+- [✓] Artifact name: `skyes-over-london-next-linux`
+- [✓] Artifact path: `applications/electron-next/dist/skyes-over-london-next.AppImage`
+- [✓] GitHub release `--title`: `Skyes Over London Next Build - Ubuntu AppImage (...)`
+- [✓] GitHub release `--notes`: references Skyes Over London
+
+**File: `Skye0s-s0l26/.github/workflows/build-next.yml`**
+- [✓] Line 1: `name: Build Skyes Over London next version`
+- [✓] Rename step: `mv .../skyes-over-london.AppImage .../skyes-over-london-$THEIA_IDE_VERSION.AppImage`
+- [✓] Linux artifact: `skyes-over-london-next-linux` / path updated
+- [✓] Mac artifacts: `skyes-over-london-next-mac-x64` / `skyes-over-london-next-mac-arm64`
+- [✓] Windows artifact: `skyes-over-london-next-windows`
+
+**File: `Skye0s-s0l26/.github/workflows/publish-theia-ide-img.yml`**
+- [✓] Line 1: `name: Publish Skyes Over London Docker Image`
+- [✓] Job name: `Build and push Skyes Over London image to Github Packages`
+- [✓] Docker tags: `ghcr.io/.../skyes-over-london:tag` and `ghcr.io/.../skyes-over-london:latest`
+- [✗] Optionally rename the file itself: `publish-theia-ide-img.yml` → `publish-sol-img.yml` (low priority, do with next CI cleanup pass)
+
+**File: `Skye0s-s0l26/.github/workflows/build.yml`**
+- [✓] `paths-ignore` filters updated: `TheiaIDE logo/**` → `SkyesOverLondon logo/**`
+
+**Logo directory: `Skye0s-s0l26/SkyesOverLondon logo/`**
+- [✓] Directory renamed from `TheiaIDE logo/` to `SkyesOverLondon logo/`
+- [✓] All 5 asset files renamed: `SkyesOverLondon.{eps,jpg,pdf,png,svg}`
+
+**File: `Skye0s-s0l26/.github/PULL_REQUEST_TEMPLATE.md`**
+- [✓] Removed upstream `github.com/theia-ide/theia` links; now references local `CONTRIBUTING.md`
+
+### 2.2 Vendor ThiaIDE CI Mirror — COMPLETE
+
+`Skye0s-s0l26/Sky0s-Platforms/SuperIDE/apps/skye-ide/vendor/theia-ide/.github/workflows/` contains copies of the upstream `theia-ide` CI.
+
+**File: `vendor/.github/workflows/build-next-release.yml`**
+- [✓] Line 1: `name: Build Skyes Over London Next Release (Linux)`
+- [✓] Artifact name: `skyes-over-london-next-linux`
+- [✓] Artifact path: `applications/electron-next/dist/skyes-over-london-next.AppImage`
+- [✓] GitHub release title and notes updated
+
+**File: `vendor/.github/workflows/build-next.yml`**
+- [✓] Line 1: `name: Build Skyes Over London next version`
+- [✓] Rename step and all artifact names updated to `skyes-over-london-*`
+
+**File: `vendor/.github/workflows/publish-theia-ide-img.yml`**
+- [✓] Line 1 + job name updated
+- [✓] Docker tags: `ghcr.io/.../skyes-over-london:tag` and `...skyes-over-london:latest`
+
+**File: `vendor/.github/workflows/build.yml`**
+- [✓] `paths-ignore` filters: `TheiaIDE logo/**` → `SkyesOverLondon logo/**`
+
+**Note:** Deep vendor source (releng/ Jenkinsfiles, TypeScript `theia-ide-contribution.tsx` etc.) remains in the vendor/theia-ide namespace per policy. Deferred to Section 3 rewrite pass.
+
+### 2.3 Vendor Theia Core Runtime Default — DEFERRED
+
+`Skye0s-s0l26/Sky0s-Platforms/SuperIDE/apps/skye-ide/vendor/theia/dev-packages/application-package/src/application-props.ts`
+- Line 125: `applicationName: 'Eclipse Theia'` — this is the framework default. The product wrapper overrides this at the application level via `package.json` `"applicationName"`. A deeper override can be applied during the Theia upstream source rewrite pass.
+- [✗] Verify product wrapper `package.json` in `apps/skye-ide` has `applicationName` set to `Skyes Over London` (confirm during Theia rewrite pass)
+
+### 2.4 Compiled `lib/` Output — SKIP (auto-regenerates)
+
+Files under `applications/*/lib/` contain build output referencing upstream strings baked in by the Theia framework. These regenerate on next build and do not need manual edits.
+
+- `applications/browser/lib/frontend/bundle.js` — skip
+- `applications/electron/lib/frontend/bundle.js` — skip
+- `applications/electron-next/lib/frontend/bundle.js` — skip
+- `applications/electron*/lib/backend/*.js` — skip
+
+### 2.5 README.md Contextual References — INTENTIONAL, NO ACTION
+
+`Skye0s-s0l26/README.md` references Eclipse Theia as the upstream *framework* this product is built on. These are correct, informational, and should not be removed — they explain the dependency clearly without branding the product as Theia.
+
+---
+
+## SECTION 3 — Vendor Theia Upstream Source (full rewrite pass — future)
+
+The following files are Eclipse Theia upstream source. They are deferred to a dedicated rewrite sprint where each file is patched, the diff is validated against upstream for merge safety, and the changes are tracked.
+
+**Files in scope for that future pass:**
+- `vendor/theia/packages/ai-ide/src/browser/*.ts` — AI agent prompt templates that mention "Eclipse Theia IDE"
+- `vendor/theia/packages/core/i18n/nls.*.json` — localization strings
+- `vendor/theia/packages/ai-llamafile/src/common/llamafile-preferences.ts`
+- `vendor/theia/packages/ai-mcp*/README.md`
+- `vendor/theia/packages/ai-ide/README.md`
+- `vendor/theia/dev-packages/application-package/src/application-props.ts` (default app name)
+- `vendor/theia/configs/merge.typedoc.json` (website URL)
+
+---
+
+## Execution Order
+
+1. **Immediate (Section 2.1)** — Fix the 3 CI workflow files in `Skye0s-s0l26/.github/workflows/`. 4 line changes total. No build impact.
+2. **Next sprint** — Vendor theia-ide CI mirror (Section 2.2). Match main tree.
+3. **Future sprint** — Full upstream Theia source rewrite pass (Section 3). Requires careful diff management.

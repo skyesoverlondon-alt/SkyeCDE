@@ -25,6 +25,9 @@ export function getSkyDexiaFileHints() {
     { label: 'README lane brief', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/README.md' },
     { label: 'Shell entry', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-shell.js' },
     { label: 'Launch map', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-launch-map.js' },
-    { label: 'Runtime recipes', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-terminal-actions.js' }
+    { label: 'Runtime recipes', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-terminal-actions.js' },
+    { label: 'Deployment systems guide', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/deployment/SKYDEXIA_DEPLOYMENT_SYSTEMS.md' },
+    { label: 'Runtime runbook', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/ops/SKYDEXIA_RUNTIME_RUNBOOK.md' },
+    { label: 'Release command center', path: 'Sky0s-Platforms/SkyeCDE/SkyDexia/delivery/SKYDEXIA_RELEASE_COMMAND_CENTER.md' }
   ];
 }

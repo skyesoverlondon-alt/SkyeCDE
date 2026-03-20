@@ -7,6 +7,7 @@ This rebuild separates the repo browser from the workspace state pane.
 - Workspace is now just project name, save state, diff, and release context.
 - Controls remain separate from View and Actions.
 - SkyDex agent runs through 0megaSkyeGate using `KAIXU_APP_TOKEN` and `OMEGA_GATE_URL`.
+- SkyDex can be launched in CDE-native mode with `?cde=1` to signal panel-first workspace behavior.
 - If the internal gate has not been deployed yet, this wiring is still correct and live calls are expected to fail until deployment plus env setup are complete.
 
 ## Deploy
@@ -16,6 +17,13 @@ Run from the project root with Netlify CLI:
 npx netlify-cli dev
 npx netlify-cli deploy --prod
 ```
+
+
+## Gate contract
+- Runtime endpoint: `OMEGA_GATE_URL`
+- App credential: `KAIXU_APP_TOKEN`
+- Model alias lane used by SkyDex backend: `kaixu/deep` by default (override with `KAIXU_AGENT_MODEL` when needed)
+- Request lane: `/api/ai-agent` -> `0megaSkyeGate /v1/chat`
 
 ## Gate note
 A `401` from `/api/ai-agent` means 0megaSkyeGate rejected the configured app token. That is a gate auth/config issue.

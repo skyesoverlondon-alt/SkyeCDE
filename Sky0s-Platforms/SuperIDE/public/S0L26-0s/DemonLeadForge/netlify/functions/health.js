@@ -6,7 +6,7 @@ export const handler = async (event) => {
     ok: true,
     name: 'Demon Lead Forge',
     runtime: 'netlify-functions',
-    openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+    gateConfigured: Boolean(process.env.OMEGA_GATE_SERVICE_KEY),
     databaseConfigured: Boolean(process.env.DATABASE_URL),
     bemonConfigured: Boolean(process.env.BEMON_KEY)
   });

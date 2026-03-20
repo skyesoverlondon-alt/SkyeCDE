@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChromeBoard Managed Bootstrap</title>
+  <style>
+    body{font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1220;color:#f5f7ff;margin:0;padding:14px;min-width:360px}
+    h1{font-size:18px;margin:0 0 8px}
+    p{margin:0 0 10px;color:#c6cbe3}
+    .card{background:#171b2d;border:1px solid #2b3255;border-radius:14px;padding:12px;margin-bottom:12px}
+    input{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid #37406f;background:#0c1020;color:#fff;padding:10px 12px;margin:8px 0 10px}
+    button{width:100%;margin:6px 0;padding:10px 12px;border-radius:10px;border:1px solid #404b80;background:#21284a;color:#fff;font-weight:600;cursor:pointer}
+    button.primary{background:linear-gradient(135deg,#6d4aff,#3a82ff);border:none}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .muted{font-size:12px;color:#9da7d5}
+    .status{white-space:pre-wrap;font-size:12px;color:#dce2ff}
+    a{color:#a7bbff}
+  </style>
+</head>
+<body>
+  <h1>ChromeBoard Managed Bootstrap</h1>
+  <p>Use the real bridge lanes: enterprise-managed seed, installed Chrome-visible apps, bookmarks, tabs, and right-click import.</p>
+  <div class="card">
+    <label for="urlInput">ChromeBoard URL</label>
+    <input id="urlInput" placeholder="https://your-chromeboard-site.example" />
+    <button class="primary" id="saveBtn">Save URL</button>
+    <p class="muted">For most people, use your deployed ChromeBoard URL here (usually your Netlify URL). Managed policy only matters for admin-controlled fleet rollouts.</p>
+  </div>
+  <div class="card">
+    <button class="primary" id="fullBootstrapBtn">Full bootstrap</button>
+    <div class="row">
+      <button id="managedSeedBtn">Import managed seed</button>
+      <button id="installedAppsBtn">Import installed apps</button>
+      <button id="bookmarkBarBtn">Import bookmark bar</button>
+      <button id="allTabsBtn">Import all tabs</button>
+      <button id="windowTabsBtn">Import window tabs</button>
+      <button id="currentTabBtn">Import current tab</button>
+    </div>
+  </div>
+  <div class="card">
+    <div id="status" class="status">Loading…</div>
+    <p class="muted" style="margin-top:10px">Native ChromeOS launcher pin state is still not exposed as a normal read API. This managed build syncs from enterprise policy plus Chrome-visible app surfaces instead of pretending the OS gave us a secret trapdoor.</p>
+    <p class="muted"><a href="options.html" target="_blank">Open detailed setup</a> · <a href="tutorial.html" target="_blank">Open full tutorial</a></p>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

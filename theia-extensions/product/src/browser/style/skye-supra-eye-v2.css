@@ -1,14 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap");
 
 :root {
-  --skye-bg-0: #04090a;
-  --skye-bg-1: #081815;
-  --skye-bg-2: #123126;
-  --skye-panel: rgba(10, 20, 18, 0.76);
-  --skye-panel-2: rgba(7, 14, 13, 0.92);
-  --skye-border: rgba(126, 217, 167, 0.26);
+  --skye-ambient-bg: #1a2e1a;
+  --skye-panel-surface: rgba(9, 22, 17, 0.76);
+  --skye-panel-elevated: rgba(6, 15, 12, 0.92);
+  --skye-border: rgba(76, 175, 80, 0.28);
+  --skye-launcher-accent: #4caf50;
+  --skye-gate-green: #00ff41;
+  --skye-bg-0: #09140b;
+  --skye-bg-1: #12301e;
+  --skye-bg-2: #1a3f2a;
+  --skye-panel: var(--skye-panel-surface);
+  --skye-panel-2: var(--skye-panel-elevated);
   --skye-gold: #ffd86b;
-  --skye-purple: #7ed9a7;
+  --skye-purple: #73d48f;
   --skye-cyan: #b7ffd0;
   --skye-text: #edf9f1;
   --skye-muted: #a8c8b3;
@@ -39,7 +44,10 @@
 }
 
 html, body {
-  background: linear-gradient(160deg, var(--skye-bg-0), var(--skye-bg-1) 55%, #020706);
+  background:
+    radial-gradient(circle at 14% 10%, color-mix(in srgb, var(--skye-gate-green) 18%, transparent), transparent 38%),
+    radial-gradient(circle at 84% 10%, color-mix(in srgb, var(--skye-launcher-accent) 20%, transparent), transparent 36%),
+    linear-gradient(160deg, var(--skye-ambient-bg) 0%, var(--skye-bg-1) 58%, #08170c 100%);
   color: var(--skye-text);
   font-family: var(--skye-font-body);
 }
@@ -72,9 +80,9 @@ body::before {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 16% 18%, rgba(126,217,167,.16), transparent 28%),
+    radial-gradient(circle at 16% 18%, color-mix(in srgb, var(--skye-gate-green) 24%, transparent), transparent 28%),
     radial-gradient(circle at 82% 14%, rgba(255,216,107,.14), transparent 28%),
-    radial-gradient(circle at 50% 100%, rgba(126,217,167,.1), transparent 34%);
+    radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--skye-launcher-accent) 24%, transparent), transparent 34%);
 }
 
 .skye-shell-background-canvas {

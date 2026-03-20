@@ -1,12 +1,10 @@
-import OpenAI from 'openai';
 import { getStore } from '@netlify/blobs';
 import { appendMessage, ensureDefaultProject, ensureSchema, ensureThread, logAudit, sql } from './_lib/db.js';
 import { getNetlifyIdentity, json, noContent, unauthorized, badRequest, parseBody, serverError, makeId } from './_lib/http.js';
 import { scrapeSite, leadsToCsv, mergeLeadRows } from './_lib/scrape.js';
 
-const client = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+const GATE_URL = process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+const GATE_KEY = process.env.OMEGA_GATE_SERVICE_KEY || '';
 const store = getStore({ name: 'leadforge-sheets', consistency: 'strong' });
 
 function extractUrls(text = '') {
@@ -28,14 +26,30 @@ function summarizeRows(rows = []) {
 }
 
 function responseText(response) {
+  if (response?.output?.text) return response.output.text;
   if (response?.output_text) return response.output_text;
   const texts = [];
-  for (const item of response?.output || []) {
+  for (const item of Array.isArray(response?.output) ? response.output : []) {
     for (const part of item?.content || []) {
       if (part?.text) texts.push(part.text);
     }
   }
   return texts.join('\n').trim();
+}
+
+async function callGateChat(prompt) {
+  if (!GATE_KEY) throw new Error('OMEGA_GATE_SERVICE_KEY is not configured.');
+  const res = await fetch(`${GATE_URL}/v1/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GATE_KEY}` },
+    body: JSON.stringify({
+      alias: process.env.GATE_ALIAS || 'kaixu/flash',
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body?.error?.message || `Gate error ${res.status}`);
+  return body;
 }
 
 async function createSheetFromRows({ ownerIdentityUid, projectId, title, rows, sourceSummary, sourceUrls }) {
@@ -107,7 +121,7 @@ export const handler = async (event, context) => {
   try {
     const { user } = getNetlifyIdentity(context);
     if (!user?.sub) return unauthorized('Log in with Netlify Identity first.');
-    if (!client) return serverError(new Error('OPENAI_API_KEY is not configured.'));
+    if (!GATE_KEY) return serverError(new Error('OMEGA_GATE_SERVICE_KEY is not configured.'));
 
     const body = parseBody(event);
     const message = String(body.message || '').trim();
@@ -223,10 +237,7 @@ export const handler = async (event, context) => {
       'Keep it concise but useful. No markdown table.'
     ].join('\n');
 
-    const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || 'gpt-5.2-mini',
-      input: prompt
-    });
+    const response = await callGateChat(prompt);
 
     const assistantText = responseText(response) || 'I processed the request, but the model returned no text. Try again with a tighter prompt.';
 

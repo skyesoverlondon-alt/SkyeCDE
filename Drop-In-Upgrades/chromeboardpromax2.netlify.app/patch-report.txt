@@ -1,0 +1,8 @@
+ChromeBoard helper tutorial patch
+
+Changes made:
+- Added separate extension tutorial page inside the extension: tutorial.html
+- Added separate site tutorial page: helper-extension-tutorial.html
+- Linked the tutorial from popup.html, options.html, helper-extension-setup.html, and index.html
+- Clarified URL guidance: most users should use the live deployed ChromeBoard URL, usually the Netlify URL or custom domain
+- Rebuilt the downloadable helper ZIP from the corrected extension files

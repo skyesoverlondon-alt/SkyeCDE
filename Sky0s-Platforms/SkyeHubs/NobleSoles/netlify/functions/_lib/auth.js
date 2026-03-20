@@ -115,6 +115,29 @@ function isAdminEmail(email) {
   return parseAdminEmails().includes(normalizeEmail(email));
 }
 
+// ── 0megaSkyeGate verification ───────────────────────────────────────────────
+// Used to verify that a caller has a valid gate session (for server-to-server
+// admin operations that should be gated at the platform boundary).
+
+const GATE_URL = process.env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+
+async function requireGateSession(event) {
+  const authHeader = String(event?.headers?.authorization || event?.headers?.Authorization || '').trim();
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  if (!token) return { ok: false, response: json(401, { ok: false, error: 'missing_gate_token' }) };
+
+  try {
+    const res = await fetch(`${GATE_URL}/v1/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok && body.ok) return { ok: true, session: body.session };
+    return { ok: false, response: json(401, { ok: false, error: 'invalid_gate_session' }) };
+  } catch (e) {
+    return { ok: false, response: json(503, { ok: false, error: 'gate_unreachable' }) };
+  }
+}
+
 module.exports = {
   clearSessionCookie,
   createSession,
@@ -122,6 +145,7 @@ module.exports = {
   isAdminEmail,
   json,
   normalizeEmail,
+  requireGateSession,
   requireRole,
   requireUser,
   setSessionCookie,

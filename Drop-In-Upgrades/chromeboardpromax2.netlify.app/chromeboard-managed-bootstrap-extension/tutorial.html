@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChromeBoard Extension Tutorial</title>
+  <style>
+    body{font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0e1120;color:#eef1ff;margin:0;padding:24px;max-width:920px}
+    h1,h2{margin:0 0 10px}
+    .card{background:#171b2d;border:1px solid #2d355d;border-radius:16px;padding:18px;margin:0 0 16px}
+    code{background:#0b0f1d;color:#dfe5ff;border-radius:10px;padding:2px 6px}
+    ol,ul{padding-left:22px}
+    a{color:#a7bbff}
+    .good{color:#b7ffcb}
+    .warn{color:#ffd9a8}
+  </style>
+</head>
+<body>
+  <h1>ChromeBoard Managed Bootstrap Tutorial</h1>
+  <div class="card">
+    <h2>What this extension actually does</h2>
+    <p>This extension is a bridge. It collects browser-visible items such as tabs, bookmarks, installed Chrome apps, and managed policy seed items, then opens your ChromeBoard site with import data attached.</p>
+    <p>It does <strong>not</strong> silently install apps, read secret ChromeOS launcher internals, or create desktop items by itself without your ChromeBoard site handling the import.</p>
+  </div>
+  <div class="card">
+    <h2>For most users: what URL should go in the box?</h2>
+    <p class="good"><strong>Use your deployed ChromeBoard site URL.</strong> In most real use, that means your Netlify URL, custom domain, or other live site URL.</p>
+    <p>Example: <code>https://your-board.netlify.app/</code></p>
+    <p>Only use a local URL such as <code>http://localhost:8888/</code> when you are actively developing or testing on your own machine.</p>
+    <p>Enterprise policy exists so an admin can prefill the same destination for many users. If you are not doing managed fleet rollout, you can ignore that and just save the live site URL locally.</p>
+  </div>
+  <div class="card">
+    <h2>First-time setup</h2>
+    <ol>
+      <li>Open the extension popup.</li>
+      <li>Paste your deployed ChromeBoard URL.</li>
+      <li>Click <strong>Save URL</strong>.</li>
+      <li>Start with <strong>Import current tab</strong>.</li>
+      <li>Your ChromeBoard site should open in a new tab.</li>
+      <li>Confirm ChromeBoard creates an item from that import.</li>
+    </ol>
+    <p>If ChromeBoard opens but nothing imports, the missing piece is in the ChromeBoard site import handler, not this extension popup.</p>
+  </div>
+  <div class="card">
+    <h2>What each action means</h2>
+    <ul>
+      <li><strong>Import current tab</strong>: send the page you are on right now into ChromeBoard.</li>
+      <li><strong>Import window tabs</strong>: send all tabs in the current window.</li>
+      <li><strong>Import all tabs</strong>: send all open tabs across Chrome.</li>
+      <li><strong>Import bookmark bar</strong>: send bookmark-bar items into ChromeBoard.</li>
+      <li><strong>Import installed apps</strong>: import Chrome-visible installed apps/extensions that expose useful launch or homepage URLs.</li>
+      <li><strong>Import managed seed</strong>: import enterprise-managed seed items from policy.</li>
+      <li><strong>Full bootstrap</strong>: combine managed seed items and any policy-enabled seed lanes such as apps, bookmarks, and tabs.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Who should use managed policy?</h2>
+    <p>If this is your own personal board or a normal consumer setup, you usually do <strong>not</strong> need managed policy at all.</p>
+    <p>Managed policy is for organizations pushing one destination and one seed set to multiple devices. In that case an admin can define <code>chromeboardUrl</code> and other seed flags so every managed user opens the same board.</p>
+  </div>
+  <div class="card">
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li><strong>Extension opens ChromeBoard but nothing appears:</strong> ChromeBoard is not reading the incoming import payload yet.</li>
+      <li><strong>Wrong board opens:</strong> the saved URL is wrong or a managed policy URL is overriding it.</li>
+      <li><strong>Managed seed imports nothing:</strong> there is no enterprise policy data on that device.</li>
+      <li><strong>Full bootstrap seems empty:</strong> the managed policy flags are off, or there is no source data in those lanes.</li>
+    </ul>
+  </div>
+</body>
+</html>

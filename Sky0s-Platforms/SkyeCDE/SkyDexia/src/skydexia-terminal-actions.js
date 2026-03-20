@@ -2,10 +2,16 @@ export const skydexiaLaunchRecipes = {
   skydexia: {
     label: 'Start SkyDexia static server',
     id: 'skydexia',
-    cwd: 'Sky0s-Platforms/SkyeCDE/SkyDexia',
+    cwd: 'Sky0s-Platforms/SkyeCDE',
     command: 'python3',
     args: ['-m', 'http.server', '4186'],
-    launchUrl: 'http://127.0.0.1:4186'
+    launchUrl: 'http://127.0.0.1:4186/SkyDexia/index.html',
+    healthCheck: {
+      name: 'SkyDexia shell availability',
+      path: '/SkyDexia/index.html',
+      expectedStatus: 200,
+      containsText: 'SkyDexia'
+    }
   },
   superIDE: {
     label: 'Start SuperIDE dev server',
@@ -13,7 +19,12 @@ export const skydexiaLaunchRecipes = {
     cwd: 'Sky0s-Platforms/SuperIDE',
     command: 'npm',
     args: ['run', 'dev'],
-    launchUrl: 'http://127.0.0.1:5173'
+    launchUrl: 'http://127.0.0.1:5173',
+    healthCheck: {
+      name: 'SuperIDE dev server',
+      path: '/',
+      expectedStatus: 200
+    }
   },
   skaixuPro: {
     label: 'Start SkaixuPro-IDE runtime',
@@ -21,7 +32,12 @@ export const skydexiaLaunchRecipes = {
     cwd: 'Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform',
     command: 'npm',
     args: ['run', 'dev'],
-    launchUrl: 'http://127.0.0.1:8080'
+    launchUrl: 'http://127.0.0.1:8080',
+    healthCheck: {
+      name: 'SkaixuPro runtime',
+      path: '/',
+      expectedStatus: 200
+    }
   },
   kaixuSuper: {
     label: 'Start KaixuSuper-IDE runtime',
@@ -29,7 +45,12 @@ export const skydexiaLaunchRecipes = {
     cwd: 'Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)',
     command: 'npm',
     args: ['run', 'dev'],
-    launchUrl: 'http://127.0.0.1:8888'
+    launchUrl: 'http://127.0.0.1:8888',
+    healthCheck: {
+      name: 'KaixuSuper runtime',
+      path: '/',
+      expectedStatus: 200
+    }
   }
 };
 
@@ -60,7 +81,8 @@ function buildRuntimeRecipe(recipe, secondary = false) {
       cwd: recipe.cwd,
       command: recipe.command,
       args: recipe.args,
-      launchUrl: recipe.launchUrl
+      launchUrl: recipe.launchUrl,
+      healthCheck: recipe.healthCheck
     }
   };
 }

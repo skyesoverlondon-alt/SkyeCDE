@@ -10,7 +10,7 @@ export const kaixuSuperIDEiaLaunchRecipes = {
   skydexia: {
     id: 'skydexia',
     label: 'Start SkyDexia server',
-    cwd: 'Sky0s-Platforms/SkyeCDE/SkyDexia',
+    cwd: 'Sky0s-Platforms/SkyeCDE/SkyDexia-2.6',
     command: 'python3',
     args: ['-m', 'http.server', '4186'],
     launchUrl: 'http://127.0.0.1:4186'

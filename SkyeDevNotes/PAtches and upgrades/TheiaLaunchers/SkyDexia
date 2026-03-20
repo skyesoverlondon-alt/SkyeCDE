@@ -1,0 +1,158 @@
+SkyDexia Plan
+
+Core rule
+
+SkyDex stays the product.
+Theia stays the support layer.
+No preview-tab behavior is acceptable for SkyDexia launch paths.
+If a user clicks SkyDex from the 0s catalog, they must land in the full SkyDex app surface.
+
+Why I previously mentioned non-HTML local targets
+
+Every catalog entry is local to this repo, but not every catalog entry is a single HTML app page.
+Some entries resolve to directories, grouped tool buckets, docs, or platform roots.
+Those are still local, but they are not all one-file app surfaces.
+For actual app pages, the launcher rule is now: open the served app URL, not a Theia preview widget.
+For directory-only inventory roots, the fallback is still local filesystem opening until each root gets its own dedicated app shell.
+
+Current source of truth for SkyDex
+
+Primary product root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyDex
+
+Active current app surface
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyDex/SkyDex4_fixed/index.html
+
+Planned upgraded build root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia
+
+Design goal
+
+SkyDexia should be a super coding environment built from SkyDex first, with Theia supplying the support systems that SkyDex does not already own well enough:
+- workspace file tree
+- autonomous coding workflows
+- terminal and long-running process control
+- editor services and extension support
+- server launch and preview orchestration
+
+SkyDexia should not replace SkyDex branding, product flow, or app identity.
+
+File-by-file build plan
+
+1. Preserve the current SkyDex product intact
+
+Keep unchanged as the product authority:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyDex/SkyDex4_fixed/index.html
+
+Inspect and preserve its current product behaviors before any merge:
+- top shell layout
+- files pane
+- workspace state pane
+- control rail
+- 0megaSkyeGate auth and session wiring
+
+2. Create the SkyDexia product folder
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/
+
+Create these planned files:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/README.md
+	Purpose: defines SkyDexia as SkyDex upgraded by Theia support infrastructure.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/package.json
+	Purpose: local dev/build scripts for the SkyDexia wrapper.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/index.html
+	Purpose: top-level SkyDexia launcher shell entry if this build ships as a browser surface.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-shell.tsx
+	Purpose: React or TS shell that frames SkyDex as the visible product and mounts Theia-driven support surfaces around it.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-layout.css
+	Purpose: SkyDex-first visual system for the upgraded build.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-session-bridge.ts
+	Purpose: session and token handoff between SkyDexia, SkyDex, and 0megaSkyeGate.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-workspace-bridge.ts
+	Purpose: maps SkyDexia actions to Theia workspace, terminals, and file operations.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-launch-map.ts
+	Purpose: routes SkyDexia buttons into full app surfaces, never preview widgets.
+
+3. Add Theia support without making Theia the product identity
+
+Files to integrate against:
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-studio-launcher-widget.tsx
+	Purpose: expose SkyDexia as a first-class coding environment action.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-app-catalog-widget.tsx
+	Purpose: ensure the catalog can launch SkyDexia directly once registered.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-app-opener.ts
+	Purpose: keep full-launch behavior and avoid preview-mode regressions.
+- /workspaces/SkyeCDE/Skye0s-s0l26/scripts/sync-skye-catalog.js
+	Purpose: add SkyDexia as a dedicated launchable surface when it exists.
+
+4. Add launcher/runtime orchestration for coding workflows
+
+Files to extend in the Theia support layer:
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/browser/launcher-service.ts
+	Purpose: surface a typed launcher call for SkyDexia bootstrap.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/launcher-backend-module.ts
+	Purpose: bind backend services that can start or attach to SkyDexia runtime processes.
+
+Add new backend files:
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skydexia-launcher-endpoint.ts
+	Purpose: spawn or attach the SkyDexia runtime and return its live URL.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skydexia-process-service.ts
+	Purpose: handle process lifecycle, ports, health checks, and restart logic.
+
+5. File-system and coding-environment bridge
+
+SkyDexia should borrow these support capabilities from Theia:
+- file navigator
+- Monaco editing where useful
+- terminal execution
+- task/process spawning
+- extension-based coding assistants
+- workspace settings and recent workspace memory
+
+Do not replace SkyDex core flows with raw Theia widgets.
+Instead, wrap Theia services behind SkyDexia-owned actions.
+
+Planned bridge files:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-terminal-actions.ts
+	Purpose: start dev servers, run checks, and attach logs.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-file-actions.ts
+	Purpose: open files, reveal folders, create files, patch files.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-preview-actions.ts
+	Purpose: open built projects in a full app window or browser tab, not preview widgets.
+
+6. Registration in the 0s catalog
+
+When SkyDexia exists, add a dedicated app entry so users can launch:
+- SkyDex
+- SkyDexia
+
+Do not overwrite the original SkyDex entry.
+The catalog should treat SkyDexia as an upgrade build, not a rename.
+The upgraded build should live under the SkyeCDE hub platform so all new IDE builds can be swapped from one place.
+
+7. Acceptance criteria
+
+SkyDexia is done when:
+- SkyDex still exists untouched as its own product surface.
+- SkyDexia launches from the 0s catalog as a full app.
+- SkyDexia can browse files, edit files, spin up servers, and open the resulting built app.
+- Theia powers the coding substrate, but the visible product identity remains SkyDex.
+- No launch path falls back to preview widgets for SkyDexia app pages.
+
+8. Delivery sequence
+
+Phase 1
+- scaffold SkyDexia folder and wrapper entry files
+
+Phase 2
+- wire Theia launcher backend and runtime bootstrap
+
+Phase 3
+- add file, terminal, and server-control bridges
+
+Phase 4
+- register SkyDexia as a dedicated 0s catalog surface
+
+Phase 5
+- test full-click launch, coding workflows, and project preview as full windows

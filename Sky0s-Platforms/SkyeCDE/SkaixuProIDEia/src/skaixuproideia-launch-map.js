@@ -2,7 +2,7 @@ export const skaixuProIDEiaLaunchMap = {
   self: './index.html',
   hub: '../index.html',
   currentSkaixuProIDE: '../../SkaixuPro-IDE/SkaixuPro-IDE-Platform/index.html',
-  skydexia: '../SkyDexia/index.html'
+  skydexia: '../SkyDexia-2.6/index.html'
 };
 
 export function resolveSkaixuProIDEiaLaunchTarget(key) {

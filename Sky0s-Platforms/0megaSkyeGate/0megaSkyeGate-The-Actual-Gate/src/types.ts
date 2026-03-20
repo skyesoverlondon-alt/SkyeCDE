@@ -337,6 +337,7 @@ export type Env = {
   KAIXU_BACKUP_TOKEN?: string
   Founders_GateWay_Key?: string
   FOUNDERS_GATEWAY_KEY?: string
+  SESSION_JWT_SECRET?: string
   SKYE_ERRORS_ADMIN_SECRET?: string
   SKYE_ERRORS_ENABLED?: string
   SKYE_ERRORS_RETENTION_DAYS?: string

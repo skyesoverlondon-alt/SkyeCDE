@@ -51,6 +51,8 @@
     @media (max-width: 1180px) { .grid-main, .grid-support { grid-template-columns: repeat(2, minmax(0,1fr)); } .playbook { grid-template-columns: 1fr; } }
     @media (max-width: 680px) { .grid-main, .grid-support { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, minmax(0,1fr)); } .shell { padding: 18px; } }
   </style>
+  <script src="/0s-auth-sdk/index.js"></script>
+  <script>OmegaAuth.requireSession();</script>
 </head>
 <body data-app-id="GBPRescueSuite">
   <div class="shell">

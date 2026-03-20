@@ -1,0 +1,124 @@
+KaixuSuperIDEia Plan
+
+Core rule
+
+KaixuSuper-IDE stays the product.
+Theia stays the support layer.
+KaixuSuperIDEia should strengthen coding and operator workflows without rewriting the current browser IDE into a Theia-native app.
+
+Current source of truth for KaixuSuper-IDE
+
+Primary product root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)
+
+Key active files
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/index.html
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/ide.html
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/app.js
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/editor.js
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/explorer.js
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/commands.js
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/github.js
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/scm.js
+
+Planned upgraded build root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia
+
+Design goal
+
+KaixuSuperIDEia should wrap the existing browser IDE with stronger launcher, workspace, terminal, and process controls supplied by Theia while leaving the current editor and admin flows recognizable and in charge.
+
+File-by-file build plan
+
+1. Preserve the current IDE surface and code modules
+
+Keep authoritative:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/index.html
+  Purpose: landing shell.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/ide.html
+  Purpose: main IDE surface.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/app.js
+  Purpose: main runtime shell logic.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/editor.js
+  Purpose: editing logic.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/explorer.js
+  Purpose: project explorer logic.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/commands.js
+  Purpose: command routing.
+
+2. Create the KaixuSuperIDEia folder
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/
+
+Planned files:
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/README.md
+  Purpose: defines the upgrade boundary.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/package.json
+  Purpose: wrapper scripts, run targets, and health checks.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-shell.tsx
+  Purpose: upgraded shell frame around the existing IDE.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-module-bridge.ts
+  Purpose: connects app.js, editor.js, explorer.js, and command flows to support-layer services.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-session-bridge.ts
+  Purpose: passes auth/session state without replacing current account flows.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-process-bridge.ts
+  Purpose: server and task control.
+
+3. Theia support files to extend
+
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/browser/launcher-service.ts
+  Purpose: launch bootstrap API for KaixuSuperIDEia.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/launcher-backend-module.ts
+  Purpose: bind the process services for this upgraded build.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/skye-studio-launcher-widget.tsx
+  Purpose: expose KaixuSuperIDEia as a top-level coding environment action.
+- /workspaces/SkyeCDE/Skye0s-s0l26/scripts/sync-skye-catalog.js
+  Purpose: add KaixuSuperIDEia as a dedicated launchable upgrade build.
+
+4. Backend files to add
+
+Create:
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/kaixusuperideia-launcher-endpoint.ts
+  Purpose: start or attach the live runtime.
+- /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/kaixusuperideia-process-service.ts
+  Purpose: process lifecycle, ports, logs, health, and restart.
+
+5. Product boundaries
+
+Do not let Theia replace:
+- KaixuSuper-IDE landing and IDE pages
+- existing editor and explorer model
+- GitHub and SCM integration logic
+- admin and policy surfaces
+
+Use Theia only to augment:
+- launcher and app switching
+- file and workspace support
+- terminal and background tasks
+- autonomous coding workflows
+
+6. Acceptance criteria
+
+KaixuSuperIDEia is done when:
+- the original KaixuSuper-IDE still exists as-is.
+- the upgraded build launches as a full app, never a preview widget.
+- Theia adds coding support power without overwriting the product shell.
+- users can launch code tasks, workspaces, and app modules smoothly from the upgraded build.
+
+7. Delivery sequence
+
+Phase 1
+- scaffold wrapper and bridge files
+
+Phase 2
+- add launcher/runtime process control
+
+Phase 3
+- connect module bridges to support-layer services
+
+Phase 4
+- register KaixuSuperIDEia beside the original platform in the 0s catalog
+
+Phase 5
+- test launch, coding workflows, and operational stability

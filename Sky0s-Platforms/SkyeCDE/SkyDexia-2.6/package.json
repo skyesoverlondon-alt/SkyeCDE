@@ -1,0 +1,21 @@
+{
+  "name": "skydexia-2-6",
+  "version": "2.6.0",
+  "private": true,
+  "description": "SkyDexia 2.6 self-hosted package runtime and static product lane",
+  "dependencies": {
+    "pg": "^8.16.3"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve:package": "node server.js",
+    "serve:static": "python3 -m http.server 4192",
+    "inspect:storage": "node scripts/inspect-storage-backend.js",
+    "verify": "node scripts/verify.js",
+    "verify:hosted": "node scripts/verify-hosted.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

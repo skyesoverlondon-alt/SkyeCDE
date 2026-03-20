@@ -1,4 +1,4 @@
-name: Build Theia IDE next version
+name: Build Skyes Over London next version
 
 on:
   workflow_dispatch:
@@ -58,22 +58,22 @@ jobs:
       - name: Rename AppImage with version
         if: runner.os == 'Linux'
         run: |
-          mv applications/electron/dist/TheiaIDE.AppImage applications/electron/dist/TheiaIDE-$THEIA_IDE_VERSION.AppImage
+          mv applications/electron/dist/skyes-over-london.AppImage applications/electron/dist/skyes-over-london-$THEIA_IDE_VERSION.AppImage
 
       - name: Upload Linux Dist Files
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: theia-ide-next-linux
+          name: skyes-over-london-next-linux
           path: |
-            applications/electron/dist/TheiaIDE-${{ env.THEIA_IDE_VERSION }}.AppImage
+            applications/electron/dist/skyes-over-london-${{ env.THEIA_IDE_VERSION }}.AppImage
           retention-days: 7
 
       - name: Upload Mac Dist Files
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: ${{ matrix.os == 'macos-15-intel' && 'theia-ide-next-mac-x64' || matrix.os == 'macos-15' && 'theia-ide-next-mac-arm64'}}
+          name: ${{ matrix.os == 'macos-15-intel' && 'skyes-over-london-next-mac-x64' || matrix.os == 'macos-15' && 'skyes-over-london-next-mac-arm64'}}
           path: applications/electron/dist/*.dmg
           retention-days: 7
 
@@ -81,6 +81,6 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: theia-ide-next-windows
+          name: skyes-over-london-next-windows
           path: applications/electron/dist/*.exe
           retention-days: 7

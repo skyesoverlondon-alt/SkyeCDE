@@ -1,0 +1,290 @@
+SkyeCDE Hub Directive
+
+Core role
+
+SkyeCDE is not a stub anymore.
+SkyeCDE is the hub platform for the new IDE builds.
+Every upgraded IDE build should live under SkyeCDE so users can switch between them from one platform.
+
+Hub root
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE
+
+Hub responsibilities
+- hold the upgraded IDE builds
+- provide a central launch hub for every new IDE
+- keep the original products separate and intact
+- let users swap between upgraded IDE builds without leaving the SkyeCDE platform
+- act as the parent platform for future CDE-class builds
+
+Planned upgraded IDE roots under SkyeCDE
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia
+
+Hub files to create
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/index.html
+  Purpose: central visual hub for all upgraded IDE builds.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/README.md
+  Purpose: explain the SkyeCDE hub architecture.
+- /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/skyecde-manifest.json
+  Purpose: declare upgraded IDE builds and routing metadata.
+
+Routing rule
+
+The SkyeCDE platform root should launch a real hub page.
+That hub page should link users into the upgraded IDE builds as full app launches, not preview widgets.
+
+Product boundary rule
+
+SkyeCDE owns the upgraded IDE hub experience.
+SkyDex, SuperIDE, SkaixuPro-IDE, and KaixuSuper-IDE still own their original products.
+The upgraded builds are additive products under SkyeCDE, not replacements of the originals.
+
+Acceptance criteria
+
+SkyeCDE is done as a hub when:
+- the platform root opens a real hub page
+- the hub lists each upgraded IDE build
+- users can launch each upgraded IDE from the hub cleanly
+- the original platforms remain intact outside the hub
+
+Additional implementation directive
+
+This section is append-only.
+Nothing above this section should be removed or rewritten by later work.
+
+Status key
+- ✅ verified done in repo and/or verified by build during implementation work
+- ⬜ not done yet
+- ⚠️ exists but is not full-scale yet
+
+Verified current state
+
+Hub and shared support layer
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/index.html exists as the SkyeCDE hub root.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/skyecde-manifest.json exists and currently tracks build status for SkyDexia, SuperIDEia, SkaixuProIDEia, and KaixuSuperIDEia.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/render-ideia-shell.js exists and is the shared IDE shell renderer.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/skycde-bridge-client.js exists and exposes workspace, file, directory, runtime, restart, stop, and full-app launch bridge calls.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/ideia-shell.css exists and styles the shared IDE shell.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skycde-bridge-endpoint.ts exists and currently implements health, workspace listing, file read/write, directory create, runtime start/status/logs/restart/stop.
+- ✅ Verified launcher build passed after the bridge expansion.
+- ✅ Verified product build passed after the shared-shell expansion.
+
+SkyDexia current state
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/index.html exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/package.json exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/README.md exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-shell.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-workspace-bridge.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-file-actions.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-terminal-actions.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-preview-actions.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-session-bridge.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-launch-map.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-layout.css exists.
+- ⚠️ SkyDexia is real and usable as a bridge-backed upgrade lane, but it is not verified as a full-scale completed IDE yet.
+
+Other IDEia current state
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/index.html exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/app.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/README.md exists.
+- ⚠️ SuperIDEia currently exists as a shared-shell upgrade lane, not a full dedicated IDE implementation.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/index.html exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/app.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/README.md exists.
+- ⚠️ SkaixuProIDEia currently exists as a shared-shell upgrade lane, not a full dedicated IDE implementation.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/index.html exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/app.js exists.
+- ✅ /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/README.md exists.
+- ⚠️ KaixuSuperIDEia currently exists as a shared-shell upgrade lane, not a full dedicated IDE implementation.
+
+Full-scale completion directive
+
+Rule 1
+- Do not mark any item complete until the file change is made, the relevant surface is checked, and the verification step listed under that item is actually run.
+
+Rule 2
+- Shared infrastructure work can be marked complete only when both extension builds still pass.
+
+Rule 3
+- Per-IDE work can be marked complete only when the IDE lane loads, its bridge actions respond, and its original product link still works.
+
+Build plan with file-by-file tracking
+
+Phase 1. Finish the shared support layer to full operational baseline
+
+1. Runtime streaming and session hardening
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skycde-bridge-endpoint.ts
+  Work: add live log tail support or polling-safe incremental log reads, normalize runtime cleanup, and persist enough runtime metadata for reliable refresh after restart.
+  Verify: run launcher build and manually verify runtime start, restart, log read, and stop.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/skycde-bridge-client.js
+  Work: add client calls for incremental runtime log loading and any new bridge contract added on the backend.
+  Verify: load an IDEia lane and confirm the browser receives the new payload shape without console errors.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/render-ideia-shell.js
+  Work: surface live runtime output controls, session refresh behavior, and stronger runtime-state rendering.
+  Verify: open a lane, start a runtime, watch logs update, restart it, and stop it cleanly.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/ideia-shell.css
+  Work: style the new runtime/session controls so they are readable and obvious.
+  Verify: inspect the lane in browser and confirm the new controls render correctly on desktop and mobile widths.
+
+2. Workspace navigation and file operations hardening
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/launcher/src/node/skycde-bridge-endpoint.ts
+  Work: add explicit rename, move, and delete endpoints with repo-root safety checks.
+  Verify: run launcher build and test rename/move/delete inside a safe SkyeCDE test path.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/skycde-bridge-client.js
+  Work: add rename, move, and delete client calls.
+  Verify: browser can call each new action and handle failures cleanly.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/render-ideia-shell.js
+  Work: add file-tree actions for rename, move, delete, and explicit reload of the current workspace root.
+  Verify: create, rename, move, delete, and reload all work from the same lane.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/ideia-shell.css
+  Work: style danger actions and confirmation states clearly.
+  Verify: destructive controls are visually distinct and readable.
+
+3. Persistent IDE lane state
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/_shared/render-ideia-shell.js
+  Work: persist selected workspace root, selected file path, selected runtime id, and recent actions in browser storage per lane.
+  Verify: reload the page and confirm the lane restores the last known state.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-shell.js
+  Work: supply a stable storage key and any SkyDexia-specific restore defaults.
+  Verify: SkyDexia restores its state after refresh.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/app.js
+  Work: supply a stable storage key and SuperIDEia defaults.
+  Verify: SuperIDEia restores its state after refresh.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/app.js
+  Work: supply a stable storage key and SkaixuProIDEia defaults.
+  Verify: SkaixuProIDEia restores its state after refresh.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/app.js
+  Work: supply a stable storage key and KaixuSuperIDEia defaults.
+  Verify: KaixuSuperIDEia restores its state after refresh.
+
+Phase 2. Push SkyDexia from advanced shell to full-scale lane
+
+4. Make the SkyDexia modules real instead of mostly placeholder support files
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-workspace-bridge.js
+  Work: give SkyDexia a lane-specific workspace controller instead of relying only on generic shared rendering.
+  Verify: SkyDexia workspace interactions flow through the module and still succeed end to end.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-file-actions.js
+  Work: implement SkyDexia-specific file workflows such as save, save-as, and recent-file handling where appropriate.
+  Verify: read/write/save flows work against a test file path.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-terminal-actions.js
+  Work: implement SkyDexia-specific runtime commands, labels, and output handling.
+  Verify: SkyDexia can start, inspect, restart, and stop its own runtime cleanly.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-session-bridge.js
+  Work: own the lane session model from SkyDexia side.
+  Verify: session data survives refresh and does not collide with other IDEia lanes.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-launch-map.js
+  Work: define all first-party full-app launch routes SkyDexia should expose.
+  Verify: every SkyDexia launch button opens the intended full app target.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-preview-actions.js
+  Work: keep preview behavior support-only and ensure no product surface regresses into a preview widget launch.
+  Verify: product launches still resolve to full app surfaces.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-layout.css
+  Work: finish a dedicated SkyDexia visual layer instead of leaving styling mostly generic.
+  Verify: SkyDexia reads as SkyDex-owned, not as a generic shared shell.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/src/skydexia-shell.js
+  Work: wire the real SkyDexia modules together and reduce purely declarative reliance on the shared shell.
+  Verify: SkyDexia still loads, all controls work, and the lane has distinct product behavior.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/index.html
+  Work: update structure if SkyDexia needs extra mount points for lane-owned panels.
+  Verify: page loads without console errors.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/README.md
+  Work: document the final lane controls and operating model.
+  Verify: README matches the implemented UI.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkyDexia/package.json
+  Work: align scripts with the implemented runtime model if additional commands are added.
+  Verify: any documented npm script runs successfully.
+
+Phase 3. Bring the other IDEia lanes up to parity with SkyDexia baseline
+
+5. SuperIDEia parity build-out
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-shell.js
+  Work: move SuperIDEia from a thin config file to a lane-owned shell module.
+  Verify: SuperIDEia loads through the new shell entry point.
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-workspace-bridge.js
+  Work: add SuperIDE-specific workspace behavior.
+  Verify: workspace actions target SuperIDE paths correctly.
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-file-actions.js
+  Work: add SuperIDE-specific file flows.
+  Verify: file read/write actions succeed.
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-terminal-actions.js
+  Work: add runtime recipes and runtime-state ownership for SuperIDEia.
+  Verify: SuperIDE dev runtime starts and is controllable from the lane.
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-session-bridge.js
+  Work: add lane-specific session persistence.
+  Verify: SuperIDEia restores lane state after refresh.
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-launch-map.js
+  Work: define all SuperIDEia full-app routes.
+  Verify: each route opens the intended full app target.
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/src/superideia-layout.css
+  Work: make the lane read as SuperIDE-owned.
+  Verify: visual identity is distinct from the generic shell.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/index.html
+  Work: point to the new shell entry.
+  Verify: page loads correctly.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/app.js
+  Work: either retire this file in favor of src/superideia-shell.js or turn it into a thin boot file only.
+  Verify: there is a single clear entry path for SuperIDEia.
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SuperIDEia/README.md
+  Work: document controls, runtime, and scope.
+  Verify: README matches the implemented lane.
+
+6. SkaixuProIDEia parity build-out
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-shell.js
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-workspace-bridge.js
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-file-actions.js
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-terminal-actions.js
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-session-bridge.js
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-launch-map.js
+- ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/src/skaixuproideia-layout.css
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/index.html
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/app.js
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/SkaixuProIDEia/README.md
+  Work: same parity target as SuperIDEia, but preserve SkaixuPro-IDE product identity and path targeting.
+  Verify: lane loads, workspace/file/runtime/launch flows work, and the original product link stays intact.
+
+7. KaixuSuperIDEia parity build-out
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-shell.js
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-workspace-bridge.js
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-file-actions.js
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-terminal-actions.js
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-session-bridge.js
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-launch-map.js
+ ✅ Create /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/src/kaixusuperideia-layout.css
+ ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/index.html
+ ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/app.js
+ ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/KaixuSuperIDEia/README.md
+  Work: same parity target as SuperIDEia, but preserve KaixuSuper-IDE product identity and route targeting.
+  Verify: lane loads, workspace/file/runtime/launch flows work, and the original product link stays intact.
+
+Phase 4. Status truth and verification discipline
+
+8. Keep manifest status honest
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/skyecde-manifest.json only when a lane has actually advanced.
+  Work: change status values only after the lane meets the verification rule for that lane.
+  Verify: manifest status matches the implemented state.
+
+9. Keep the hub copy honest
+- ✅ Edit /workspaces/SkyeCDE/Skye0s-s0l26/Sky0s-Platforms/SkyeCDE/index.html when lane status changes.
+  Work: update any labels or copy that describe lane maturity.
+  Verify: hub language does not overclaim completion.
+
+10. Keep the catalog and launcher wiring aligned
+- ⬜ Edit /workspaces/SkyeCDE/Skye0s-s0l26/scripts/sync-skye-catalog.js if lane routing metadata changes.
+  Verify: regenerate catalog and confirm SkyeCDE entries still resolve correctly.
+- ✅ Verify /workspaces/SkyeCDE/Skye0s-s0l26/theia-extensions/product/src/browser/generated/skye-generated-catalog.ts after regeneration.
+  Verify: all SkyeCDE lanes still show as launchable entries.
+
+Required verification commands before marking shared work complete
+- node scripts/run-npm-in.js theia-extensions/launcher build
+- node scripts/run-npm-in.js theia-extensions/product build
+
+Required verification checks before marking a lane complete
+- load the lane page itself
+- execute at least one workspace listing call
+- execute at least one file read call
+- execute at least one file write or directory create call in a safe test path
+- start and stop at least one runtime from that lane
+- confirm the full-app link for the original product still opens correctly
+- update this directive only after the above is actually checked

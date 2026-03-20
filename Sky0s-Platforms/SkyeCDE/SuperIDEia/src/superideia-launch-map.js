@@ -2,7 +2,7 @@ export const superideiaLaunchMap = {
   self: './index.html',
   hub: '../index.html',
   currentSuperIDE: '../../SuperIDE/index.html',
-  skydexia: '../SkyDexia/index.html'
+  skydexia: '../SkyDexia-2.6/index.html'
 };
 
 export function resolveSuperIDEiaLaunchTarget(key) {

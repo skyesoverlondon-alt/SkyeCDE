@@ -47,6 +47,13 @@
 
     body.embed .shell-header { display: none; }
     body.embed .shell { grid-template-rows: 1fr; }
+    body.cde-native .brand-subtitle {
+      color: #cbe7d4;
+    }
+    body.cde-native .shell-header {
+      border-bottom-color: rgba(102, 211, 157, 0.32);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.24), 0 0 24px rgba(102, 211, 157, 0.16);
+    }
 
     button,
     input,
@@ -1647,6 +1654,7 @@
         <span class="chip" id="revisionChip">revision: none</span>
         <span class="chip" id="accessChip">access: session</span>
         <span class="chip" id="sourceChip">source: workspace only</span>
+        <span class="chip" id="modeChip">mode: standalone</span>
         <button class="ghost" type="button" id="toggleWorkspaceDrawerBtn">Workspace Pane</button>
         <button class="ghost" type="button" id="toggleFilesDrawerBtn">Files Pane</button>
         <button class="ghost" type="button" id="toggleControlDrawerBtn">Control Pane</button>
@@ -2069,7 +2077,18 @@
     const workspaceId = (qs.get("ws_id") || "primary-workspace").trim();
     const initialSkyedriveRecordId = (qs.get("drive_record_id") || "").trim();
     const isEmbed = qs.get("embed") === "1";
+    const isCdeNative = qs.get("cde") === "1" || qs.get("panel") === "cde";
     if (isEmbed) document.body.classList.add("embed");
+    if (isCdeNative) document.body.classList.add("cde-native");
+
+    const modeChip = document.getElementById("modeChip");
+    const workspaceLabel = document.getElementById("workspaceLabel");
+    if (modeChip) {
+      modeChip.textContent = isCdeNative ? "mode: CDE native panel" : "mode: standalone";
+    }
+    if (workspaceLabel && isCdeNative) {
+      workspaceLabel.textContent = "CDE-native SkyDex lane with workspace context, command-surface integration, and 0mega gate-routed agent execution";
+    }
 
     const state = {
       workspaceId,
@@ -2894,7 +2913,7 @@
       if (paths.some((path) => path.startsWith("netlify/functions/")) || paths.includes("netlify.toml")) stack.push("Netlify Functions");
       if (paths.some((path) => path.startsWith("worker/"))) stack.push("Cloudflare Worker");
       if (state.integrationStatus.skyedrive?.connected) stack.push("SkyeDrive source attached");
-      const aiTouchpoints = state.files.filter((file) => /\/api\/kaixu-generate|\/api\/ai-agent|0megaskyegate|OMEGA_GATE_URL|api\.openai\.com|generativelanguage\.googleapis\.com|anthropic/i.test(file.content)).length;
+      const aiTouchpoints = state.files.filter((file) => /\/api\/kaixu-generate|\/api\/ai-agent|\/v1\/chat|\/v1\/stream|0megaskyegate|OMEGA_GATE_URL|KAIXU_APP_TOKEN|KAIXU_GATE/i.test(file.content)).length;
       const docCount = paths.filter((path) => path.startsWith("docs/") || /\.md$/.test(path)).length;
       const testCount = paths.filter((path) => /(^|\/)(test|tests|spec|scripts)\//.test(path) || /(\.test|\.spec)\./.test(path)).length;
       const diff = computeSnapshotDiff(activeSourceBaselineFiles());

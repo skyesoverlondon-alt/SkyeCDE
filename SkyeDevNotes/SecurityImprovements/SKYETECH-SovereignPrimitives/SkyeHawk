@@ -1,0 +1,361 @@
+# SKYETECH Sovereign Primitives — SkyeHawk
+
+## Status note — shelved until IDEia builds are complete
+As of 2026-03-19, SkyeHawk has partial wiring inside the SkyeCDE hub and shared IDEia shell.
+
+That work should be treated as a parked feature branch of the platform idea, not as proof that the IDEia builds are ready.
+
+The fix order from here is:
+- finish the IDEias as enterprise-grade product lanes first
+- keep the current SkyeHawk wiring stable but deprioritized
+- come back later to harden or prune the SkyeHawk implementation once the product builds are actually complete
+
+This note exists so the current wiring is not mistaken for release readiness.
+
+## What SkyeHawk is in plain English
+SkyeHawk is the sovereign system menu and navigation layer.
+
+Its job is simple:
+- give the user one place to open the rest of the system
+- let the user move between apps without hunting through random sidebars
+- provide a hidden or power-user entry path when a normal menu is not visible
+- act like a command deck, not just a decorative button
+
+If the 0s is the operating ecosystem, SkyeHawk is the thing that helps users move through it.
+
+---
+
+## What SkyeHawk is doing today in the repo
+
+### 1. In SuperIDE
+SkyeHawk already exists as a shell launcher rail.
+
+Current behavior in the SuperIDE shell:
+- there is a hawk trigger button
+- opening it reveals a horizontal rail of app destinations
+- the rail is built from apps marked with `skyehawk: true`
+- the popup teaches the user that this is the menu for moving around the suite
+
+What that means:
+- SkyeHawk is already acting as an app switcher
+- it is already tied to a route registry
+- it is already meant to expose important system lanes from inside the shell
+
+### 2. In Neural Space Pro
+SkyeHawk exists as popup guidance and launcher entry.
+
+Current behavior there:
+- the user sees a SkyeHawk button
+- a popup explains that the menu is the way to move through the suite
+- the user can dismiss it or open the menu directly
+
+What that means:
+- SkyeHawk is not just a hidden admin trick
+- it is also a user-teaching mechanism for platform navigation
+
+### 3. In SkaixuPro-IDE
+SkyeHawk exists as a stronger hidden navigator terminal.
+
+Current behavior there:
+- it can open from a hidden gesture
+- it injects a trigger into the page
+- it exposes a searchable app directory
+- it can also switch into chat/navigation intent mode
+- users can type commands like asking to go to an app or list destinations
+
+What that means:
+- this is the clearest proof of the bigger idea
+- SkyeHawk is already halfway between a hidden command palette and a sovereign navigation terminal
+
+---
+
+## What SkyeHawk actually does inside a platform
+Inside a platform, SkyeHawk should do five jobs:
+
+1. Navigation
+It moves the user to apps, lanes, tools, recovery surfaces, and hub pages.
+
+2. Discovery
+It shows users what exists, even when the normal UI does not expose everything clearly.
+
+3. Power-user entry
+It gives advanced users a hidden command path or gesture path to open the system menu fast.
+
+4. Route normalization
+It prevents every platform from inventing a different launcher behavior.
+
+5. Trust-aware exposure
+It should only expose privileged destinations when the session/role/policy allows them.
+
+---
+
+## Why this matters for SkyeCDE
+SkyeCDE is now the IDE-upgrade hub.
+
+That means SkyeHawk should be able to open:
+- the SkyeCDE hub
+- SkyDexia
+- SuperIDEia
+- SkaixuProIDEia
+- KaixuSuperIDEia
+- the original product surfaces those lanes preserve
+
+If SkyeHawk gets platform-wide route awareness, then SkyeCDE stops being a buried upgrade island and becomes part of the normal movement system of the 0s.
+
+---
+
+## Recommended 0s-wide model
+SkyeHawk should become one shared navigation contract with three entry types.
+
+### Entry type 1 — visible launcher
+Use when a platform already has room for a launcher button or rail.
+
+Examples:
+- SuperIDE shell rail
+- Neural Space Pro launcher button
+- SkyeCDE hub launcher button
+
+### Entry type 2 — hidden command
+Use when you want power users to open the system menu without cluttering the UI.
+
+Examples:
+- gesture trigger
+- keyboard shortcut
+- command phrase like `skyehawk`
+
+### Entry type 3 — text command routing
+Use when SkyeHawk is operating like a command palette or sovereign navigator.
+
+Examples:
+- `open skyehubs`
+- `take me to skydexia`
+- `show admin surfaces`
+- `show recovery lanes`
+
+---
+
+## What needs to happen next
+
+### Immediate implementation idea
+Add SkyeCDE and the IDEia lanes into the shared SkyeHawk route universe.
+
+### Next structural move
+Create one shared route registry that contains:
+- platform id
+- route label
+- target href
+- category
+- privilege level
+- visibility mode
+- source platform
+
+### Next behavior move
+Standardize commands such as:
+- `skyehawk`
+- `open menu`
+- `show system`
+- `open skydexia`
+- `open current superide`
+
+### Next governance move
+Filter privileged routes through role and policy context so sensitive lanes do not appear to everyone.
+
+---
+
+## What is still not built
+This is the section that needs to be explicit.
+
+SkyeHawk is **not** platform-wide yet.
+
+What exists right now is fragmented:
+- SuperIDE has a visible SkyeHawk rail pattern
+- Neural Space Pro has a visible launcher + popup guidance pattern
+- SkaixuPro-IDE has the strongest hidden-command implementation
+- SkyeCDE does **not** yet have a real SkyeHawk command layer wired into the hub or the IDEia lanes
+- there is **not** one shared route registry for the full 0s system yet
+- there is **not** one shared command grammar for SkyeHawk yet
+- there is **not** one shared policy-aware privilege filter for SkyeHawk yet
+
+So the real truth is:
+- the repo proves the pattern
+- the repo does not yet ship a unified SkyeHawk system
+
+---
+
+## Full implementation backlog
+
+### 1. Shared route registry
+Need one canonical SkyeHawk route registry for the whole 0s.
+
+That registry needs to include:
+- route id
+- display label
+- canonical href
+- route category
+- source platform
+- privilege level
+- visibility mode
+- aliases and command phrases
+- whether the route is user-safe, operator-only, admin-only, or recovery-only
+
+Until this exists, every platform is inventing its own partial route list.
+
+### 2. Shared command grammar
+Need one set of supported command phrases.
+
+Examples:
+- `skyehawk`
+- `open menu`
+- `show system`
+- `open skydexia`
+- `open current superide`
+- `show recovery lanes`
+- `show admin surfaces`
+
+Until this exists, SkyeHawk behavior will remain inconsistent across platforms.
+
+### 3. Shared hidden-entry contract
+Need one policy for how SkyeHawk opens invisibly.
+
+Possible supported methods:
+- keyboard shortcut
+- gesture trigger
+- typed command trigger
+- command-palette entry
+
+This needs to be standardized so the hidden command is not different in every product.
+
+### 4. Shared visible-entry contract
+Need one policy for how visible SkyeHawk controls should appear.
+
+That includes:
+- launcher button placement
+- menu rail placement
+- popup guidance behavior
+- first-run teaching behavior
+- dismiss / persistence behavior
+
+Until this is standardized, SkyeHawk will feel like three unrelated UI experiments.
+
+### 5. SkyeCDE integration
+Need to wire SkyeHawk directly into SkyeCDE.
+
+That means:
+- add a SkyeHawk trigger to the SkyeCDE hub
+- add a hidden SkyeHawk command entry to the SkyeCDE hub
+- add SkyeHawk entry inside the shared IDEia shell
+- expose SkyeCDE hub, all IDEia lanes, and original preserved product surfaces through SkyeHawk
+
+Without this, SkyeCDE may exist in the catalog but still is not part of the system-menu experience.
+
+### 6. IDEia lane wiring
+Need each IDEia lane to register itself into SkyeHawk.
+
+Minimum destinations:
+- SkyeCDE hub
+- SkyDexia
+- SuperIDEia
+- SkaixuProIDEia
+- KaixuSuperIDEia
+- original SkyDex
+- original SuperIDE
+- original SkaixuPro-IDE
+- original KaixuSuper-IDE
+
+This should not be hardcoded differently in every lane.
+
+### 7. Role and policy filtering
+Need SkyeHawk to hide privileged routes when the user is not allowed to see them.
+
+This includes:
+- admin routes
+- recovery routes
+- operator routes
+- gateway control routes
+- vault-governed routes
+
+Until this is enforced, SkyeHawk is a launcher, not a trustworthy sovereign navigation layer.
+
+### 8. Search and command routing engine
+Need SkyeHawk to resolve:
+- route names
+- aliases
+- fuzzy search
+- typed navigation requests
+- category browsing
+
+That engine should route users to the correct destination instead of depending on one-off click handlers.
+
+### 9. Cross-platform event contract
+Need SkyeHawk open/route actions to emit a shared event envelope.
+
+That should include:
+- who opened SkyeHawk
+- which route was selected
+- from which source surface
+- with what role/policy context
+- whether the route required privilege elevation
+
+Without this, SkyeHawk is not integrated into sovereign telemetry.
+
+### 10. Recovery and operations surface support
+Need SkyeHawk to expose more than public app links.
+
+It should eventually route to:
+- recovery lanes
+- operator lanes
+- admin lanes
+- audit surfaces
+- vault and release control surfaces
+
+This is the difference between a menu and an operating-system command layer.
+
+### 11. Documentation and truth discipline
+Need the docs to clearly separate three states:
+- pattern exists
+- baseline is wired
+- full system is complete
+
+That distinction was not clear enough before.
+
+---
+
+## Relationship to the unfinished IDEias
+This also needs to be stated directly.
+
+The IDEias were moved through a **verified baseline parity pass**.
+
+That baseline meant:
+- lane-owned module split
+- workspace controls
+- file controls
+- runtime controls
+- state persistence
+- launch mapping
+- preserved link back to original product
+
+That baseline did **not** mean:
+- fully product-specific enterprise workflows are complete
+- full SkyeHawk integration is complete
+- admin/recovery/operator route systems are complete
+- role-aware system-menu behavior is complete
+- deep product-native lane features are complete
+
+So if the question is "why was work moved forward if SkyDexia was not fully done," the honest answer is:
+- the stopping line was set at baseline parity verification, not final enterprise completion
+- that is why the work advanced to the next lanes
+- that baseline/final distinction should have been stated more clearly
+
+---
+
+## Bottom line
+SkyeHawk is not just a logo button.
+
+It is the beginning of a sovereign operating-system menu for the 0s.
+
+Right now the repo already proves three important things:
+- SkyeHawk can be visible
+- SkyeHawk can be hidden
+- SkyeHawk can be searchable and command-like
+
+The next step is to stop treating those as isolated product tricks and turn SkyeHawk into the shared navigation layer for the whole platform system, with SkyeCDE wired in as a top-level destination.

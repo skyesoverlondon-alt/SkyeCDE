@@ -1,0 +1,733 @@
+================================================================================
+  SKYES OVER LONDON — ULTIMATE ENVIRONMENT VARIABLE TEMPLATE
+  The single source of truth for every secret, token, and config var
+  across the entire Sky0s platform ecosystem.
+================================================================================
+
+HOW THIS WORKS
+──────────────
+Every platform in this project funnels auth through ONE lane:
+  - AI calls      → 0megaSkyeGate (Cloudflare Worker)
+  - Identity      → SuperIDE Worker (Cloudflare Worker + Neon DB)
+  - Errors        → kAIxU-Brain / SkyErrors (Cloudflare Worker + D1 + KV + R2)
+  - Mail          → SkyeMail 2.0 (Netlify Functions + Neon DB)
+  - Commerce      → SkyeHubs (Netlify Functions + Stripe + Neon DB)
+
+The master shared secrets are:
+  KAIXU_ADMIN_TOKEN       → proves you are the sovereign admin owner
+  KAIXU_APP_TOKEN         → proves a platform is a trusted app caller
+  RUNNER_SHARED_SECRET    → proves the SuperIDE worker call is internal
+  KAIXU_SERVICE_SECRET    → proves kAIxU-Brain can talk to SuperIDE gate
+  OMEGA_GATE_URL          → the one URL every platform points AI calls at
+
+UPDATE SEQUENCE WHEN ROTATING SECRETS
+──────────────────────────────────────
+1. Generate new secret value
+2. Update wrangler secret:  npx wrangler secret put <NAME> --name <worker>
+3. Update Netlify UI:        Site Settings → Environment Variables
+4. Update .dev.vars locally for each worker
+5. Restart workers / redeploy functions
+6. Verify /health endpoints return 200 on all platforms
+
+================================================================================
+  BLOCK 1 — SOVEREIGN AUTH CORE
+  These go everywhere. Every platform needs to know the gate URL and its token.
+================================================================================
+
+# The sovereign gateway URL — ALL platforms point AI calls here
+OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+
+# Master admin bearer token — gates all /admin/* routes on 0megaSkyeGate
+# Set via: npx wrangler secret put KAIXU_ADMIN_TOKEN --name 0megaskyegate
+KAIXU_ADMIN_TOKEN=
+
+# App-level caller token — used by SuperIDE, SkyeMail, SkyeHubs, etc.
+# to authenticate outbound calls to 0megaSkyeGate
+# Set via: npx wrangler secret put KAIXU_APP_TOKEN on each caller worker
+# AND in Netlify env for each Netlify-hosted platform
+KAIXU_APP_TOKEN=
+
+# Founder-level override token (legacy alias — same value as KAIXU_ADMIN_TOKEN)
+Founders_GateWay_Key=
+Founders_GateWay_Email=
+
+# Shared secret between SuperIDE Netlify Functions ↔ SuperIDE Cloudflare Worker
+# Must match on BOTH sides (Netlify env + wrangler secret)
+RUNNER_SHARED_SECRET=
+
+# Shared secret between kAIxU-Brain ↔ SuperIDE Netlify functions
+# Must match on BOTH sides
+KAIXU_SERVICE_SECRET=
+
+# Master token sequence — used in SuperIDE token issuance pipeline
+TOKEN_MASTER_SEQUENCE=
+
+================================================================================
+  BLOCK 2 — AI PROVIDER KEYS
+  Set on: 0megaSkyeGate (the ONLY worker that holds provider keys)
+  All other platforms call 0megaSkyeGate — they do NOT hold provider keys.
+================================================================================
+
+# ── OpenAI ────────────────────────────────────────────────────────────────────
+# Generic fallback key (used if lane-specific key is absent)
+OPENAI_API_KEY=
+
+# Lane-specific keys (optional but recommended for budget isolation)
+OPENAI_TEXT_KEY=
+OPENAI_IMAGES_KEY=
+OPENAI_VIDEOS_KEY=
+OPENAI_AUDIO_KEY=
+OPENAI_REALTIME_KEY=
+
+# Organization / project scoping
+OPENAI_PROJECT_ID=
+
+# Model assignments per lane
+OPENAI_TEXT_MODEL=gpt-4o-mini
+OPENAI_DEEP_MODEL=gpt-4o
+OPENAI_CODE_MODEL=gpt-4o
+OPENAI_VISION_MODEL=gpt-4o
+OPENAI_IMAGE_MODEL=gpt-image-1
+OPENAI_VIDEO_MODEL=sora-2
+OPENAI_SPEECH_MODEL=gpt-4o-mini-tts
+OPENAI_TRANSCRIBE_MODEL=gpt-4o-transcribe
+OPENAI_REALTIME_MODEL=gpt-4o-realtime-preview
+
+# ── Google Gemini ─────────────────────────────────────────────────────────────
+GEMINI_API_KEY=
+
+# ── Anthropic ─────────────────────────────────────────────────────────────────
+ANTHROPIC_API_KEY=
+
+# ── Retired legacy worker vars (do not use for new deploys) ───────────────────
+# These existed for kaixusi-era routing and are not part of the approved
+# single-gateway model. Keep only for archive/reference if an old surface has
+# not yet been retired.
+OPENAI_KEY=
+ANTHROPIC_KEY=
+GEMINI_KEY=
+
+# ── SkaixuPro virtual key (if using LiteLLM proxy) ────────────────────────────
+KAIXU_VIRTUAL_KEY=
+
+================================================================================
+  BLOCK 3 — 0megaSkyeGate WORKER
+  Platform: Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate/
+  Runtime: Cloudflare Worker (TypeScript)
+  Deploy: npx wrangler deploy --name 0megaskyegate
+================================================================================
+
+# ── Identity ──────────────────────────────────────────────────────────────────
+KAIXU_PUBLIC_BRAND=Skyes Over London
+KAIXU_GATE_NAME=0megaSkyeGate
+APP_NAME=0megaSkyeGate
+APP_ENV=production
+
+# ── Secrets (set via wrangler secret put, NOT in wrangler.toml) ───────────────
+# npx wrangler secret put KAIXU_ADMIN_TOKEN --name 0megaskyegate
+# npx wrangler secret put OPENAI_API_KEY    --name 0megaskyegate
+# npx wrangler secret put GEMINI_API_KEY    --name 0megaskyegate
+# npx wrangler secret put ANTHROPIC_API_KEY --name 0megaskyegate
+# npx wrangler secret put SKYE_ERRORS_ADMIN_SECRET --name 0megaskyegate
+
+# ── Feature Flags ─────────────────────────────────────────────────────────────
+ENABLE_CHAT=true
+ENABLE_STREAM=true
+ENABLE_IMAGES=true
+ENABLE_VIDEOS=true
+ENABLE_AUDIO_SPEECH=true
+ENABLE_AUDIO_TRANSCRIPTIONS=true
+ENABLE_REALTIME=true
+ENABLE_FALLBACKS=true
+
+# ── Skyfuel / Wallet ──────────────────────────────────────────────────────────
+DEFAULT_CURRENCY=SKYFUEL
+DEFAULT_MAX_SKYFUEL_PER_CALL=10000
+
+# ── Errors Pipeline ───────────────────────────────────────────────────────────
+SKYE_ERRORS_ADMIN_SECRET=
+SKYE_ERRORS_ENABLED=true
+SKYE_ERRORS_RETENTION_DAYS=90
+SKYE_ERRORS_MAX_BODY_BYTES=16384
+
+# ── Brains / Flow Config ──────────────────────────────────────────────────────
+KAIXU_BRAIN_BASE_FLOW32=
+
+# ── D1 Bindings (set in wrangler.toml, NOT here) ─────────────────────────────
+# DB              → main gate database (wallets, app_tokens, usage, traces)
+# SKYE_ERRORS_DB  → errors pipeline database (skye_errors_events)
+
+# ── KV Binding ────────────────────────────────────────────────────────────────
+# KAIXU_SMOKE_KV  → smoke test audit log
+
+# ── R2 Binding ────────────────────────────────────────────────────────────────
+# SKYE_ERRORS_RAW → raw error body storage
+
+================================================================================
+  BLOCK 4 — kAIxU-Brain / SkyErrors WORKER
+  Platform: Sky0s-Platforms/SkyErrors/kAIxU-Brain/
+  Runtime: Cloudflare Worker
+  Deploy: npx wrangler deploy
+================================================================================
+
+# AI provider key for this worker (direct calls — deprecated once 0megaSkyeGate
+# is fully live; migrate to KAIXU_APP_TOKEN + OMEGA_GATE_URL)
+KAIXU_OPENAI_API_KEY=
+
+# App tokens this worker will accept (comma-separated bearer tokens)
+KAIXU_APP_TOKENS=
+
+# Token verification — point to SuperIDE gate or 0megaSkyeGate verify endpoint
+KAIXU_TOKEN_VERIFY_URL=https://0megaskyegate.skyesoverlondon.workers.dev/v1/auth/verify
+KAIXU_NETLIFY_URLS=
+KAIXU_NETLIFY_URL=
+KAIXU_SERVICE_SECRET=
+
+# Brain routing
+KAIXU_BRAIN_DEFAULT_TARGET=kaixu67
+KAIXU_BRAIN_BASE_KAIXU67=https://kaixu67.skyesoverlondon.workers.dev
+KAIXU_BRAIN_BASE_KAIXU0S=https://0megaskyegate.skyesoverlondon.workers.dev
+KAIXU_BRAIN_BASE_FLOW32=
+
+# Smoke test automation (cron)
+KAIXU_SMOKE_AUTORUN=1
+KAIXU_SMOKE_AUTORUN_GENERATE=1
+KAIXU_SMOKE_PROMPT=Reply with SMOKE_OK
+KAIXU_SMOKE_MAX_TOKENS=16
+
+# Errors pipeline
+SKYE_ERRORS_ADMIN_SECRET=
+SKYE_ERRORS_ENABLED=1
+SKYE_ERRORS_RETENTION_DAYS=30
+SKYE_ERRORS_MAX_BODY_BYTES=1048576
+
+# ── KV Binding (set in wrangler.toml) ────────────────────────────────────────
+# KAIXU_SMOKE_KV  → smoke audit log
+
+# ── R2 Binding (set in wrangler.toml) ────────────────────────────────────────
+# SKYE_ERRORS_RAW → raw error body storage
+
+================================================================================
+  BLOCK 5 — SUPERIDE WORKER (kaixu-superide-runner)
+  Platform: Sky0s-Platforms/SuperIDE/worker/
+  Runtime: Cloudflare Worker (TypeScript)
+  Deploy: npx wrangler deploy --name kaixu-superide-runner
+================================================================================
+
+# Database
+NEON_DATABASE_URL=
+
+# Internal runner auth — must match Netlify side
+RUNNER_SHARED_SECRET=
+
+# GitHub App (for code push / repo integration)
+GITHUB_APP_ID=
+GITHUB_APP_PRIVATE_KEY=
+
+# Netlify deploy token (encrypted at rest in KX_SECRETS_KV)
+NETLIFY_TOKEN_MASTER_KEY=
+
+# Evidence signing (for audit ZIP integrity)
+EVIDENCE_SIGNING_KEY=
+
+# AI gateway — points to 0megaSkyeGate
+KAIXU_BACKUP_ENDPOINT=https://0megaskyegate.skyesoverlondon.workers.dev
+KAIXU_APP_TOKEN=
+KAIXU_BACKUP_TOKEN=
+KAIXU_BACKUP_PROVIDER=
+KAIXU_BACKUP_MODEL=
+KAIXU_GATEWAY_PROVIDER=
+KAIXU_GATEWAY_MODEL=
+
+# CORS / Cloudflare Access
+ALLOW_ORIGINS=https://your-superide-site.netlify.app
+ACCESS_AUD=
+ACCESS_ISSUER=
+ACCESS_JWKS_URL=https://skyesoverlondon.cloudflareaccess.com/cdn-cgi/access/certs
+
+# ── KV Binding (set in wrangler.toml) ─────────────────────────────────────────
+# KX_SECRETS_KV   → encrypted user secrets vault
+
+# ── R2 Binding (set in wrangler.toml) ─────────────────────────────────────────
+# KX_EVIDENCE_R2  → evidence ZIP storage
+
+================================================================================
+  BLOCK 6 — SUPERIDE NETLIFY FUNCTIONS
+  Platform: Sky0s-Platforms/SuperIDE/
+  Runtime: Netlify Functions (Node.js)
+  Set in: Netlify UI → Site Settings → Environment Variables
+================================================================================
+
+# Database (Neon PostgreSQL)
+NEON_DATABASE_URL=
+
+# SuperIDE Worker URL + shared secret
+WORKER_RUNNER_URL=https://kaixu-superide-runner.<your-cf-subdomain>.workers.dev
+RUNNER_SHARED_SECRET=
+
+# AI Gateway — points to 0megaSkyeGate
+KAIXU_GATEWAY_ENDPOINT=https://0megaskyegate.skyesoverlondon.workers.dev
+KAIXU_APP_TOKEN=
+
+# Optional gateway routing hints
+KAIXU_GATEWAY_PROVIDER=
+KAIXU_GATEWAY_MODEL=
+
+# Auth token chain
+TOKEN_MASTER_SEQUENCE=
+Founders_GateWay_Key=
+Founders_GateWay_Email=
+
+# Cloudflare Access (if using Zero Trust in front of Netlify)
+CF_ACCESS_CLIENT_ID=
+CF_ACCESS_CLIENT_SECRET=
+
+# Mail / Onboarding
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+MAIL_FROM=
+SKYE_MAIL_FROM=
+RESEND_API_KEY=
+MAIL_INGEST_SECRET=
+
+# Vite build-time metadata (injected at Netlify build)
+VITE_WORKER_RUNNER_URL=https://kaixu-superide-runner.<your-cf-subdomain>.workers.dev
+VITE_DEFAULT_WS_ID=primary-workspace
+VITE_SITE_BASE_URL=https://your-superide-site.netlify.app
+VITE_APP_VERSION=
+VITE_GIT_SHA=
+
+================================================================================
+  BLOCK 7 — SUPERIDE DOCKER (local dev only)
+  Platform: Sky0s-Platforms/SuperIDE/
+  Copy to: .env.docker
+  NEVER commit with real values
+================================================================================
+
+NODE_VERSION=22.14.0
+VITE_DEV_PORT=5173
+NETLIFY_DEV_PORT=8888
+WORKER_DEV_PORT=8787
+SITE_PORT=8080
+POSTGRES_PORT=5432
+SQL_HTTP_PORT=5540
+ADMINER_PORT=8081
+CHOKIDAR_USEPOLLING=true
+WATCHPACK_POLLING=true
+
+# Local Postgres (docker compose only)
+POSTGRES_DB=superidev2
+POSTGRES_USER=superide
+POSTGRES_PASSWORD=superide-local-only
+
+# Wired to docker service names
+NEON_DATABASE_URL=http://db-http:5540/sql
+WORKER_RUNNER_URL=http://worker:8787
+RUNNER_SHARED_SECRET=local-runner-secret-change-me
+
+# Gateway (leave blank to skip AI calls in local dev)
+KAIXU_GATEWAY_ENDPOINT=
+KAIXU_APP_TOKEN=
+KAIXU_GATEWAY_PROVIDER=
+KAIXU_GATEWAY_MODEL=
+TOKEN_MASTER_SEQUENCE=
+Founders_GateWay_Key=
+Founders_GateWay_Email=
+CF_ACCESS_CLIENT_ID=
+CF_ACCESS_CLIENT_SECRET=
+
+# Mail (leave blank locally)
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
+MAIL_FROM=
+SKYE_MAIL_FROM=
+RESEND_API_KEY=
+MAIL_INGEST_SECRET=
+
+# Vite local wiring
+VITE_WORKER_RUNNER_URL=http://localhost:8787
+VITE_DEFAULT_WS_ID=primary-workspace
+VITE_SITE_BASE_URL=http://localhost:8888
+VITE_APP_VERSION=docker-local
+VITE_GIT_SHA=docker-local
+VITE_BUILD_TIME=
+
+================================================================================
+  BLOCK 8 — KaixuSuper-IDE INTERNAL GATE WORKER (kaixusi)
+  Platform: Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/worker/
+  Runtime: Cloudflare Worker (JavaScript)
+  Deploy: npx wrangler deploy --name kaixusi
+  NOTE: Legacy direct-AI worker. Migrate AI calls to 0megaSkyeGate over time.
+================================================================================
+
+# Shared bearer token — Netlify Functions present this in Authorization header
+# Set via: npx wrangler secret put KAIXUSI_SECRET --name kaixusi
+KAIXUSI_SECRET=
+
+# Direct provider keys (legacy — kept until full 0megaSkyeGate migration)
+# npx wrangler secret put OPENAI_KEY --name kaixusi
+OPENAI_KEY=
+# npx wrangler secret put ANTHROPIC_KEY --name kaixusi
+ANTHROPIC_KEY=
+# npx wrangler secret put GEMINI_KEY --name kaixusi
+GEMINI_KEY=
+
+# Neon usage log database
+# npx wrangler secret put DATABASE_URL --name kaixusi
+DATABASE_URL=
+
+# Set in Netlify env so Netlify Functions know where to send calls
+KAIXUSI_WORKER_URL=https://kaixusi.<your-cf-subdomain>.workers.dev
+
+================================================================================
+  BLOCK 9 — SKYE MAIL 2.0
+  Platform: Sky0s-Platforms/SkyeMail2.0/
+  Runtime: Netlify Functions (Node.js) + Neon Postgres
+  Set in: Netlify UI → Site Settings → Environment Variables
+================================================================================
+
+# Database (Neon PostgreSQL)
+DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/DB?sslmode=require
+
+# Auth
+JWT_SECRET=
+IP_HASH_SALT=
+
+# Mail delivery
+RESEND_API_KEY=
+NOTIFY_FROM_EMAIL=Skye Mail Vault <notify@yourdomain.com>
+
+# Site origin
+PUBLIC_BASE_URL=https://your-skyemail-site.netlify.app
+
+# Break-glass admin recovery keys (PEM format)
+ADMIN_RECOVERY_PUBLIC_KEY_PEM=
+ADMIN_RECOVERY_PRIVATE_KEY_PEM=
+ADMIN_RECOVERY_TOKEN=
+
+# VPS SMTP bridge inbound (optional)
+SMTP_BRIDGE_SECRET=
+
+# Postmark inbound webhook (optional — for inbound mail)
+INBOUND_DOMAIN=
+INBOUND_PROVIDER=postmark
+INBOUND_BASIC_USER=
+INBOUND_BASIC_PASS=
+INBOUND_SPAM_SCORE_MAX=7.0
+INBOUND_MAX_TEXT_CHARS=200000
+
+# Cloudflare Turnstile bot defense (recommended)
+TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
+
+# Build ID shown in /health
+BUILD_ID=smv-enterprise-v1.1.0
+
+# SAML SSO (required if SAML enabled)
+SAML_SP_PRIVATE_KEY_PEM=
+
+# AWS KMS — config secret encryption (Procurement Tier v1.3+)
+CONFIG_KMS_KEY_ID=
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+================================================================================
+  BLOCK 10 — SKYEHUBS (Commerce / Marketplace)
+  Platform: Sky0s-Platforms/SkyeHubs/
+  Runtime: Netlify Functions (Node.js) + Stripe + Neon/Postgres session-backed APIs
+  Set in: Netlify UI → Site Settings → Environment Variables
+================================================================================
+
+# Stripe payments
+STRIPE_SECRET_KEY=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Database (Neon PostgreSQL) for request + checkout persistence
+DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/DB?sslmode=require
+
+# Site URL (auto-set by Netlify, but set manually for custom domains)
+SITE_URL=https://your-skyehubs-site.netlify.app
+
+# Optional commerce/runtime flags
+DEFAULT_DEPOSIT_CENTS=
+SESSION_COOKIE_SECURE=true
+ADMIN_EMAILS=
+
+================================================================================
+  BLOCK 11 — SKAIXUPRO IDE
+  Platform: Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/
+  Runtime: Vite SPA + direct AI calls
+  NOTE: This platform currently holds a live virtual key — rotate immediately
+  after reading this file.
+================================================================================
+
+# AI gateway virtual key — ROTATE THIS — it was committed in .env
+KAIXU_VIRTUAL_KEY=
+
+# Should point to 0megaSkyeGate instead of a virtual key:
+VITE_OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+VITE_KAIXU_APP_TOKEN=
+
+================================================================================
+  BLOCK 12 — SKYEDIRECTOR AI STUDIO WORKER
+  Platform: Sky0s-Platforms/SuperIDE/public/S0L26-0s/skyedirector-ai-studio/
+  Runtime: Cloudflare Worker (skyedirector-render-runner)
+  Deploy: npx wrangler deploy --name skyedirector-render-runner
+================================================================================
+
+# AI calls via 0megaSkyeGate
+OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+KAIXU_APP_TOKEN=
+
+# Admin
+SKYEDIRECTOR_ADMIN_SECRET=
+
+================================================================================
+  BLOCK 13 — MINI OPS SUITE / DEMON LEAD FORGE / CONTRACTOR TOOLS
+  Platform: Sky0s-Platforms/SuperIDE/public/S0L26-0s/Mini-Ops-SUite/ etc.
+  Runtime: Netlify Functions or static + Neon Postgres
+================================================================================
+
+# Database
+DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/DB?sslmode=require
+
+# AI calls — all go through the sovereign gate
+OMEGA_GATE_URL=https://0megaskyegate.skyesoverlondon.workers.dev
+KAIXU_APP_TOKEN=
+
+# Internal service auth
+KAIXU_SERVICE_SECRET=
+
+================================================================================
+  BLOCK 14 — UNIFIED AUTH SQL
+  Run this once against your main D1 database on 0megaSkyeGate.
+  This gives the gate full knowledge of every platform's app_id so token
+  issuance and auth checks are consistent across all platforms.
+================================================================================
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- PLATFORM REGISTRY — one row per platform, issued at boot
+-- Run via: npx wrangler d1 execute 0megaskyegate-db --file=this.sql
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- Ensure the org exists (Skyes Over London sovereign org)
+INSERT OR IGNORE INTO wallets (id, scope_type, scope_id, currency, balance, status, created_at)
+VALUES (
+  'wlt_sovereign_org',
+  'org',
+  'org_skyesoverlondon',
+  'SKYFUEL',
+  999999999,
+  'active',
+  datetime('now')
+);
+
+-- ── Platform App Registrations ───────────────────────────────────────────────
+-- Each platform gets an app_id row in app_tokens so the gate can verify
+-- inbound KAIXU_APP_TOKEN calls and attribute usage correctly.
+-- Replace token_hash values with: sha256(your actual KAIXU_APP_TOKEN value)
+
+-- SuperIDE (kaixu-superide-runner)
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_superide',
+  'app_superide',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_SUPERIDE_KAIXU_APP_TOKEN',
+  '["kaixu/flash","kaixu/deep","kaixu/code","kaixu/vision","kaixu/image","kaixu/video","kaixu/speech","kaixu/transcribe","kaixu/realtime","kaixu/embed"]',
+  500,
+  datetime('now')
+);
+
+-- kAIxU-Brain / SkyErrors
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_kaixubrain',
+  'app_kaixubrain',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_KAIXUBRAIN_KAIXU_APP_TOKEN',
+  '["kaixu/flash","kaixu/deep","kaixu/code"]',
+  200,
+  datetime('now')
+);
+
+-- SkyeMail 2.0
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_skyemail',
+  'app_skyemail',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_SKYEMAIL_KAIXU_APP_TOKEN',
+  '["kaixu/flash","kaixu/code"]',
+  100,
+  datetime('now')
+);
+
+-- SkyeHubs (commerce / marketplace)
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_skyehubs',
+  'app_skyehubs',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_SKYEHUBS_KAIXU_APP_TOKEN',
+  '["kaixu/flash"]',
+  60,
+  datetime('now')
+);
+
+-- SkaixuPro IDE
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_skaixupro',
+  'app_skaixupro',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_SKAIXUPRO_KAIXU_APP_TOKEN',
+  '["kaixu/flash","kaixu/deep","kaixu/code","kaixu/vision","kaixu/image"]',
+  300,
+  datetime('now')
+);
+
+-- SkyeDirector AI Studio
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_skyedirector',
+  'app_skyedirector',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_SKYEDIRECTOR_KAIXU_APP_TOKEN',
+  '["kaixu/flash","kaixu/vision","kaixu/image","kaixu/video"]',
+  120,
+  datetime('now')
+);
+
+-- Mini Ops Suite / Internal Tools
+INSERT OR IGNORE INTO app_tokens
+  (id, app_id, org_id, wallet_id, token_hash, allowed_aliases, rate_limit_rpm, created_at)
+VALUES (
+  'tkid_platform_miniops',
+  'app_miniops',
+  'org_skyesoverlondon',
+  'wlt_sovereign_org',
+  'REPLACE_WITH_SHA256_OF_MINIOPS_KAIXU_APP_TOKEN',
+  '["kaixu/flash","kaixu/code"]',
+  60,
+  datetime('now')
+);
+
+-- HOW TO GENERATE token_hash values:
+-- node -e "const c=require('crypto');console.log(c.createHash('sha256').update('YOUR_TOKEN_HERE').digest('hex'))"
+-- OR in the browser console:
+-- const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('YOUR_TOKEN'));
+-- console.log([...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''))
+
+================================================================================
+  BLOCK 15 — CLOUDFLARE BINDINGS REFERENCE
+  These are NOT env vars — they go in wrangler.toml under [bindings] sections.
+  Listed here so you can verify every worker has the right bindings.
+================================================================================
+
+0megaSkyeGate (0megaskyegate):
+  D1:  DB                → main gate DB (wallets, tokens, usage, traces)
+  D1:  SKYE_ERRORS_DB    → errors pipeline DB
+  KV:  KAIXU_SMOKE_KV    → smoke audit log
+  R2:  SKYE_ERRORS_RAW   → raw error body storage
+
+SuperIDE Worker (kaixu-superide-runner):
+  KV:  KX_SECRETS_KV     → encrypted user secrets vault
+  R2:  KX_EVIDENCE_R2    → evidence ZIP storage
+
+kAIxU-Brain (kaixu-brain):
+  KV:  KAIXU_SMOKE_KV    → smoke audit log (shared with gate or separate)
+  R2:  SKYE_ERRORS_RAW   → raw error body storage
+
+================================================================================
+  BLOCK 16 — SECRET ROTATION CHECKLIST
+  Run through this any time you rotate a master secret.
+================================================================================
+
+[ ] KAIXU_ADMIN_TOKEN
+    → wrangler secret put KAIXU_ADMIN_TOKEN --name 0megaskyegate
+    → Update in Netlify env for any admin tooling that calls /admin/*
+
+[ ] KAIXU_APP_TOKEN (per platform — each platform has its own token)
+    → SuperIDE:        wrangler secret put KAIXU_APP_TOKEN --name kaixu-superide-runner
+                       + Netlify env: KAIXU_APP_TOKEN, KAIXU_GATEWAY_ENDPOINT
+    → kAIxU-Brain:     wrangler secret put KAIXU_APP_TOKENS --name kaixu-brain
+    → SkyeMail:        Netlify env: KAIXU_APP_TOKEN
+    → SkyeHubs:        Netlify env: KAIXU_APP_TOKEN
+    → SkaixuPro:       Vite env or Netlify: KAIXU_VIRTUAL_KEY → migrate to VITE_KAIXU_APP_TOKEN
+    → SkyeDirector:    wrangler secret put KAIXU_APP_TOKEN --name skyedirector-render-runner
+    → Then update app_tokens table: UPDATE app_tokens SET token_hash='NEW_HASH' WHERE app_id='app_X';
+
+[ ] RUNNER_SHARED_SECRET
+    → wrangler secret put RUNNER_SHARED_SECRET --name kaixu-superide-runner
+    → Netlify env: RUNNER_SHARED_SECRET (must match)
+
+[ ] KAIXU_SERVICE_SECRET
+    → wrangler secret put KAIXU_SERVICE_SECRET --name kaixu-brain
+    → Netlify env: KAIXU_SERVICE_SECRET (SuperIDE side must match)
+
+[ ] SKYE_ERRORS_ADMIN_SECRET
+    → wrangler secret put SKYE_ERRORS_ADMIN_SECRET --name 0megaskyegate
+    → wrangler secret put SKYE_ERRORS_ADMIN_SECRET --name kaixu-brain
+
+[ ] OPENAI_API_KEY / lane keys
+    → wrangler secret put OPENAI_API_KEY --name 0megaskyegate
+    → (and any lane-specific keys: OPENAI_TEXT_KEY, OPENAI_IMAGES_KEY, etc.)
+
+[ ] DATABASE_URL / NEON_DATABASE_URL
+    → wrangler secret put DATABASE_URL --name kaixusi
+    → wrangler secret put NEON_DATABASE_URL --name kaixu-superide-runner
+    → Netlify env: NEON_DATABASE_URL (SuperIDE)
+    → Netlify env: DATABASE_URL (SkyeMail)
+
+[ ] STRIPE_SECRET_KEY
+    → Netlify env: STRIPE_SECRET_KEY (SkyeHubs)
+
+[ ] JWT_SECRET + IP_HASH_SALT
+    → Netlify env: JWT_SECRET, IP_HASH_SALT (SkyeMail)
+
+================================================================================
+  BLOCK 17 — SECURITY NOTES
+================================================================================
+
+CRITICAL — ROTATE NOW:
+  SkaixuPro-IDE has a live key committed to .env:
+    KAIXU_VIRTUAL_KEY=sk_live_REDACTED_ROTATE_THIS_KEY
+  → Invalidate this key immediately in whatever system issued it
+  → Replace with a proper VITE_KAIXU_APP_TOKEN pointing to 0megaSkyeGate
+
+NEVER DO:
+  - Commit .dev.vars, .env, .env.docker with real values
+  - Put provider API keys on any worker except 0megaSkyeGate
+  - Hardcode tokens in client-side JS or HTML files
+  - Share KAIXU_ADMIN_TOKEN with app-level callers (use KAIXU_APP_TOKEN)
+
+ALWAYS DO:
+  - Use wrangler secret put for ALL secrets on CF Workers
+  - Use Netlify UI → Environment Variables for ALL secrets on Netlify Functions
+  - Issue per-platform KAIXU_APP_TOKEN values (not one shared token)
+  - Store the sha256 hash of each token in app_tokens, never the raw token
+
+================================================================================
+  END OF ULTIMATE ENV VAR TEMPLATE
+  Last updated: March 2026
+  Maintainer: Skyes Over London Engineering
+================================================================================

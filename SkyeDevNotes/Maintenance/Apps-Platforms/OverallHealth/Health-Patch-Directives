@@ -1,0 +1,784 @@
+HEALTH PATCH DIRECTIVES — FILE-BY-FILE FIX PLAN
+Source: /SkyeDevNotes/Maintenance/Apps-Platforms/Overall-Health-Report
+Scope:  Every issue flagged in the health report, broken down to exact files
+        and exact changes required. No platform codebase files are edited during
+        this planning run — this document is the plan only.
+================================================================================
+
+PRIORITY KEY
+  P0  = Do this before anything else. Security risk. Production is at risk NOW.
+  P1  = Broken in production right now. AI calls failing or endpoints dead.
+  P2  = Migration required. Not compliant with 0megaSkyeGate standard.
+  P3  = Technical debt. Non-blocking but degrades UX or increases future risk.
+================================================================================
+
+
+================================================================================
+PLATFORM: SkaixuPro-IDE
+Path: Skye0s-s0l26/Sky0s-Platforms/SkaixuPro-IDE/SkaixuPro-IDE-Platform/
+================================================================================
+
+── P0-001 ── ROTATE LIVE API KEY + PURGE FROM GIT HISTORY
+  Issue:   Live key committed to .env:
+           KAIXU_VIRTUAL_KEY=sk_live_REDACTED_ROTATE_THIS_KEY
+  Files:
+    .env
+  Fix:
+    Step 1: Go to your LLM provider dashboard and INVALIDATE the key immediately.
+    Step 2: Generate a new key.
+    Step 3: Set the new key as a Netlify environment variable (do not put in .env).
+    Step 4: Remove .env from git history entirely:
+              git filter-repo --path SkaixuPro-IDE-Platform/.env --invert-paths
+            (run from repo root; requires git-filter-repo installed)
+    Step 5: Force push the cleaned history:
+              git push --force-with-lease
+    Step 6: Delete or empty SkaixuPro-IDE-Platform/.env locally. Add it to .gitignore.
+    Step 7: Rotate any other keys that were ever available to anyone who had repo access.
+
+── P1-001 ── FIX LOCALHOST HARDCODES IN MODULE FILES
+  Issue:   15+ module index.html and tool files have localhost:* API endpoints
+           hardcoded — all AI features in those modules are broken in production.
+  Files to patch (replace localhost:PORT with env-injected BASE_URL or the gate URL):
+    skAIxuide/diagnostics.html
+    skAIxuide/SmartIDE.html
+    skAIxuide/index.html
+    skriptx/index.html
+    skyeuipro/index.html
+    GodCode/GodCode.html
+    GodCode/index.html
+    KaiPrompt/index.html
+    PlanItPro/PlanItPro.html
+    SkyeVault/index.html
+    skyeportal/index.html
+    GodKode/index.html
+    Webby/Webby.html
+    skriptxdataalchemist/index.html
+    "PWA Factory/index.html"
+    kaixumagic/index.html
+    SkyeView-Red/index.html
+  Fix per file:
+    Search for: http://localhost:
+    Replace with: https://0megaskyegate.skyesoverlondon.workers.dev
+    OR (preferred): window.__BASE_URL__ || 'https://0megaskyegate.skyesoverlondon.workers.dev'
+    Note: Review each file — some may use localhost for non-AI local dev tooling.
+          Only replace the AI endpoint references, not legit local tooling refs.
+
+── P3-001 ── UPDATE LEGACY GATEWAY REF
+  Issue:   One file still references an old gateway URL.
+  File:
+    "THE SOLE NETWORK/Editorials/Elite/FounderOpx1.html"
+  Fix:
+    Search for old gateway URL (skyesol.netlify.app or kaixusi reference)
+    Replace with: https://0megaskyegate.skyesoverlondon.workers.dev
+    Or if it's a nav link only, update to the correct live platform URL.
+
+── P3-002 ── AUDIT DUPLICATE GODNODES VERSIONS
+  Issue:   GodNodes has two versions (G0dN0de2.4 and GodN0dePro2) — unclear which
+           is canonical.
+  Files:
+    GodNodes/G0dN0de2.4/
+    GodNodes/GodN0dePro2/
+  Fix:
+    Open both. Identify the latest version by feature set and last-modified date.
+    Archive the older one: move it to a /deprecated/ folder or delete it.
+    Document the canonical version in a README.md inside GodNodes/.
+
+
+================================================================================
+PLATFORM: SuperIDE
+Path: Skye0s-s0l26/Sky0s-Platforms/SuperIDE/
+================================================================================
+
+── P1-002 ── FIX BROKEN FALLBACK IN kaixu_brain.ts
+  Issue:   normalizeKaixuGatewayEndpoint() returns the decommissioned URL
+           https://skyesol.netlify.app/.netlify/functions/gateway-chat
+           as its default when KAIXU_GATEWAY_ENDPOINT env var is not set.
+           This silently breaks ALL AI generation in production if env var is absent.
+  Files:
+    netlify/functions/_shared/kaixu_brain.ts  (2 occurrences)
+  Fix:
+    Find every instance of:
+      return "https://skyesol.netlify.app/.netlify/functions/gateway-chat";
+    Replace with:
+      return "https://0megaskyegate.skyesoverlondon.workers.dev";
+    Verify: search the entire file for "skyesol" — remove or replace all hits.
+
+── P1-003 ── FIX BROKEN FALLBACK IN kaixu-generate-stream.ts
+  Issue:   Same broken fallback as above but in the streaming function specifically.
+           Streaming AI calls (SSE) will fail with the same decommissioned URL.
+  Files:
+    netlify/functions/kaixu-generate-stream.ts  (2 occurrences)
+  Fix:
+    Same as P1-002 — replace all instances of the skyesol.netlify.app URL with
+    https://0megaskyegate.skyesoverlondon.workers.dev
+
+── P1-004 ── SET KAIXU_GATEWAY_ENDPOINT IN NETLIFY ENVIRONMENT
+  Issue:   Even after fixing the code fallback, the env var should be explicitly
+           set so there is no ambiguity.
+  Files:   None to edit — this is a Netlify dashboard action.
+  Fix:
+    Go to: Netlify → SuperIDE site → Site Configuration → Environment Variables
+    Add:   KAIXU_GATEWAY_ENDPOINT = https://0megaskyegate.skyesoverlondon.workers.dev
+    Save and redeploy.
+
+── P1-005 ── UPDATE DEV CHECKLIST — WRONG GATEWAY URL
+  Issue:   Dev launch checklist actively points developers to the wrong endpoint.
+           Anyone following it will configure the gate incorrectly.
+  File:
+    "DEVV ONLY NO GIT/SuperIDEv2 ENV LAUNCH CHECKLIST.md"
+  Fix:
+    Find: KAIXU_GATEWAY_ENDPOINT=https://skyesol.netlify.app/.netlify/functions/gateway-chat
+    Replace with: KAIXU_GATEWAY_ENDPOINT=https://0megaskyegate.skyesoverlondon.workers.dev
+    Also search file for any other skyesol.netlify.app references and update them.
+
+── P3-003 ── REMOVE DEAD NAVIGATION LINKS IN SUB-PLATFORM PAGES
+  Issue:   14+ sub-platform HTML files have skyesol.netlify.app as a nav link.
+           The domain is decommissioned — clicking it goes nowhere.
+  Files:
+    public/kAIxu-Quest/index.html
+    public/kAixu-Nexus/index.html
+    public/kAIxu-Forge/index.html
+    public/kAIxu-Cinematic/index.tml   ← NOTE: .tml typo in filename, may need rename
+    public/Skye-ID/index.html
+    public/kAIxU-PrimeCommand/index.html
+    public/kAIxU-Codex/index.html
+    public/kAIxu-Atmos/index.html
+    public/kAIxU-Matrix/index.html
+    public/kAixU-Chronos/index.html
+  Fix per file:
+    Search for: skyesol.netlify.app
+    Replace href with: https://skyesoverlondon.com (or whatever the current live
+    brand URL is — confirm the correct destination first)
+    Or remove the link entirely if no replacement exists yet.
+  Bonus fix:
+    public/kAIxu-Cinematic/index.tml — rename this file:
+      mv "public/kAIxu-Cinematic/index.tml" "public/kAIxu-Cinematic/index.html"
+    Then update any links pointing to it.
+
+── P3-004 ── AUDIT worker/src/index.ts (kaixu-superide-runner)
+  Issue:   Legacy refs present. Unclear if this worker is still needed after
+           0megaSkyeGate launch or if it can be retired.
+  File:
+    worker/src/index.ts
+  Fix:
+    Open the file and identify what it does:
+      - If it provides KX_SECRETS_KV and KX_EVIDENCE_R2 access that no Netlify
+        function has replaced → keep it, update any skyesol refs inside it
+      - If 0megaSkyeGate now handles everything it was doing → deprecate:
+          1. Remove or comment out the wrangler deploy step
+          2. Add a README.md inside worker/ explaining it is retired
+    In either case: search file for "skyesol" and replace with the new gate URL.
+
+── P3-005 ── AUDIT src/App.tsx FOR LEGACY URL REFS
+  Issue:   src/App.tsx contains legacy URL references (may be nav links).
+  File:
+    src/App.tsx
+  Fix:
+    Search file for: skyesol
+    For each hit — determine if it's:
+      a) An API endpoint → replace with 0megaSkyeGate URL
+      b) A nav link → replace with correct live brand URL or remove
+
+
+================================================================================
+PLATFORM: KaixuSuper-IDE-(Internal Gate)
+Path: Skye0s-s0l26/Sky0s-Platforms/KaixuSuper-IDE-(Internal Gate)/
+================================================================================
+
+── P2-001 ── MIGRATE app.js AI CALLS FROM kaixusi → 0megaSkyeGate
+  Issue:   All AI calls in the IDE go through /.netlify/functions/ → kaixusi
+           legacy worker. kaixusi is not 0megaSkyeGate.
+  File:
+    app.js  (monolithic ~2500+ lines)
+  Fix:
+    Step 1: Search app.js for all fetch() calls that reference:
+              /.netlify/functions/ai-edit-run-background
+              /.netlify/functions/  (any AI-related function)
+            Or any direct kaixusi.workers.dev URL
+    Step 2: For each AI fetch call, identify what it does (generate, edit, chat)
+    Step 3: Replace the endpoint with the equivalent 0megaSkyeGate route:
+              chat/generate → POST https://0megaskyegate.skyesoverlondon.workers.dev/v1/chat
+              streaming     → POST .../v1/stream
+    Step 4: Add Authorization: Bearer header using the platform's KAIXU_APP_TOKEN
+            (set this token as a Netlify env var for KaixuSuper-IDE)
+    Step 5: Issue a new app token for KaixuSuper-IDE via the gate admin API
+            (see 0megaSkyeGate deploy guide — issue token section)
+
+── P2-002 ── MIGRATE NETLIFY FUNCTIONS — AI-RELATED FUNCTIONS
+  Issue:   Netlify Functions in this platform proxy to kaixusi. They need to
+           either be removed (if app.js calls gate directly) or updated to
+           proxy to 0megaSkyeGate instead.
+  Files:
+    netlify/functions/ai-edit-run-background.js  (or .ts)
+    netlify/functions/  — any function that calls kaixusi or makes LLM API calls
+  Fix:
+    Option A (preferred): Delete the AI proxy functions and have app.js call
+                          0megaSkyeGate directly.
+    Option B: Update each function to forward the request to 0megaSkyeGate:
+                const resp = await fetch('https://0megaskyegate.../v1/chat', {
+                  headers: { Authorization: `Bearer ${process.env.KAIXU_APP_TOKEN}` },
+                  ...
+                });
+
+── P2-003 ── RETIRE OR UPDATE THE kaixusi CLOUDFLARE WORKER
+  Issue:   worker/wrangler.toml deploys the kaixusi legacy worker which still
+           makes direct OpenAI/Anthropic/Gemini API calls, bypassing the gate.
+  Files:
+    worker/wrangler.toml
+    worker/  (all source files in the worker folder)
+  Fix:
+    Option A (retire): 
+      1. Stop deploying — remove the deploy step from any CI/CD
+      2. In Cloudflare dashboard → Workers: disable or delete the kaixusi worker
+      3. Add a README.md inside worker/: "RETIRED — replaced by 0megaSkyeGate"
+    Option B (update):
+      Update worker/src/ to proxy all requests to 0megaSkyeGate instead of
+      calling providers directly. Then redeploy via wrangler deploy inside worker/.
+
+── P2-004 ── UPDATE SMOKE TEST PAGES TO TARGET 0megaSkyeGate
+  Issue:   Smoke test pages point to kaixusi directly — they'll fail once kaixusi
+           is retired or if kaixusi goes down.
+  Files:
+    smoketest.html
+    smoke-live.html
+  Fix:
+    Search each file for the kaixusi worker URL or /.netlify/functions/smoke
+    Replace with: https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse
+    Or if linking to the external SkyErrors smokehouse:
+      https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse
+
+── P3-006 ── ADD ERROR FEEDBACK TO AI EDIT BUTTON
+  Issue:   "AI Edit" button fires but fails silently if the Netlify function
+           is not deployed or returns an error.
+  File:
+    app.js
+  Fix:
+    Find the click handler for the AI Edit action.
+    Wrap the fetch in try/catch.
+    On error, display an inline error message to the user:
+      e.g., show a red banner: "AI edit failed — check connection or token"
+    On successful response, clear any previous error state.
+
+── P3-007 ── ADD ERROR FEEDBACK TO DEPLOY BUTTON
+  Issue:   "Deploy" button fires Netlify webhook but shows nothing if the webhook
+           URL isn't set or the call fails.
+  File:
+    app.js
+  Fix:
+    Find the deploy webhook fetch call.
+    Check the response status.
+    On non-2xx: show user-facing message: "Deploy trigger failed — check webhook config"
+    On success: show: "Deploy triggered successfully"
+
+── P3-008 ── ADD SRI HASH TO jszip.min.js
+  Issue:   jszip.min.js is a third-party library bundled directly with no
+           Subresource Integrity (SRI) check — a security gap.
+  File:
+    jszip.min.js  (referenced in HTML files that load it)
+    + whichever HTML file has the <script src="jszip.min.js"> tag
+  Fix:
+    Option A: Replace the local copy with a CDN link + SRI hash:
+      Generate SRI: cat jszip.min.js | openssl dgst -sha384 -binary | openssl base64 -A
+      Add to script tag: <script src="..." integrity="sha384-XXXX" crossorigin="anonymous">
+    Option B: Keep it local but add a build step that generates and checks a hash.
+    Option C (simplest): Keep local as-is but document it as a known dependency to
+      update when jszip releases a new version. Lower risk than CDN for internal tools.
+
+
+================================================================================
+PLATFORM: Kaixu67
+Path: Skye0s-s0l26/Sky0s-Platforms/Kaixu67/
+================================================================================
+
+── P2-005 ── UPDATE gateway.html TO USE OMEGA_GATE_URL
+  Issue:   gateway.html still references old gateway endpoints directly.
+  File:
+    gateway.html
+  Fix:
+    Search for any hardcoded gateway URL (skyesol.netlify.app, kaixu67.netlify,
+    or any direct AI provider URL).
+    Replace the endpoint variable/constant with:
+      const GATE_URL = window.OMEGA_GATE_URL
+        || localStorage.getItem('OMEGA_GATE_URL')
+        || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+    Update the "Test Connection" button handler to use GATE_URL.
+
+── P2-006 ── UPDATE smokekai.html AND smokecoveragekai.html
+  Issue:   Both files are smoke test pages targeting the legacy gateway endpoint.
+  Files:
+    smokekai.html
+    smokecoveragekai.html
+  Fix:
+    Option A: Point them at the new smokehouse endpoint:
+      Replace all legacy URLs with:
+        https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse
+    Option B: Delete these files and redirect users to the SkyErrors smokehouse
+      (the gate's /smokehouse route covers what these did).
+    Recommended: Option A — update in place, keep the pages as alternate smoke tools.
+
+── P3-009 ── ADD VISIBLE EMPTY-STATE WHEN TOKEN/ENDPOINT NOT SET
+  Issue:   Each tool page silently fails if OMEGA_GATE_URL or token not configured.
+           User sees a spinner or nothing.
+  Files:
+    All 73 HTML tool pages — but add to the shared JS pattern each page uses
+    (if there's a shared snippet; if not, create _shared/config.js — see P3-010)
+  Fix:
+    In each page's JS init block (or in the shared config):
+      if (!GATE_URL || !token) {
+        document.getElementById('output').innerHTML =
+          '<p style="color:red">No endpoint or token set. Open Settings to configure.</p>';
+        return;
+      }
+
+── P3-010 ── EXTRACT OMEGA_GATE_URL PATTERN INTO SHARED CONFIG FILE
+  Issue:   The OMEGA_GATE_URL detection pattern is duplicated across all 73 HTML files.
+           Any future URL change requires updating all 73 files again.
+  Files:
+    Create new file: _shared/config.js
+    All 73 HTML tool pages (add one <script> tag to each)
+  Fix:
+    Create _shared/config.js with content:
+      window.OMEGA_GATE_URL = window.OMEGA_GATE_URL
+        || localStorage.getItem('OMEGA_GATE_URL')
+        || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+      window.KAIXU_TOKEN = localStorage.getItem('KAIXU_TOKEN') || '';
+    In each HTML tool page, add before the closing </body>:
+      <script src="/_shared/config.js"></script>
+    Then remove the inline OMEGA_GATE_URL detection from each page's own JS.
+
+
+================================================================================
+PLATFORM: SkyDex (SkyDex4_fixed)
+Path: Skye0s-s0l26/Sky0s-Platforms/SkyDex/SkyDex4_fixed/
+================================================================================
+
+── P3-011 ── REMOVE LEGACY URL FROM ai-agent.js ALLOWLIST
+  Issue:   kaixu67.skyesoverlondon.netlify.app remains in the allowlist inside
+           ai-agent.js — a legacy URL that could allow fallback to old endpoint.
+  File:
+    netlify/functions/ai-agent.js
+  Fix:
+    Open file. Find the allowlist/verify array or constant.
+    Remove the entry: kaixu67.skyesoverlondon.netlify.app
+    Keep only: https://0megaskyegate.skyesoverlondon.workers.dev
+    Confirm no other legacy URLs are in the list.
+
+── P3-012 ── ARCHIVE .patch-backups/ FOLDER
+  Issue:   .patch-backups/ contains backup copies of files from a March 2026 patch.
+           These are stale and bloat the repo.
+  Files:
+    .patch-backups/ai-agent.20260316-153429.js.bak
+    .patch-backups/index.20260316-153429.html.bak
+  Fix:
+    Option A (cleanest): Delete the folder entirely — the backups are now in git history.
+      git rm -r .patch-backups/
+      git commit -m "chore: remove stale patch backups"
+    Option B: Move to an /artifacts/ or /archive/ folder if you want to keep them
+      accessible without cluttering the working directory.
+
+── P3-013 ── VERIFY SMTP ENV VARS FOR skymail-send.js
+  Issue:   skymail-send.js will fail silently if SMTP env vars are not set in Netlify.
+  File:
+    netlify/functions/skymail-send.js  (no code change needed — env action)
+  Fix:
+    Open skymail-send.js and identify which env vars it reads
+    (likely RESEND_API_KEY, SMTP_HOST, FROM_EMAIL, or similar).
+    Go to Netlify → SkyDex site → Environment Variables.
+    Confirm each required var is set.
+    If any are missing, add them.
+    Add a note to the top of skymail-send.js listing required env vars as a comment.
+
+
+================================================================================
+PLATFORM: SkyErrors / kAIxU-Brain
+Path: Skye0s-s0l26/Sky0s-Platforms/SkyErrors/kAIxU-Brain/
+================================================================================
+
+── P3-014 ── UPDATE .dev.vars.template — REPLACE LEGACY GATEWAY URL
+  Issue:   Template instructs developers to use the old gateway URL.
+  File:
+    .dev.vars.template
+  Fix:
+    Find: any line referencing kaixu67.skyesoverlondon.netlify.app or skyesol.netlify.app
+    Replace with the correct 0megaSkyeGate URL:
+      KAIXU_BRAIN_BASE_KAIXU67=https://0megaskyegate.skyesoverlondon.workers.dev
+    Update any surrounding comment to reflect the new gateway.
+
+── P3-015 ── UPDATE ENV.template — SAME AS ABOVE
+  File:
+    ENV.template
+  Fix:
+    Same search-and-replace as P3-014 — find all legacy URLs and update to
+    https://0megaskyegate.skyesoverlondon.workers.dev
+
+── P3-016 ── UPDATE smokehouse-standalone.html — POINT AT LIVE GATE
+  Issue:   Smoke test panel has a localhost or legacy URL hardcoded.
+  File:
+    smokehouse-standalone.html
+  Fix:
+    Find the URL the "Run Smoke" button posts to.
+    Replace with: https://0megaskyegate.skyesoverlondon.workers.dev/smokehouse
+    Update any displayed URL text in the page to match.
+
+── P3-017 ── CONFIRM weekly-ops.mjs RUNS VIA CF CRON TRIGGER
+  Issue:   weekly-ops.mjs is a cron-style script — if it's expected to run as a
+           standalone Node cron it won't work in the Workers runtime.
+  File:
+    scripts/weekly-ops.mjs
+  Fix:
+    Open the file. Check if it exports a scheduled() handler or runs as a
+    standalone script.
+    If standalone: ensure it is invoked from outside Cloudflare (e.g., a GitHub
+    Actions cron workflow) rather than from within the Worker.
+    If it uses the CF scheduled handler pattern: confirm the wrangler.toml has
+    the correct cron trigger entry for it.
+    Document the intended execution method in a comment at the top of the file.
+
+
+================================================================================
+PLATFORM: SkyeBundle
+Path: Skye0s-s0l26/Sky0s-Platforms/SkyeBundle/
+================================================================================
+
+── P3-018 ── PRE-POPULATE DEFAULT GATEWAY URL IN ALL 15 TOOLS
+  Issue:   Tools have no default endpoint — users must manually configure.
+           If endpoint is empty, AI calls fail silently.
+  Files:
+    01-scriptdrop-ai-runner/app.js
+    02-offerforge-proposal-builder/app.js
+    03-objection-crusher-studio/app.js
+    04-follow-up-cadence-machine/app.js
+    05-local-lead-scrubber/app.js
+    06-service-page-generator-x/app.js
+    07-review-rocket-writer/app.js
+    08-case-study-builder/app.js
+    09-pricestack-architect/app.js
+    10-contract-pack-generator/app.js
+    11-cohort-command/app.js
+    12-video-idea-engine/app.js
+    13-intakevault-lite/app.js
+    14-authority-binder-generator/app.js
+    15-ae-route-planner-pro/app.js
+  Fix per file:
+    Find where endpoint is loaded from localStorage.
+    Add a default fallback:
+      const endpoint = localStorage.getItem('endpoint')
+        || 'https://0megaskyegate.skyesoverlondon.workers.dev';
+    Save that default back to localStorage so subsequent loads have it:
+      if (!localStorage.getItem('endpoint')) {
+        localStorage.setItem('endpoint', 'https://0megaskyegate.skyesoverlondon.workers.dev');
+      }
+
+── P3-019 ── ADD URL VALIDATION BEFORE FETCH IN ALL 15 TOOLS
+  Issue:   endpoint is raw user input passed directly to fetch() with no
+           validation — a user could enter an arbitrary URL.
+  Files:
+    Same 15 app.js files as P3-018
+  Fix per file:
+    Before the fetch(endpoint, ...) call, add:
+      try {
+        const parsed = new URL(endpoint);
+        if (!['https:', 'http:'].includes(parsed.protocol)) throw new Error();
+      } catch {
+        showError('Invalid endpoint URL. Please check your settings.');
+        return;
+      }
+    For production safety, also validate it's not a localhost URL:
+      if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
+        showError('localhost endpoints are not allowed in production.');
+        return;
+      }
+
+── P3-020 ── ADD VISIBLE EMPTY-STATE WARNING ON LOAD FOR ALL 15 TOOLS
+  Issue:   If endpoint or token not set, user sees nothing — no helpful message.
+  Files:
+    Same 15 app.js files as P3-018
+  Fix per file:
+    In the page init / DOMContentLoaded handler:
+      if (!localStorage.getItem('token')) {
+        showBanner('No API token configured. Open Settings to enter your token.');
+      }
+    showBanner() should render a dismissible yellow warning at the top of the UI.
+
+── P3-021 ── BUMP sw.js CACHE VERSIONS ACROSS ALL 15 TOOLS
+  Issue:   Service worker cache versions are likely static — users can get stale
+           app versions after updates.
+  Files:
+    01-scriptdrop-ai-runner/sw.js through 15-ae-route-planner-pro/sw.js (15 files)
+  Fix:
+    In each sw.js, find the cache version constant:
+      const CACHE_VERSION = 'v1';  (or similar)
+    Update it to a meaningful version string:
+      const CACHE_VERSION = 'v1.1.0';  (match the app version)
+    Going forward: bump this string every time the app.js or index.html changes.
+    Consider automating this via a build script that injects the version from package.json.
+
+
+================================================================================
+PLATFORM: SkyeHubs
+Path: Skye0s-s0l26/Sky0s-Platforms/SkyeHubs/
+================================================================================
+
+── P3-022 ── VERIFY + DOCUMENT REQUIRED ENV VARS IN ALL THREE HUBS
+  Issue:   If STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, or required backend env vars
+           are not set in Netlify, bookings and approvals fail silently.
+  Files (no code change — Netlify env + documentation):
+    SkyeHubs/netlify/functions/create-checkout.js
+    SkyeHubs/netlify/functions/finalize-checkout.js
+    SkyeHubs/netlify/functions/approve-cohost.js
+    "Mobile Detailing/netlify/functions/create-checkout.js"
+    "Mobile Detailing/netlify/functions/finalize-checkout.js"
+    "Mobile Detailing/netlify/functions/approve-detailer.js"
+    "NobleSoles/netlify/functions/create-checkout.js"
+    "NobleSoles/netlify/functions/finalize-checkout.js"
+    "NobleSoles/netlify/functions/approve-caregiver.js"
+  Fix:
+    Step 1: Open each Netlify function file and note the process.env.* variables it reads.
+    Step 2: Go to each hub's Netlify site → Environment Variables.
+    Step 3: Confirm STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET are set.
+    Step 4: Confirm the required backend/session env vars are set.
+    Step 5: Add a comment block at the top of each function listing required env vars:
+          // Required env vars: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, DATABASE_URL
+
+── P3-023 ── ADD USER-FACING ERROR STATE FOR FAILED STRIPE CHECKOUT
+  Issue:   If checkout creation fails (bad Stripe key, network error), user gets
+           a blank page or unhandled error.
+  Files:
+    SkyeHubs/index.html  (and Mobile Detailing/index.html, NobleSoles/index.html)
+    SkyeHubs/app.js       (and variants)
+  Fix:
+    Find the "Book Now" button handler / fetch to create-checkout.
+    Wrap in try/catch.
+    On error (non-2xx or exception): show user-facing message:
+      "Booking unavailable right now. Please try again shortly."
+    On success: proceed with Stripe redirect as normal.
+
+
+================================================================================
+PLATFORM: SkyeMail2.0
+Path: Skye0s-s0l26/Sky0s-Platforms/SkyeMail2.0/
+================================================================================
+
+── P2-007 ── CONFIRM AND UPDATE AI ENDPOINT IN ai.html
+  Issue:   The AI email drafting page's endpoint was not confirmed in the static
+           scan — unknown if it calls 0megaSkyeGate or something else.
+  File:
+    ai.html
+    (+ whatever JS file ai.html loads for its AI call)
+  Fix:
+    Open ai.html. Find the fetch/XHR call for AI drafting.
+    If it calls a Netlify function: open that function and check what URL it posts to.
+    If it calls a hardcoded AI provider URL directly: update to use 0megaSkyeGate.
+    Correct endpoint: https://0megaskyegate.skyesoverlondon.workers.dev/v1/chat
+    Correct auth: Authorization: Bearer <KAIXU_APP_TOKEN from env>
+
+── P3-024 ── VERIFY SSO ENV VARS ARE SET
+  Issue:   SSO login (SAML + OIDC) fails silently if env vars not set in Netlify.
+  Files (no code change — Netlify env action):
+    netlify/functions/sso-saml-acs.js
+    netlify/functions/sso-saml-login.js
+    netlify/functions/sso-oidc-callback.js
+    netlify/functions/sso-oidc-login.js
+  Fix:
+    Open each file and note required env vars (SAML_SP_PRIVATE_KEY_PEM, etc.)
+    Go to Netlify → SkyeMail site → Environment Variables.
+    Confirm every SSO-related var is set.
+    Add required var comments to the top of each function file.
+
+── P3-025 ── VERIFY SMTP INGEST EXTERNAL ROUTING
+  Issue:   smtp-ingest.js expects incoming email to be forwarded to it via webhook.
+           Netlify doesn't handle inbound SMTP natively — needs Resend or Postmark config.
+  File:
+    netlify/functions/smtp-ingest.js
+  Fix:
+    Open the file. Identify which service is expected to POST to it
+    (Resend inbound, Postmark inbound, Mailgun, etc.).
+    Go to that service's dashboard and confirm the inbound webhook URL is set to
+    the Netlify function URL:
+      https://[skyemail-site].netlify.app/.netlify/functions/smtp-ingest
+    Add a comment at the top of smtp-ingest.js:
+      // Inbound webhook — requires [SERVICE] inbound routing configured to POST here.
+      // Dashboard: [link to service]
+
+── P3-026 ── TEST VAULT EXPORT BINARY DOWNLOAD
+  Issue:   vault-export.js returns a binary file (ZIP) — browser download behavior
+           from Netlify functions can be inconsistent.
+  File:
+    netlify/functions/vault-export.js
+  Fix:
+    Open the file. Confirm it sets these response headers:
+      Content-Type: application/zip
+      Content-Disposition: attachment; filename="vault-export.zip"
+    If missing, add them.
+    Test manually: trigger the export and confirm the browser downloads a file
+    (not renders raw binary or returns an error).
+
+
+================================================================================
+PLATFORM: SkyeSpace
+Path: Skye0s-s0l26/Sky0s-Platforms/SkyeSpace/skyespace_mvp_platform/
+================================================================================
+
+── P3-027 ── ADD prefers-reduced-motion CHECK TO background-injector.js
+  Issue:   Canvas/CSS background animation runs on all devices regardless of
+           accessibility settings — can cause issues for users with motion sensitivity.
+  File:
+    js/background-injector.js
+  Fix:
+    At the top of the animation init logic, add:
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) return;  // skip all animation setup
+    This kills the animation before it starts for users who have reduced motion enabled.
+
+── P3-028 ── VERIFY ALL NAV SHELL LINKS RESOLVE CORRECTLY
+  Issue:   shell.js drives navigation between 12 pages — any broken href results
+           in a 404.
+  File:
+    js/shell.js
+  Fix:
+    Open shell.js. Find all href / page link targets.
+    Cross-reference against the actual files in skyespace_mvp_platform/:
+      academy.html, council.html, districts.html, forge.html, market.html,
+      messages.html, muse.html, profile.html, signal.html, stage.html,
+      studio.html, vaults.html
+    Any link pointing to a page that doesn't exist → either create the missing page
+    or remove the link from the nav.
+    Note: stage.html and studio.html — confirm both exist (they were listed in scan).
+
+
+================================================================================
+PLATFORM: Skye_platform_foundry_pack
+Path: Skye0s-s0l26/Sky0s-Platforms/Skye_platform_foundry_pack/
+================================================================================
+
+── P3-029 ── AUDIT background-injector.js ACROSS ALL 6 TEMPLATES
+  Issue:   background-injector.js appears in every template — likely 6 diverged copies.
+           A bug fix or improvement would need to be applied to all 6.
+  Files:
+    skyecircuit/js/background-injector.js
+    skyeflux/js/background-injector.js
+    skyemuse/js/background-injector.js
+    skyescene/js/background-injector.js
+    skyetown/js/background-injector.js
+    (check if skyescene and skyetown have the same files)
+  Fix:
+    Run: diff skyecircuit/js/background-injector.js skyeflux/js/background-injector.js
+    If they're identical or near identical → consolidate:
+      Option A: Move to a shared location: _shared/js/background-injector.js
+                Update all 6 templates' HTML to reference the shared path.
+      Option B: If templates will always be deployed independently, keep copies
+                but add a comment: "SOURCE: _shared — do not edit independently"
+                and keep a canonical copy in a _shared/ folder that you copy from.
+
+
+================================================================================
+PLATFORM: 0megaSkyeGate
+Path: Skye0s-s0l26/Sky0s-Platforms/0megaSkyeGate/0megaSkyeGate-The-Actual-Gate/
+================================================================================
+
+── P3-030 ── CONFIRM GatewayUpgrades/sky-currency-additive-pack IS ARCHIVED
+  Issue:   Older scaffold copy sits alongside the live gate — risk of accidentally
+           deploying it if someone runs wrangler deploy from the wrong folder.
+  Files:
+    GatewayUpgrades/sky-currency-additive-pack/wrangler.jsonc
+    GatewayUpgrades/sky-currency-additive-pack/  (entire folder)
+  Fix:
+    Open GatewayUpgrades/sky-currency-additive-pack/wrangler.jsonc and confirm
+    the worker name is different from "0megaskyegate" (so it can't accidentally
+    overwrite the live gate if deployed).
+    Add a README.md inside GatewayUpgrades/sky-currency-additive-pack/:
+      "This is an archived scaffold used to bootstrap the live gate.
+       Do not deploy from this folder.
+       The live gate is at: ../0megaSkyeGate-The-Actual-Gate/"
+
+── P3-031 ── ADD D1 SCHEMA APPLY TO CI/CD PIPELINE
+  Issue:   schema.sql must be manually applied via wrangler d1 execute on every
+           fresh deploy. No automated step guards this — a deploy to a new D1
+           instance will have empty tables.
+  File:
+    (No existing CI file — need to create or update)
+    .github/workflows/deploy.yml  (if using GitHub Actions)
+    OR netlify.toml [build] section  (if using Netlify CI)
+  Fix:
+    Add a pre-deploy step:
+      wrangler d1 execute sky_currency --remote --file=src/db/schema.sql
+    This is idempotent (uses CREATE TABLE IF NOT EXISTS) so safe to run on every deploy.
+    Example GitHub Actions step:
+      - name: Apply DB Schema
+        run: wrangler d1 execute sky_currency --remote --file=src/db/schema.sql
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+
+── P3-032 ── ADD ChromeBoard-Pro FUNCTIONAL BUTTON TEST DIRECTIVE
+  Issue:   ChromeBoard-Pro has no app.js — all button logic is inline in index.html.
+           Risk of broken onclick handlers with no external script to catch errors.
+  File:
+    ChromeBoard-Pro/index.html  (under ChromeBoards platform, not 0megaSkyeGate)
+  Fix:
+    Open index.html. Find all onclick= and addEventListener() handlers.
+    Manually test each button in a Chrome browser (ChromeBoard is ChromeOS-targeted).
+    For any button with no handler or a broken handler:
+      Add the correct handler inline or extract to a new app.js.
+
+
+================================================================================
+CHRONOLOGICAL FIX ORDER (RECOMMENDED EXECUTION SEQUENCE)
+================================================================================
+
+WEEK 1 — Security + Broken Production AI
+  [ ] P0-001  Rotate KAIXU_VIRTUAL_KEY + purge from git history (SkaixuPro-IDE .env)
+  [ ] P1-001  Fix localhost:* hardcodes in 15+ SkaixuPro-IDE module files
+  ✓ P1-002  Fix kaixu_brain.ts broken fallback URL (SuperIDE — 2 files)
+  ✓ P1-003  Fix kaixu-generate-stream.ts broken fallback URL (SuperIDE)
+  [ ] P1-004  Set KAIXU_GATEWAY_ENDPOINT in SuperIDE Netlify env (dashboard action)
+  ✓ P1-005  Update SuperIDE dev checklist with correct gateway URL
+
+WEEK 2 — Gateway Migration
+  ✓ P2-001  Migrate KaixuSuper-IDE app.js AI calls → 0megaSkyeGate
+  ✓ P2-002  Migrate KaixuSuper-IDE Netlify AI functions → 0megaSkyeGate or remove
+  ✓ P2-003  Retire or update kaixusi Cloudflare Worker
+  ✓ P2-004  Update smoke test pages in KaixuSuper-IDE
+  ✓ P2-005  Update Kaixu67 gateway.html → OMEGA_GATE_URL
+  ✓ P2-006  Update Kaixu67 smokekai.html + smokecoveragekai.html
+  ✓ P2-007  Confirm SkyeMail2.0 ai.html endpoint + update if needed
+
+WEEK 3 — Technical Debt + UX Gaps
+  ✓ P3-001  SkaixuPro-IDE THE SOLE NETWORK legacy ref
+  ✓ P3-002  Audit GodNodes duplicate versions
+  [ ] P3-003  SuperIDE dead skyesol nav links in 10+ sub-platform files
+  [ ] P3-004  SuperIDE worker/src/index.ts audit + update
+  [ ] P3-005  SuperIDE src/App.tsx legacy URL search
+  ✓ P3-006  KaixuSuper-IDE AI edit button error feedback
+  ✓ P3-007  KaixuSuper-IDE deploy button error feedback
+  ✓ P3-008  KaixuSuper-IDE jszip.min.js SRI
+  [ ] P3-009  Kaixu67 empty-state messaging (73 pages)
+  ✓ P3-010  Kaixu67 extract OMEGA_GATE_URL to _shared/config.js
+  ✓ P3-011  SkyDex remove legacy URL from allowlist
+  ✓ P3-012  SkyDex archive .patch-backups/
+  ✓ P3-013  SkyDex verify SMTP env vars
+  ✓ P3-014  SkyErrors .dev.vars.template legacy URL
+  ✓ P3-015  SkyErrors ENV.template legacy URL
+  ✓ P3-016  SkyErrors smokehouse-standalone.html URL
+  ✓ P3-017  SkyErrors confirm weekly-ops.mjs execution model
+  ✓ P3-018  SkyeBundle pre-populate default gateway URL (15 app.js files)
+  ✓ P3-019  SkyeBundle URL validation before fetch (15 app.js files)
+  ✓ P3-020  SkyeBundle empty-state warnings (15 app.js files)
+  ✓ P3-021  SkyeBundle sw.js cache version bumps (15 sw.js files)
+  ✓ P3-022  SkyeHubs verify + document required env vars (3 hubs)
+  ✓ P3-023  SkyeHubs add error state for failed Stripe checkout
+  ✓ P3-024  SkyeMail2.0 verify SSO env vars
+  ✓ P3-025  SkyeMail2.0 verify SMTP ingest routing
+  ✓ P3-026  SkyeMail2.0 vault-export binary download headers
+  ✓ P3-027  SkyeSpace background-injector.js prefers-reduced-motion
+  ✓ P3-028  SkyeSpace verify shell.js nav links
+  ✓ P3-029  Foundry pack background-injector.js consolidation
+  ✓ P3-030  0megaSkyeGate GatewayUpgrades archive README
+  ✓ P3-031  0megaSkyeGate add schema apply to CI/CD
+  ✓ P3-032  ChromeBoard-Pro inline button test
+
+================================================================================
+TOTAL ISSUES: 32 directives across 9 platforms
+  P0: 1   |   P1: 5   |   P2: 7   |   P3: 19
+================================================================================
+END OF HEALTH PATCH DIRECTIVES
+================================================================================
