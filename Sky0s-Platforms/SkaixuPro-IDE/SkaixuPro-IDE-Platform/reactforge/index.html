@@ -262,14 +262,21 @@ Review the provided HTML/JS code.
   <script>
     async function generateContent(prompt, systemInstruction, apiKey){
       if(!apiKey) throw new Error("API Key is missing");
-      const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+      const gateBase = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+      const API_URL = `${gateBase}/v1/chat`;
       const payload = {
-        contents: [{ parts: [{ text: prompt }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] }
+        alias: 'kaixu/deep',
+        messages: [
+          { role: 'system', content: systemInstruction },
+          { role: 'user', content: prompt }
+        ]
       };
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
         body: JSON.stringify(payload)
       });
       if(!response.ok){
@@ -281,7 +288,7 @@ Review the provided HTML/JS code.
         throw new Error(msg);
       }
       const data = await response.json();
-      return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      return data?.output?.text || "";
     }
 
     function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }

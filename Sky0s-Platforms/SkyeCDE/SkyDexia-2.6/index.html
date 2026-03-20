@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SkyDexia 2.6</title>
-  <link rel="icon" type="image/png" href="./favicon.png" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <meta name="theme-color" content="#180713" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png" />
+  <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <meta name="theme-color" content="#120611" />
   <script src="./_shared/auth-unlock.js"></script>
   <script src="./_shared/standalone-session.js"></script>
   <style>
@@ -223,16 +224,44 @@
       filter: drop-shadow(0 0 10px var(--brand-drop-1)) drop-shadow(0 0 12px var(--brand-drop-2));
     }
 
+    .mark-badge {
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: var(--brand-shell);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 0 24px var(--brand-glow);
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .mark-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px var(--brand-drop-1)) drop-shadow(0 0 12px var(--brand-drop-2));
+    }
+
+    .mark-badge.desktop-drop-mark {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 16px;
+      border-radius: 24px;
+      padding: 10px;
+    }
+
+    .mark-badge.status-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      padding: 5px;
+    }
+
     .brand-copy { min-width: 0; }
     .brand-title { margin: 0; font-size: 18px; letter-spacing: 0.02em; white-space: nowrap; }
     .brand-title .sky { color: var(--purple-soft); }
     .brand-title .dex { color: var(--gold-soft); }
-
-    .brand-mark.is-pure {
-      background:
-        radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.12), transparent 50%),
-        var(--brand-shell);
-    }
 
     .brand-subtitle {
       margin: 4px 0 0;
@@ -677,6 +706,17 @@
       margin-bottom: 6px;
     }
 
+    .status-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .status-card-header strong {
+      margin-bottom: 0;
+    }
+
     .outline-stack {
       display: grid;
       gap: 8px;
@@ -768,68 +808,6 @@
       margin: 0;
       color: var(--muted);
       line-height: 1.55;
-    }
-
-    .loading-mark-wrap {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 18px;
-    }
-
-    .loading-mark {
-      width: 74px;
-      height: 74px;
-      border-radius: 22px;
-      background:
-        radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.12), transparent 52%),
-        var(--brand-shell);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-        0 0 30px var(--brand-glow);
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      margin-inline: auto;
-    }
-
-    .loading-mark img {
-      width: 90%;
-      height: 90%;
-      object-fit: contain;
-      filter: drop-shadow(0 0 10px var(--brand-drop-1)) drop-shadow(0 0 14px var(--brand-drop-2));
-    }
-
-    .status-card.with-mark {
-      display: grid;
-      grid-template-columns: 64px minmax(0, 1fr);
-      gap: 14px;
-      align-items: center;
-    }
-
-    .status-mark {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      background:
-        radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.12), transparent 52%),
-        var(--brand-shell);
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-        0 0 22px var(--brand-glow);
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-    }
-
-    .status-mark img {
-      width: 88%;
-      height: 88%;
-      object-fit: contain;
-      filter: drop-shadow(0 0 8px var(--brand-drop-1)) drop-shadow(0 0 12px var(--brand-drop-2));
-    }
-
-    .status-copy {
-      min-width: 0;
     }
 
     .desktop-drop-actions {
@@ -2135,11 +2113,7 @@
   </div>
   <div class="desktop-dropzone" id="desktopDropZone" aria-hidden="true">
     <div class="desktop-drop-card">
-      <div class="loading-mark-wrap" aria-hidden="true">
-        <div class="loading-mark">
-          <img src="./branding/skydexia-mark.png" alt="" />
-        </div>
-      </div>
+      <div class="mark-badge desktop-drop-mark" aria-hidden="true"><img src="./branding/skydexia-mark.png" alt="" /></div>
       <div class="eyebrow">Desktop Import</div>
       <h2>Drop files, folders, or ZIPs into SkyDexia 2.6</h2>
       <p id="desktopDropLabel">Release to import your desktop selection into the active workspace snapshot. SkyDexia 2.6 will normalize the files, save them into the lane, and push a matching restore source into SkyeDrive.</p>
@@ -2152,7 +2126,7 @@
   <div class="shell">
     <header class="shell-header">
       <div class="brand-block">
-        <div class="brand-mark is-pure" aria-hidden="true"><img src="./branding/skydexia-mark.png" alt="" /></div>
+        <div class="brand-mark" aria-hidden="true"><img src="./branding/skydexia-mark.png" alt="" /></div>
         <div class="brand-copy">
           <h1 class="brand-title"><span class="sky">SkyDexia</span> <span class="dex">2.6</span></h1>
           <p class="brand-subtitle" id="workspaceLabel">Self-contained workspace lane with SkyeDrive continuity, 0mega gate-routed agenting, optional GitHub push, and Netlify release flow</p>
@@ -2821,14 +2795,12 @@ build"></textarea>
         </div>
 
         <div class="rail-block summary-stack" data-section-title="Status Log" data-default-open="1">
-          <div class="status-card with-mark">
-            <div class="status-mark" aria-hidden="true">
-              <img src="./branding/skydexia-mark.png" alt="" />
-            </div>
-            <div class="status-copy">
+          <div class="status-card">
+            <div class="status-card-header">
+              <div class="mark-badge status-mark" aria-hidden="true"><img src="./branding/skydexia-mark.png" alt="" /></div>
               <strong id="statusTitle">Status</strong>
-              <div class="muted" id="statusBody">Booting SkyDexia 2.6.</div>
             </div>
+            <div class="muted" id="statusBody">Booting SkyDexia 2.6.</div>
           </div>
           <div class="log-list" id="logBox"></div>
         </div>

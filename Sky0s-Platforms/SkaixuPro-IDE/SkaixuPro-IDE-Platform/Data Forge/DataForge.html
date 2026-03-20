@@ -409,8 +409,9 @@
                 return;
             }
 
-            const modelName = modelInput.value || "gemini-2.5-flash-preview-09-2025";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`;
+            const modelName = modelInput.value || "kaixu/deep";
+            const gateBase = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+            const apiUrl = `${gateBase}/v1/chat`;
 
             // Determine Format specifics
             let formatValue = 'json';
@@ -429,8 +430,11 @@ Task: Design the schema and mock data for the following description: "${promptTe
 Constraint: ${formatRules[formatValue]}`;
 
             const payload = {
-                contents: [{ parts: [{ text: fullPrompt }] }],
-                systemInstruction: { parts: [{ text: "You output strictly raw code/data only. No pleasantries. No markdown backticks." }] }
+                alias: modelName,
+                messages: [
+                    { role: 'system', content: 'You output strictly raw code/data only. No pleasantries. No markdown backticks.' },
+                    { role: 'user', content: fullPrompt }
+                ]
             };
 
             // UI Loading State
@@ -446,7 +450,10 @@ Constraint: ${formatRules[formatValue]}`;
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${activeKey}`
+                    },
                     body: JSON.stringify(payload)
                 });
 
@@ -456,7 +463,7 @@ Constraint: ${formatRules[formatValue]}`;
                 }
 
                 const result = await response.json();
-                let text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                let text = result?.output?.text;
                 
                 if (!text) throw new Error("AI returned empty response");
 

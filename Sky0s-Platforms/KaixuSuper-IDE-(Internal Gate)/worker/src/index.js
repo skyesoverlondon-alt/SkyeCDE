@@ -92,80 +92,64 @@ function resolveContext(request, body) {
 
 // ─── PROVIDER CALLS ───────────────────────────────────────────────────────────
 
+function gateBaseUrl(env) {
+  return String(env.OMEGA_GATE_URL || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+}
+
+function gateServiceToken(env) {
+  return String(env.OMEGA_GATE_SERVICE_KEY || env.KAIXU_APP_TOKEN || env.KAIXUSI_SECRET || '').trim();
+}
+
 async function callOpenAI({ model, messages, max_tokens, temperature, stream }, env) {
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const endpoint = stream ? '/v1/stream' : '/v1/chat';
+  const res = await fetch(`${gateBaseUrl(env)}${endpoint}`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${env.OPENAI_KEY}`,
+      'Authorization': `Bearer ${gateServiceToken(env)}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: model || 'gpt-4o',
+      alias: model || 'kaixu/deep',
       messages,
       max_tokens: max_tokens || 4096,
       temperature: temperature ?? 0.7,
-      stream: stream || false,
     }),
   });
   return res;
 }
 
 async function callAnthropic({ model, messages, max_tokens, temperature, stream }, env) {
-  // Separate system message if present (Anthropic requires it as top-level param)
-  const systemMsg = messages.find(m => m.role === 'system');
-  const userMsgs  = messages.filter(m => m.role !== 'system');
-
-  const body = {
-    model: model || 'claude-3-5-sonnet-20241022',
-    messages: userMsgs,
-    max_tokens: max_tokens || 4096,
-    temperature: temperature ?? 0.7,
-    stream: stream || false,
-  };
-  if (systemMsg) body.system = systemMsg.content;
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const endpoint = stream ? '/v1/stream' : '/v1/chat';
+  const res = await fetch(`${gateBaseUrl(env)}${endpoint}`, {
     method: 'POST',
     headers: {
-      'x-api-key':         env.ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-      'Content-Type':      'application/json',
+      'Authorization': `Bearer ${gateServiceToken(env)}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      alias: model || 'kaixu/deep',
+      messages,
+      max_tokens: max_tokens || 4096,
+      temperature: temperature ?? 0.7,
+    }),
   });
   return res;
 }
 
 async function callGemini({ model, messages, max_tokens, temperature, stream }, env) {
-  const geminiModel = model || 'gemini-2.5-flash';
-  // Translate OpenAI-style messages → Gemini contents format
-  const systemMsg = messages.find(m => m.role === 'system');
-  const chatMsgs  = messages.filter(m => m.role !== 'system');
-
-  const contents = chatMsgs.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }],
-  }));
-
-  const endpoint = stream
-    ? `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:streamGenerateContent?key=${env.GEMINI_KEY}`
-    : `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${env.GEMINI_KEY}`;
-
-  const body = {
-    contents,
-    generationConfig: {
-      maxOutputTokens: max_tokens || 4096,
-      temperature: temperature ?? 0.7,
-    },
-  };
-  if (systemMsg) {
-    body.systemInstruction = { parts: [{ text: systemMsg.content }] };
-  }
-
-  const res = await fetch(endpoint, {
+  const endpoint = stream ? '/v1/stream' : '/v1/chat';
+  const res = await fetch(`${gateBaseUrl(env)}${endpoint}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    headers: {
+      'Authorization': `Bearer ${gateServiceToken(env)}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      alias: model || 'kaixu/deep',
+      messages,
+      max_tokens: max_tokens || 4096,
+      temperature: temperature ?? 0.7,
+    }),
   });
   return res;
 }
@@ -173,6 +157,26 @@ async function callGemini({ model, messages, max_tokens, temperature, stream }, 
 // ─── TEXT EXTRACTION (non-streaming) ─────────────────────────────────────────
 async function extractText(provider, providerRes) {
   const data = await providerRes.json().catch(() => ({}));
+
+  // Canonical 0mega gate response shape
+  if (typeof data?.output?.text === 'string' && data.output.text.trim()) {
+    return {
+      text: data.output.text,
+      usage: {
+        input_tokens: Number(data?.usage?.input_tokens || data?.usage?.prompt_tokens || 0) || 0,
+        output_tokens: Number(data?.usage?.output_tokens || data?.usage?.completion_tokens || 0) || 0,
+      },
+    };
+  }
+  if (typeof data?.output_text === 'string' && data.output_text.trim()) {
+    return {
+      text: data.output_text,
+      usage: {
+        input_tokens: Number(data?.usage?.input_tokens || data?.usage?.prompt_tokens || 0) || 0,
+        output_tokens: Number(data?.usage?.output_tokens || data?.usage?.completion_tokens || 0) || 0,
+      },
+    };
+  }
 
   if (provider === 'openai') {
     return {
@@ -209,46 +213,44 @@ async function extractText(provider, providerRes) {
 
 // ─── EMBED ─────────────────────────────────────────────────────────────────────
 async function embedGemini({ input, taskType, outputDimensionality }, env) {
-  const model    = 'gemini-embedding-001';
-  const dims     = outputDimensionality || 1536;
-  const task     = taskType || 'RETRIEVAL_DOCUMENT';
-
-  const results = await Promise.all(input.map(async text => {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent?key=${env.GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: `models/${model}`,
-          content: { parts: [{ text }] },
-          taskType: task,
-          outputDimensionality: dims,
-        }),
-      }
-    );
-    const d = await res.json().catch(() => ({}));
-    return d.embedding?.values || [];
-  }));
-
-  return { embeddings: results, dimensions: dims };
+  const dims = outputDimensionality || 1536;
+  const res = await fetch(`${gateBaseUrl(env)}/v1/embed`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${gateServiceToken(env)}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      alias: 'kaixu/embed',
+      input,
+      taskType,
+      outputDimensionality: dims,
+    })
+  });
+  const payload = await res.json().catch(() => ({}));
+  return {
+    embeddings: payload.embeddings || [],
+    dimensions: payload.dimensions || dims,
+  };
 }
 
 async function embedOpenAI({ input, model: modelName }, env) {
-  const res = await fetch('https://api.openai.com/v1/embeddings', {
+  const res = await fetch(`${gateBaseUrl(env)}/v1/embed`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${env.OPENAI_KEY}`,
+      'Authorization': `Bearer ${gateServiceToken(env)}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: modelName || 'text-embedding-3-small',
+      alias: modelName || 'kaixu/embed',
       input,
     }),
   });
   const data = await res.json().catch(() => ({}));
-  const embeddings = (data.data || []).map(d => d.embedding || []);
-  return { embeddings, dimensions: embeddings[0]?.length || 0 };
+  return {
+    embeddings: data.embeddings || [],
+    dimensions: data.dimensions || 0,
+  };
 }
 
 // ─── USAGE LOGGING ─────────────────────────────────────────────────────────────

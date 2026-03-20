@@ -434,11 +434,12 @@
             const activeKey = apiKeyInput.value || fallbackKey;
             
             if (!activeKey) {
-                throw new Error("Please enter your Gemini API Key.");
+                throw new Error("Please enter your 0mega gate token.");
             }
             
-            const modelName = modelInput.value || "gemini-2.5-flash-preview-09-2025";
-            const currentApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`;
+            const modelName = modelInput.value || "kaixu/deep";
+            const gateBase = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+            const currentApiUrl = `${gateBase}/v1/chat`;
             
             let retries = 0;
             const delays = [1000, 2000, 4000, 8000, 16000];
@@ -447,7 +448,10 @@
                 try {
                     const response = await fetch(currentApiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${activeKey}`
+                        },
                         body: JSON.stringify(payload)
                     });
 
@@ -488,13 +492,16 @@ Code to annotate:
 ${currentCode}
 `;
             const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: "You are a precise code formatter. Return only raw code without markdown wrappers." }] }
+                alias: modelInput.value || 'kaixu/deep',
+                messages: [
+                    { role: 'system', content: 'You are a precise code formatter. Return only raw code without markdown wrappers.' },
+                    { role: 'user', content: prompt }
+                ]
             };
 
             try {
                 const result = await handleApiRequestWithRetry(payload);
-                let responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                let responseText = result?.output?.text;
                 
                 if (!responseText) throw new Error("No response generated");
 

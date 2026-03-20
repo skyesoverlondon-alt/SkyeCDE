@@ -383,15 +383,19 @@
                     else parts.push({ text: `[NEURAL_INGEST: ${a.name} (${a.type.toUpperCase()})]\n${a.content}\n` });
                 });
 
-                const payload = { 
-                    contents: [...conversation, { role: "user", parts }], 
-                    systemInstruction: { parts: [{ text: sys }] }, 
-                    tools: isSearchOn ? [{ google_search: {} }] : [] 
+                const gateBase = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+                const payload = {
+                    alias: 'kaixu/deep',
+                    messages: [
+                        { role: 'system', content: sys },
+                        ...conversation.map(entry => ({ role: entry.role, content: (entry.parts || []).map(p => p.text || '').join('\n') })),
+                        { role: 'user', content: [prompt || 'Neural handshake.', ...atts.map(a => `[NEURAL_INGEST: ${a.name} (${a.type.toUpperCase()})]\n${a.content}\n`)].join('\n') }
+                    ]
                 };
-                
-                const res = await apiCall(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, payload, abortCtrl.signal);
-                
-                const text = res.candidates[0].content.parts[0].text;
+
+                const res = await apiCall(`${gateBase}/v1/chat`, payload, abortCtrl.signal, apiKey);
+
+                const text = res?.output?.text || res?.output_text || 'No response text returned.';
                 addMessageUI('model', text);
                 await saveMessage('model', text);
                 conversation.push({ role: "user", parts: [{ text: prompt }] }, { role: "model", parts: [{ text: text }] });
@@ -402,8 +406,16 @@
             }
         }
 
-        async function apiCall(url, body, signal) {
-            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal });
+        async function apiCall(url, body, signal, token) {
+            const r = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(body),
+                signal
+            });
             if (!r.ok) throw new Error(await r.text());
             return await r.json();
         }

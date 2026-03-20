@@ -1447,18 +1447,27 @@ Evidence Record:
 Respond in plain professional prose. No markdown, no headers. Keep it under 80 words.`;
 
     try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const gateBase = (window.OMEGA_GATE_URL || localStorage.getItem('OMEGA_GATE_URL') || 'https://0megaskyegate.skyesoverlondon.workers.dev').replace(/\/+$/, '');
+        const gateToken = (window.KAIXU_APP_TOKEN || localStorage.getItem('KAIXU_APP_TOKEN') || '').trim();
+        if (!gateToken) {
+            throw new Error('Missing gate token. Set KAIXU_APP_TOKEN for this workspace.');
+        }
+
+        const res = await fetch(`${gateBase}/v1/chat`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${gateToken}`
+            },
             body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 1000,
-                messages: [{ role: 'user', content: prompt }]
+                alias: 'kaixu/deep',
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.4
             })
         });
 
-        const data = await res.json();
-        const text = data.content?.find(b => b.type === 'text')?.text || 'Analysis unavailable.';
+        const data = await res.json().catch(() => ({}));
+        const text = data?.output?.text || data?.output_text || 'Analysis unavailable.';
         selectedItem.aiAnalysis = text;
 
         body.innerHTML = renderAiAnalysis(text);

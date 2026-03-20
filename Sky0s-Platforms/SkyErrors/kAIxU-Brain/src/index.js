@@ -763,7 +763,7 @@ function extractUsageFromOpenAI(json) {
 }
 
 function openAiBase(env) {
-  return String(env.KAIXU_OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, "");
+  return String(env.KAIXU_OPENAI_BASE_URL || env.OMEGA_GATE_URL || "https://0megaskyegate.skyesoverlondon.workers.dev").replace(/\/+$/, "");
 }
 
 function openAiKey(env) {
